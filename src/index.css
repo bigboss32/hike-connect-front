@@ -89,6 +89,7 @@ All colors MUST be HSL.
   
   body {
     @apply bg-background text-foreground;
+    padding-top: env(safe-area-inset-top);
   }
 
   /* Safe areas para móvil (notch en Android/iOS) */
@@ -98,5 +99,11 @@ All colors MUST be HSL.
 
   .safe-bottom {
     padding-bottom: max(env(safe-area-inset-bottom), 1rem);
+  }
+  
+  /* Hero con safe area */
+  .hero-safe {
+    margin-top: calc(-1 * env(safe-area-inset-top));
+    padding-top: env(safe-area-inset-top);
   }
 }

@@ -9,7 +9,7 @@ import routeCoast from "@/assets/route-coast.jpg";
 const Index = () => {
   return (
     <div className="min-h-screen bg-background pb-20">
-      <div className="relative h-64 overflow-hidden">
+      <div className="relative h-64 overflow-hidden hero-safe">
         <img
           src={heroImage}
           alt="Hiking trail"
