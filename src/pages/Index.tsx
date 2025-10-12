@@ -59,14 +59,17 @@ const Index = () => {
               duration="3h 30min"
               difficulty="Medio"
               image={routeForest}
+              type="pública"
             />
             <RouteCard
-              title="Ruta Costera del Atlántico"
-              location="Costa de Galicia"
-              distance="12 km"
-              duration="4h 15min"
+              title="Ruta Premium Picos de Europa"
+              location="Picos de Europa"
+              distance="15 km"
+              duration="5h"
               difficulty="Difícil"
               image={routeCoast}
+              type="privada"
+              company="Montaña Aventura Pro"
             />
           </div>
         </section>
