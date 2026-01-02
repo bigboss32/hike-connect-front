@@ -4,6 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Settings, Award, MapPin, Calendar } from "lucide-react";
+import EditProfileDialog from "@/components/EditProfileDialog";
+import SettingsDialog from "@/components/SettingsDialog";
 
 const Profile = () => {
   return (
@@ -12,9 +14,11 @@ const Profile = () => {
         <div className="max-w-lg mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <h1 className="text-2xl font-bold text-foreground">Perfil</h1>
-            <Button variant="ghost" size="icon">
-              <Settings className="w-5 h-5" />
-            </Button>
+            <SettingsDialog>
+              <Button variant="ghost" size="icon">
+                <Settings className="w-5 h-5" />
+              </Button>
+            </SettingsDialog>
           </div>
         </div>
       </header>
@@ -39,9 +43,11 @@ const Profile = () => {
             <p className="text-sm text-muted-foreground mb-4">
               Amante de la naturaleza y el senderismo. Siempre buscando nuevas rutas por descubrir.
             </p>
-            <Button className="w-full" variant="outline">
-              Editar Perfil
-            </Button>
+            <EditProfileDialog>
+              <Button className="w-full" variant="outline">
+                Editar Perfil
+              </Button>
+            </EditProfileDialog>
           </CardContent>
         </Card>
 

@@ -1,7 +1,6 @@
 import Navigation from "@/components/Navigation";
 import CommunityCard from "@/components/CommunityCard";
-import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
+import CreateCommunityDialog from "@/components/CreateCommunityDialog";
 import communityImg from "@/assets/community.jpg";
 
 const Communities = () => {
@@ -32,10 +31,7 @@ const Communities = () => {
         <div className="max-w-lg mx-auto px-4 py-4">
           <div className="flex items-center justify-between mb-4">
             <h1 className="text-2xl font-bold text-foreground">Comunidades</h1>
-            <Button size="sm">
-              <Plus className="w-4 h-4 mr-2" />
-              Crear
-            </Button>
+            <CreateCommunityDialog />
           </div>
           <p className="text-muted-foreground text-sm">
             Únete a grupos de senderismo en tu zona
