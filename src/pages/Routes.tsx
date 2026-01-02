@@ -9,7 +9,8 @@ import routeForest from "@/assets/route-forest.jpg";
 import routeCoast from "@/assets/route-coast.jpg";
 
 const Routes = () => {
-  const [filter, setFilter] = useState<"todas" | "públicas" | "privadas">("todas");
+  const [categoryFilter, setCategoryFilter] = useState<"todas" | "senderismo" | "agroturismo">("todas");
+  const [typeFilter, setTypeFilter] = useState<"todas" | "públicas" | "premium">("todas");
   
   const allRoutes = [
     {
@@ -20,6 +21,7 @@ const Routes = () => {
       difficulty: "Medio" as const,
       image: routeForest,
       type: "pública" as const,
+      category: "senderismo" as const,
     },
     {
       title: "Ruta Premium Picos de Europa",
@@ -30,6 +32,29 @@ const Routes = () => {
       image: routeCoast,
       type: "privada" as const,
       company: "Montaña Aventura Pro",
+      category: "senderismo" as const,
+    },
+    {
+      title: "Finca La Esperanza",
+      location: "Valle del Cauca",
+      distance: "3 km",
+      duration: "2h",
+      difficulty: "Fácil" as const,
+      image: routeForest,
+      type: "agroturismo" as const,
+      company: "Finca La Esperanza",
+      category: "agroturismo" as const,
+    },
+    {
+      title: "Ruta del Café",
+      location: "Eje Cafetero",
+      distance: "4 km",
+      duration: "3h",
+      difficulty: "Fácil" as const,
+      image: routeCoast,
+      type: "agroturismo" as const,
+      company: "Hacienda El Roble",
+      category: "agroturismo" as const,
     },
     {
       title: "Ruta Costera del Atlántico",
@@ -39,6 +64,7 @@ const Routes = () => {
       difficulty: "Difícil" as const,
       image: routeCoast,
       type: "pública" as const,
+      category: "senderismo" as const,
     },
     {
       title: "Experiencia Guiada Ordesa",
@@ -49,6 +75,18 @@ const Routes = () => {
       image: routeForest,
       type: "privada" as const,
       company: "Guías de Aragón",
+      category: "senderismo" as const,
+    },
+    {
+      title: "Granja Orgánica Los Pinos",
+      location: "Boyacá",
+      distance: "2.5 km",
+      duration: "1h 30min",
+      difficulty: "Fácil" as const,
+      image: routeForest,
+      type: "agroturismo" as const,
+      company: "Granja Los Pinos",
+      category: "agroturismo" as const,
     },
     {
       title: "Camino del Valle Verde",
@@ -58,14 +96,17 @@ const Routes = () => {
       difficulty: "Fácil" as const,
       image: routeForest,
       type: "pública" as const,
+      category: "senderismo" as const,
     },
   ];
 
   const routes = allRoutes.filter(route => {
-    if (filter === "todas") return true;
-    if (filter === "públicas") return route.type === "pública";
-    if (filter === "privadas") return route.type === "privada";
-    return true;
+    const matchesCategory = categoryFilter === "todas" || route.category === categoryFilter;
+    const matchesType = 
+      typeFilter === "todas" || 
+      (typeFilter === "públicas" && route.type === "pública") ||
+      (typeFilter === "premium" && (route.type === "privada" || route.type === "agroturismo"));
+    return matchesCategory && matchesType;
   });
 
   return (
@@ -85,11 +126,18 @@ const Routes = () => {
               <SlidersHorizontal className="w-4 h-4" />
             </Button>
           </div>
-          <Tabs defaultValue="todas" className="w-full" onValueChange={(value) => setFilter(value as any)}>
+          <Tabs defaultValue="todas" className="w-full mb-3" onValueChange={(value) => setCategoryFilter(value as any)}>
+            <TabsList className="w-full grid grid-cols-3">
+              <TabsTrigger value="todas">Todas</TabsTrigger>
+              <TabsTrigger value="senderismo">Senderismo</TabsTrigger>
+              <TabsTrigger value="agroturismo">Agroturismo</TabsTrigger>
+            </TabsList>
+          </Tabs>
+          <Tabs defaultValue="todas" className="w-full" onValueChange={(value) => setTypeFilter(value as any)}>
             <TabsList className="w-full grid grid-cols-3">
               <TabsTrigger value="todas">Todas</TabsTrigger>
               <TabsTrigger value="públicas">Públicas</TabsTrigger>
-              <TabsTrigger value="privadas">Premium</TabsTrigger>
+              <TabsTrigger value="premium">Premium/Fincas</TabsTrigger>
             </TabsList>
           </Tabs>
         </div>

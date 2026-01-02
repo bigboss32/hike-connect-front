@@ -9,8 +9,9 @@ interface RouteCardProps {
   duration: string;
   difficulty: "Fácil" | "Medio" | "Difícil";
   image: string;
-  type: "pública" | "privada";
+  type: "pública" | "privada" | "agroturismo";
   company?: string;
+  category: "senderismo" | "agroturismo";
 }
 
 const RouteCard = ({
@@ -22,6 +23,7 @@ const RouteCard = ({
   image,
   type,
   company,
+  category,
 }: RouteCardProps) => {
   const difficultyColor = {
     Fácil: "bg-primary text-primary-foreground",
@@ -44,11 +46,16 @@ const RouteCard = ({
       <CardContent className="p-4">
         <div className="flex items-center justify-between mb-1">
           <h3 className="font-bold text-lg text-foreground">{title}</h3>
-          {type === "privada" && (
-            <Badge variant="secondary" className="text-xs">Premium</Badge>
-          )}
+          <div className="flex gap-1">
+            {category === "agroturismo" && (
+              <Badge variant="outline" className="text-xs border-accent text-accent">Finca</Badge>
+            )}
+            {type === "privada" && (
+              <Badge variant="secondary" className="text-xs">Premium</Badge>
+            )}
+          </div>
         </div>
-        {type === "privada" && company && (
+        {(type === "privada" || type === "agroturismo") && company && (
           <p className="text-xs text-muted-foreground mb-2">Por {company}</p>
         )}
         <div className="flex items-center gap-1 text-muted-foreground text-sm mb-3">
