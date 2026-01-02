@@ -60,6 +60,7 @@ const Index = () => {
               difficulty="Medio"
               image={routeForest}
               type="pública"
+              category="senderismo"
             />
             <RouteCard
               title="Ruta Premium Picos de Europa"
@@ -70,6 +71,7 @@ const Index = () => {
               image={routeCoast}
               type="privada"
               company="Montaña Aventura Pro"
+              category="senderismo"
             />
           </div>
         </section>
