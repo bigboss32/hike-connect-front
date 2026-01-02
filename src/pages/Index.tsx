@@ -53,6 +53,7 @@ const Index = () => {
           </div>
           <div className="grid gap-4">
             <RouteCard
+              id="bosque-encantado"
               title="Sendero del Bosque Encantado"
               location="Sierra de Madrid"
               distance="8.5 km"
@@ -63,6 +64,7 @@ const Index = () => {
               category="senderismo"
             />
             <RouteCard
+              id="picos-europa-premium"
               title="Ruta Premium Picos de Europa"
               location="Picos de Europa"
               distance="15 km"

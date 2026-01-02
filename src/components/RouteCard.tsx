@@ -1,8 +1,10 @@
+import { useNavigate } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { MapPin, Clock, TrendingUp } from "lucide-react";
 
 interface RouteCardProps {
+  id: string;
   title: string;
   location: string;
   distance: string;
@@ -15,6 +17,7 @@ interface RouteCardProps {
 }
 
 const RouteCard = ({
+  id,
   title,
   location,
   distance,
@@ -25,6 +28,7 @@ const RouteCard = ({
   company,
   category,
 }: RouteCardProps) => {
+  const navigate = useNavigate();
   const difficultyColor = {
     Fácil: "bg-primary text-primary-foreground",
     Medio: "bg-secondary text-secondary-foreground",
@@ -32,7 +36,10 @@ const RouteCard = ({
   };
 
   return (
-    <Card className="overflow-hidden shadow-soft hover:shadow-elevated transition-all cursor-pointer">
+    <Card 
+      className="overflow-hidden shadow-soft hover:shadow-elevated transition-all cursor-pointer"
+      onClick={() => navigate(`/routes/${id}`)}
+    >
       <div className="relative h-40">
         <img
           src={image}

@@ -5,100 +5,11 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Search, SlidersHorizontal } from "lucide-react";
 import { useState } from "react";
-import routeForest from "@/assets/route-forest.jpg";
-import routeCoast from "@/assets/route-coast.jpg";
+import { allRoutes } from "@/data/routes";
 
 const Routes = () => {
   const [categoryFilter, setCategoryFilter] = useState<"todas" | "senderismo" | "agroturismo">("todas");
   const [typeFilter, setTypeFilter] = useState<"todas" | "públicas" | "premium">("todas");
-  
-  const allRoutes = [
-    {
-      title: "Sendero del Bosque Encantado",
-      location: "Sierra de Madrid",
-      distance: "8.5 km",
-      duration: "3h 30min",
-      difficulty: "Medio" as const,
-      image: routeForest,
-      type: "pública" as const,
-      category: "senderismo" as const,
-    },
-    {
-      title: "Ruta Premium Picos de Europa",
-      location: "Picos de Europa",
-      distance: "15 km",
-      duration: "5h",
-      difficulty: "Difícil" as const,
-      image: routeCoast,
-      type: "privada" as const,
-      company: "Montaña Aventura Pro",
-      category: "senderismo" as const,
-    },
-    {
-      title: "Finca La Esperanza",
-      location: "Valle del Cauca",
-      distance: "3 km",
-      duration: "2h",
-      difficulty: "Fácil" as const,
-      image: routeForest,
-      type: "agroturismo" as const,
-      company: "Finca La Esperanza",
-      category: "agroturismo" as const,
-    },
-    {
-      title: "Ruta del Café",
-      location: "Eje Cafetero",
-      distance: "4 km",
-      duration: "3h",
-      difficulty: "Fácil" as const,
-      image: routeCoast,
-      type: "agroturismo" as const,
-      company: "Hacienda El Roble",
-      category: "agroturismo" as const,
-    },
-    {
-      title: "Ruta Costera del Atlántico",
-      location: "Costa de Galicia",
-      distance: "12 km",
-      duration: "4h 15min",
-      difficulty: "Difícil" as const,
-      image: routeCoast,
-      type: "pública" as const,
-      category: "senderismo" as const,
-    },
-    {
-      title: "Experiencia Guiada Ordesa",
-      location: "Parque Nacional Ordesa",
-      distance: "10 km",
-      duration: "4h",
-      difficulty: "Medio" as const,
-      image: routeForest,
-      type: "privada" as const,
-      company: "Guías de Aragón",
-      category: "senderismo" as const,
-    },
-    {
-      title: "Granja Orgánica Los Pinos",
-      location: "Boyacá",
-      distance: "2.5 km",
-      duration: "1h 30min",
-      difficulty: "Fácil" as const,
-      image: routeForest,
-      type: "agroturismo" as const,
-      company: "Granja Los Pinos",
-      category: "agroturismo" as const,
-    },
-    {
-      title: "Camino del Valle Verde",
-      location: "Pirineo Aragonés",
-      distance: "5.2 km",
-      duration: "2h",
-      difficulty: "Fácil" as const,
-      image: routeForest,
-      type: "pública" as const,
-      category: "senderismo" as const,
-    },
-  ];
 
   const routes = allRoutes.filter(route => {
     const matchesCategory = categoryFilter === "todas" || route.category === categoryFilter;
@@ -145,8 +56,8 @@ const Routes = () => {
 
       <main className="max-w-lg mx-auto px-4 py-6">
         <div className="grid gap-4">
-          {routes.map((route, index) => (
-            <RouteCard key={index} {...route} />
+          {routes.map((route) => (
+            <RouteCard key={route.id} {...route} />
           ))}
         </div>
       </main>
