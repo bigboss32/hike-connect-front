@@ -1,7 +1,6 @@
 import Navigation from "@/components/Navigation";
 import EventCard from "@/components/EventCard";
-import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
+import CreateEventDialog from "@/components/CreateEventDialog";
 
 const Events = () => {
   const events = [
@@ -34,10 +33,7 @@ const Events = () => {
         <div className="max-w-lg mx-auto px-4 py-4">
           <div className="flex items-center justify-between mb-4">
             <h1 className="text-2xl font-bold text-foreground">Eventos</h1>
-            <Button size="sm">
-              <Plus className="w-4 h-4 mr-2" />
-              Crear
-            </Button>
+            <CreateEventDialog />
           </div>
           <p className="text-muted-foreground text-sm">
             Próximas salidas de senderismo

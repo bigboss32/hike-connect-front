@@ -1,6 +1,8 @@
+import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Users } from "lucide-react";
+import { Users, Check } from "lucide-react";
+import { toast } from "@/hooks/use-toast";
 
 interface CommunityCardProps {
   name: string;
@@ -10,6 +12,27 @@ interface CommunityCardProps {
 }
 
 const CommunityCard = ({ name, members, description, image }: CommunityCardProps) => {
+  const [joined, setJoined] = useState(false);
+  const [currentMembers, setCurrentMembers] = useState(members);
+
+  const handleJoin = () => {
+    if (joined) {
+      setJoined(false);
+      setCurrentMembers(prev => prev - 1);
+      toast({
+        title: "Has salido de la comunidad",
+        description: `Ya no eres miembro de "${name}"`,
+      });
+    } else {
+      setJoined(true);
+      setCurrentMembers(prev => prev + 1);
+      toast({
+        title: "¡Te has unido!",
+        description: `Ahora eres miembro de "${name}"`,
+      });
+    }
+  };
+
   return (
     <Card className="overflow-hidden shadow-soft">
       <div className="relative h-32">
@@ -27,10 +50,21 @@ const CommunityCard = ({ name, members, description, image }: CommunityCardProps
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-1 text-sm text-muted-foreground">
             <Users className="w-4 h-4" />
-            <span>{members} miembros</span>
+            <span>{currentMembers} miembros</span>
           </div>
-          <Button variant="outline" size="sm">
-            Unirse
+          <Button 
+            variant={joined ? "secondary" : "outline"} 
+            size="sm"
+            onClick={handleJoin}
+          >
+            {joined ? (
+              <>
+                <Check className="w-3 h-3 mr-1" />
+                Miembro
+              </>
+            ) : (
+              "Unirse"
+            )}
           </Button>
         </div>
       </CardContent>
