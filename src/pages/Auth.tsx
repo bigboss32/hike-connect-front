@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
@@ -11,8 +11,15 @@ import { useToast } from "@/hooks/use-toast";
 
 const Auth = () => {
   const navigate = useNavigate();
-  const { login, register } = useAuth();
+  const { login, register, user, isLoading: authLoading } = useAuth();
   const { toast } = useToast();
+  
+  // Redirect if already logged in
+  useEffect(() => {
+    if (!authLoading && user) {
+      navigate("/", { replace: true });
+    }
+  }, [user, authLoading, navigate]);
   
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
