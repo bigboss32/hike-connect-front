@@ -129,6 +129,12 @@ const Auth = () => {
     }
   };
 
+  // Test credentials info
+  const testCredentials = {
+    email: "demo@senderoconnect.com",
+    password: "demo123",
+  };
+
   return (
     <div className="min-h-screen bg-background flex flex-col items-center justify-center p-4">
       <div className="w-full max-w-md">
@@ -197,6 +203,18 @@ const Auth = () => {
                   <Button type="submit" className="w-full" disabled={isLoading}>
                     {isLoading ? "Iniciando sesión..." : "Iniciar Sesión"}
                   </Button>
+                  
+                  <div className="mt-4 p-3 bg-muted rounded-lg">
+                    <p className="text-xs text-muted-foreground text-center mb-2">
+                      Usuario de prueba:
+                    </p>
+                    <p className="text-xs text-center font-mono">
+                      {testCredentials.email}
+                    </p>
+                    <p className="text-xs text-center font-mono">
+                      {testCredentials.password}
+                    </p>
+                  </div>
                 </form>
               </TabsContent>
               

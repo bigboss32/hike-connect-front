@@ -28,11 +28,26 @@ interface AuthProviderProps {
   children: ReactNode;
 }
 
+// Test user credentials
+const TEST_USER = {
+  id: "test-user-123",
+  email: "demo@senderoconnect.com",
+  password: "demo123",
+  name: "Usuario Demo",
+};
+
 export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    // Initialize test user if not exists
+    const users = JSON.parse(localStorage.getItem("registered_users") || "[]");
+    if (!users.some((u: any) => u.email === TEST_USER.email)) {
+      users.push(TEST_USER);
+      localStorage.setItem("registered_users", JSON.stringify(users));
+    }
+
     // Check for existing session
     const storedUser = localStorage.getItem("auth_user");
     if (storedUser) {
