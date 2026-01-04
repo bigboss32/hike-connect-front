@@ -1,24 +1,73 @@
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import Navigation from "@/components/Navigation";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { Settings, Award, MapPin, Calendar } from "lucide-react";
+import { Settings, Award, MapPin, Calendar, LogOut } from "lucide-react";
 import EditProfileDialog from "@/components/EditProfileDialog";
 import SettingsDialog from "@/components/SettingsDialog";
+import { useAuth } from "@/contexts/AuthContext";
+import { useToast } from "@/hooks/use-toast";
 
 const Profile = () => {
+  const { user, logout, isLoading } = useAuth();
+  const navigate = useNavigate();
+  const { toast } = useToast();
+
+  useEffect(() => {
+    if (!isLoading && !user) {
+      navigate("/auth");
+    }
+  }, [user, isLoading, navigate]);
+
+  const handleLogout = () => {
+    logout();
+    toast({
+      title: "Sesión cerrada",
+      description: "Has cerrado sesión correctamente",
+    });
+    navigate("/");
+  };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <p className="text-muted-foreground">Cargando...</p>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return null;
+  }
+
+  const getInitials = (name: string) => {
+    return name
+      .split(" ")
+      .map((n) => n[0])
+      .join("")
+      .toUpperCase()
+      .slice(0, 2);
+  };
+
   return (
     <div className="min-h-screen bg-background pb-20">
       <header className="bg-card border-b border-border">
         <div className="max-w-lg mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <h1 className="text-2xl font-bold text-foreground">Perfil</h1>
-            <SettingsDialog>
-              <Button variant="ghost" size="icon">
-                <Settings className="w-5 h-5" />
+            <div className="flex items-center gap-2">
+              <SettingsDialog>
+                <Button variant="ghost" size="icon">
+                  <Settings className="w-5 h-5" />
+                </Button>
+              </SettingsDialog>
+              <Button variant="ghost" size="icon" onClick={handleLogout}>
+                <LogOut className="w-5 h-5" />
               </Button>
-            </SettingsDialog>
+            </div>
           </div>
         </div>
       </header>
@@ -28,12 +77,12 @@ const Profile = () => {
           <CardContent className="p-6">
             <div className="flex items-start gap-4 mb-4">
               <Avatar className="w-20 h-20">
-                <AvatarImage src="https://api.dicebear.com/7.x/avataaars/svg?seed=hiking" />
-                <AvatarFallback>JD</AvatarFallback>
+                <AvatarImage src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${user.email}`} />
+                <AvatarFallback>{getInitials(user.name)}</AvatarFallback>
               </Avatar>
               <div className="flex-1">
-                <h2 className="text-xl font-bold text-foreground">Juan Pérez</h2>
-                <p className="text-muted-foreground text-sm mb-2">@juanperez</p>
+                <h2 className="text-xl font-bold text-foreground">{user.name}</h2>
+                <p className="text-muted-foreground text-sm mb-2">{user.email}</p>
                 <Badge variant="secondary">
                   <Award className="w-3 h-3 mr-1" />
                   Explorador

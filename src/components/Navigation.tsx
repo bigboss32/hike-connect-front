@@ -1,16 +1,18 @@
-import { Home, Map, Users, Calendar, User } from "lucide-react";
+import { Home, Map, Users, Calendar, User, LogIn } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/contexts/AuthContext";
 
 const Navigation = () => {
   const location = useLocation();
+  const { user } = useAuth();
 
   const navItems = [
     { icon: Home, label: "Inicio", path: "/" },
     { icon: Map, label: "Rutas", path: "/routes" },
     { icon: Users, label: "Comunidad", path: "/communities" },
     { icon: Calendar, label: "Eventos", path: "/events" },
-    { icon: User, label: "Perfil", path: "/profile" },
+    { icon: user ? User : LogIn, label: user ? "Perfil" : "Entrar", path: user ? "/profile" : "/auth" },
   ];
 
   return (
