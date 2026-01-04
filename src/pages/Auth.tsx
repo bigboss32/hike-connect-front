@@ -1,0 +1,290 @@
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Mountain, Eye, EyeOff } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+
+const Auth = () => {
+  const navigate = useNavigate();
+  const { login, register } = useAuth();
+  const { toast } = useToast();
+  
+  const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  
+  // Login form state
+  const [loginEmail, setLoginEmail] = useState("");
+  const [loginPassword, setLoginPassword] = useState("");
+  
+  // Register form state
+  const [registerName, setRegisterName] = useState("");
+  const [registerEmail, setRegisterEmail] = useState("");
+  const [registerPassword, setRegisterPassword] = useState("");
+  const [registerConfirmPassword, setRegisterConfirmPassword] = useState("");
+
+  const validateEmail = (email: string) => {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  };
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!loginEmail || !loginPassword) {
+      toast({
+        title: "Error",
+        description: "Por favor completa todos los campos",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    if (!validateEmail(loginEmail)) {
+      toast({
+        title: "Error",
+        description: "Por favor ingresa un correo válido",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    setIsLoading(true);
+    const result = await login(loginEmail, loginPassword);
+    setIsLoading(false);
+    
+    if (result.success) {
+      toast({
+        title: "¡Bienvenido!",
+        description: "Has iniciado sesión correctamente",
+      });
+      navigate("/");
+    } else {
+      toast({
+        title: "Error",
+        description: result.error || "Error al iniciar sesión",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleRegister = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!registerName || !registerEmail || !registerPassword || !registerConfirmPassword) {
+      toast({
+        title: "Error",
+        description: "Por favor completa todos los campos",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    if (!validateEmail(registerEmail)) {
+      toast({
+        title: "Error",
+        description: "Por favor ingresa un correo válido",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    if (registerPassword.length < 6) {
+      toast({
+        title: "Error",
+        description: "La contraseña debe tener al menos 6 caracteres",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    if (registerPassword !== registerConfirmPassword) {
+      toast({
+        title: "Error",
+        description: "Las contraseñas no coinciden",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    setIsLoading(true);
+    const result = await register(registerEmail, registerPassword, registerName);
+    setIsLoading(false);
+    
+    if (result.success) {
+      toast({
+        title: "¡Cuenta creada!",
+        description: "Te has registrado correctamente",
+      });
+      navigate("/");
+    } else {
+      toast({
+        title: "Error",
+        description: result.error || "Error al registrarse",
+        variant: "destructive",
+      });
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-background flex flex-col items-center justify-center p-4">
+      <div className="w-full max-w-md">
+        <div className="text-center mb-8">
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 mb-4">
+            <Mountain className="w-8 h-8 text-primary" />
+          </div>
+          <h1 className="text-2xl font-bold text-foreground">SenderoConnect</h1>
+          <p className="text-muted-foreground mt-2">Tu comunidad de senderismo</p>
+        </div>
+
+        <Card>
+          <CardHeader className="pb-4">
+            <Tabs defaultValue="login" className="w-full">
+              <TabsList className="grid w-full grid-cols-2">
+                <TabsTrigger value="login">Iniciar Sesión</TabsTrigger>
+                <TabsTrigger value="register">Registrarse</TabsTrigger>
+              </TabsList>
+              
+              <TabsContent value="login" className="mt-6">
+                <CardTitle className="text-xl">¡Bienvenido de nuevo!</CardTitle>
+                <CardDescription className="mt-1">
+                  Ingresa tus credenciales para continuar
+                </CardDescription>
+                
+                <form onSubmit={handleLogin} className="space-y-4 mt-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="login-email">Correo electrónico</Label>
+                    <Input
+                      id="login-email"
+                      type="email"
+                      placeholder="tu@correo.com"
+                      value={loginEmail}
+                      onChange={(e) => setLoginEmail(e.target.value)}
+                      disabled={isLoading}
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="login-password">Contraseña</Label>
+                    <div className="relative">
+                      <Input
+                        id="login-password"
+                        type={showPassword ? "text" : "password"}
+                        placeholder="••••••••"
+                        value={loginPassword}
+                        onChange={(e) => setLoginPassword(e.target.value)}
+                        disabled={isLoading}
+                      />
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        className="absolute right-0 top-0 h-full px-3 hover:bg-transparent"
+                        onClick={() => setShowPassword(!showPassword)}
+                      >
+                        {showPassword ? (
+                          <EyeOff className="h-4 w-4 text-muted-foreground" />
+                        ) : (
+                          <Eye className="h-4 w-4 text-muted-foreground" />
+                        )}
+                      </Button>
+                    </div>
+                  </div>
+                  
+                  <Button type="submit" className="w-full" disabled={isLoading}>
+                    {isLoading ? "Iniciando sesión..." : "Iniciar Sesión"}
+                  </Button>
+                </form>
+              </TabsContent>
+              
+              <TabsContent value="register" className="mt-6">
+                <CardTitle className="text-xl">Crear cuenta</CardTitle>
+                <CardDescription className="mt-1">
+                  Únete a la comunidad de senderistas
+                </CardDescription>
+                
+                <form onSubmit={handleRegister} className="space-y-4 mt-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="register-name">Nombre completo</Label>
+                    <Input
+                      id="register-name"
+                      type="text"
+                      placeholder="Tu nombre"
+                      value={registerName}
+                      onChange={(e) => setRegisterName(e.target.value)}
+                      disabled={isLoading}
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="register-email">Correo electrónico</Label>
+                    <Input
+                      id="register-email"
+                      type="email"
+                      placeholder="tu@correo.com"
+                      value={registerEmail}
+                      onChange={(e) => setRegisterEmail(e.target.value)}
+                      disabled={isLoading}
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="register-password">Contraseña</Label>
+                    <div className="relative">
+                      <Input
+                        id="register-password"
+                        type={showPassword ? "text" : "password"}
+                        placeholder="Mínimo 6 caracteres"
+                        value={registerPassword}
+                        onChange={(e) => setRegisterPassword(e.target.value)}
+                        disabled={isLoading}
+                      />
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        className="absolute right-0 top-0 h-full px-3 hover:bg-transparent"
+                        onClick={() => setShowPassword(!showPassword)}
+                      >
+                        {showPassword ? (
+                          <EyeOff className="h-4 w-4 text-muted-foreground" />
+                        ) : (
+                          <Eye className="h-4 w-4 text-muted-foreground" />
+                        )}
+                      </Button>
+                    </div>
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="register-confirm">Confirmar contraseña</Label>
+                    <Input
+                      id="register-confirm"
+                      type="password"
+                      placeholder="Repite tu contraseña"
+                      value={registerConfirmPassword}
+                      onChange={(e) => setRegisterConfirmPassword(e.target.value)}
+                      disabled={isLoading}
+                    />
+                  </div>
+                  
+                  <Button type="submit" className="w-full" disabled={isLoading}>
+                    {isLoading ? "Creando cuenta..." : "Crear Cuenta"}
+                  </Button>
+                </form>
+              </TabsContent>
+            </Tabs>
+          </CardHeader>
+        </Card>
+        
+        <p className="text-center text-sm text-muted-foreground mt-6">
+          Al continuar, aceptas nuestros términos de servicio y política de privacidad.
+        </p>
+      </div>
+    </div>
+  );
+};
+
+export default Auth;
