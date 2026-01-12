@@ -29,7 +29,8 @@ const Auth = () => {
   const [loginPassword, setLoginPassword] = useState("");
   
   // Register form state
-  const [registerName, setRegisterName] = useState("");
+  const [registerFirstName, setRegisterFirstName] = useState("");
+  const [registerLastName, setRegisterLastName] = useState("");
   const [registerEmail, setRegisterEmail] = useState("");
   const [registerPassword, setRegisterPassword] = useState("");
   const [registerConfirmPassword, setRegisterConfirmPassword] = useState("");
@@ -81,7 +82,7 @@ const Auth = () => {
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!registerName || !registerEmail || !registerPassword || !registerConfirmPassword) {
+    if (!registerFirstName || !registerLastName || !registerEmail || !registerPassword || !registerConfirmPassword) {
       toast({
         title: "Error",
         description: "Por favor completa todos los campos",
@@ -118,7 +119,7 @@ const Auth = () => {
     }
     
     setIsLoading(true);
-    const result = await register(registerEmail, registerPassword, registerName);
+    const result = await register(registerEmail, registerPassword, registerConfirmPassword, registerFirstName, registerLastName);
     setIsLoading(false);
     
     if (result.success) {
@@ -232,16 +233,29 @@ const Auth = () => {
                 </CardDescription>
                 
                 <form onSubmit={handleRegister} className="space-y-4 mt-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="register-name">Nombre completo</Label>
-                    <Input
-                      id="register-name"
-                      type="text"
-                      placeholder="Tu nombre"
-                      value={registerName}
-                      onChange={(e) => setRegisterName(e.target.value)}
-                      disabled={isLoading}
-                    />
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="space-y-2">
+                      <Label htmlFor="register-firstname">Nombre</Label>
+                      <Input
+                        id="register-firstname"
+                        type="text"
+                        placeholder="Juan"
+                        value={registerFirstName}
+                        onChange={(e) => setRegisterFirstName(e.target.value)}
+                        disabled={isLoading}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="register-lastname">Apellido</Label>
+                      <Input
+                        id="register-lastname"
+                        type="text"
+                        placeholder="Pérez"
+                        value={registerLastName}
+                        onChange={(e) => setRegisterLastName(e.target.value)}
+                        disabled={isLoading}
+                      />
+                    </div>
                   </div>
                   
                   <div className="space-y-2">
