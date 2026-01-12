@@ -160,11 +160,26 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     }
   };
 
-  const logout = () => {
-    setUser(null);
-    setTokens(null);
-    localStorage.removeItem("auth_user");
-    localStorage.removeItem("auth_tokens");
+  const logout = async () => {
+    try {
+      if (tokens?.refresh) {
+        await fetch(`${API_BASE_URL}/logout/`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${tokens.access}`,
+          },
+          body: JSON.stringify({ refresh: tokens.refresh }),
+        });
+      }
+    } catch (error) {
+      console.error("Logout error:", error);
+    } finally {
+      setUser(null);
+      setTokens(null);
+      localStorage.removeItem("auth_user");
+      localStorage.removeItem("auth_tokens");
+    }
   };
 
   const getAccessToken = () => {
