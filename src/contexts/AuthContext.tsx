@@ -19,7 +19,7 @@ interface AuthContextType {
   user: User | null;
   isLoading: boolean;
   login: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
-  register: (email: string, password: string, name: string) => Promise<{ success: boolean; error?: string }>;
+  register: (email: string, password: string, passwordConfirm: string, firstName: string, lastName: string) => Promise<{ success: boolean; error?: string }>;
   logout: () => void;
   getAccessToken: () => string | null;
 }
@@ -100,9 +100,14 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     }
   };
 
-  const register = async (email: string, password: string, name: string): Promise<{ success: boolean; error?: string }> => {
+  const register = async (
+    email: string, 
+    password: string, 
+    passwordConfirm: string,
+    firstName: string, 
+    lastName: string
+  ): Promise<{ success: boolean; error?: string }> => {
     try {
-      // Try to register via API - adjust endpoint as needed
       const response = await fetch(`${API_BASE_URL}/register`, {
         method: "POST",
         headers: {
@@ -111,8 +116,9 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         body: JSON.stringify({ 
           email, 
           password,
-          first_name: name.split(" ")[0],
-          last_name: name.split(" ").slice(1).join(" ") || "",
+          password_confirm: passwordConfirm,
+          first_name: firstName,
+          last_name: lastName,
         }),
       });
 
