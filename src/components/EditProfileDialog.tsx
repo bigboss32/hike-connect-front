@@ -18,17 +18,27 @@ const EditProfileDialog = ({ children, initialData }: EditProfileDialogProps) =>
   const { user } = useAuth();
   const [open, setOpen] = useState(false);
   const [formData, setFormData] = useState({
-    firstName: user?.first_name || "",
-    lastName: user?.last_name || "",
+    firstName: "",
+    lastName: "",
     bio: initialData?.bio || "",
   });
 
   useEffect(() => {
     if (user) {
+      // Try to get first_name/last_name, or split the name if not available
+      let firstName = user.first_name || "";
+      let lastName = user.last_name || "";
+      
+      if (!firstName && !lastName && user.name) {
+        const nameParts = user.name.split(" ");
+        firstName = nameParts[0] || "";
+        lastName = nameParts.slice(1).join(" ") || "";
+      }
+      
       setFormData((prev) => ({
         ...prev,
-        firstName: user.first_name || "",
-        lastName: user.last_name || "",
+        firstName,
+        lastName,
       }));
     }
   }, [user]);
