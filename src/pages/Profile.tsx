@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Navigation from "@/components/Navigation";
 import { Card, CardContent } from "@/components/ui/card";
@@ -11,9 +12,14 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 
 const Profile = () => {
-  const { user, logout } = useAuth();
+  const { user, logout, fetchProfile } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
+
+  useEffect(() => {
+    // Fetch profile data when component mounts
+    fetchProfile();
+  }, []);
 
   const handleLogout = () => {
     logout();
@@ -75,9 +81,9 @@ const Profile = () => {
               </div>
             </div>
             <p className="text-sm text-muted-foreground mb-4">
-              Amante de la naturaleza y el senderismo. Siempre buscando nuevas rutas por descubrir.
+              {user.bio || "Amante de la naturaleza y el senderismo. Siempre buscando nuevas rutas por descubrir."}
             </p>
-            <EditProfileDialog>
+            <EditProfileDialog initialData={{ bio: user.bio || "" }}>
               <Button className="w-full" variant="outline">
                 Editar Perfil
               </Button>
