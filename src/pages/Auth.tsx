@@ -6,8 +6,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Mountain, Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import maroaLogo from "@/assets/maroa-logo.png";
 
 const Auth = () => {
   const navigate = useNavigate();
@@ -142,10 +143,8 @@ const Auth = () => {
     <div className="min-h-screen bg-background flex flex-col items-center justify-center p-4">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 mb-4">
-            <Mountain className="w-8 h-8 text-primary" />
-          </div>
-          <h1 className="text-2xl font-bold text-foreground">SenderoConnect</h1>
+          <img src={maroaLogo} alt="MAROÁ Logo" className="w-24 h-24 mx-auto mb-4" />
+          <h1 className="text-2xl font-bold text-foreground">MAROÁ</h1>
           <p className="text-muted-foreground mt-2">Tu comunidad de senderismo</p>
         </div>
 
