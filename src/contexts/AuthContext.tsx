@@ -8,6 +8,8 @@ interface User {
   name: string;
   first_name?: string;
   last_name?: string;
+  bio?: string;
+  avatar?: string | null;
 }
 
 interface AuthTokens {
@@ -22,6 +24,8 @@ interface AuthContextType {
   register: (email: string, password: string, passwordConfirm: string, firstName: string, lastName: string) => Promise<{ success: boolean; error?: string }>;
   logout: () => void;
   getAccessToken: () => string | null;
+  fetchProfile: () => Promise<{ success: boolean; error?: string }>;
+  updateProfile: (data: { first_name?: string; last_name?: string; bio?: string }) => Promise<{ success: boolean; error?: string }>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -186,8 +190,88 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     return tokens?.access || null;
   };
 
+  const fetchProfile = async (): Promise<{ success: boolean; error?: string }> => {
+    try {
+      if (!tokens?.access) {
+        return { success: false, error: "No hay sesión activa" };
+      }
+
+      const response = await fetch(`${API_BASE_URL}/profile/`, {
+        method: "GET",
+        headers: {
+          "Authorization": `Bearer ${tokens.access}`,
+        },
+      });
+
+      if (!response.ok) {
+        return { success: false, error: "Error al obtener el perfil" };
+      }
+
+      const data = await response.json();
+      
+      const userData: User = {
+        id: data.id,
+        email: data.email,
+        name: data.full_name || `${data.first_name} ${data.last_name}`,
+        first_name: data.first_name,
+        last_name: data.last_name,
+        bio: data.bio,
+        avatar: data.avatar,
+      };
+
+      setUser(userData);
+      localStorage.setItem("auth_user", JSON.stringify(userData));
+      
+      return { success: true };
+    } catch (error) {
+      console.error("Fetch profile error:", error);
+      return { success: false, error: "Error de conexión" };
+    }
+  };
+
+  const updateProfile = async (data: { first_name?: string; last_name?: string; bio?: string }): Promise<{ success: boolean; error?: string }> => {
+    try {
+      if (!tokens?.access) {
+        return { success: false, error: "No hay sesión activa" };
+      }
+
+      const response = await fetch(`${API_BASE_URL}/profile/`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${tokens.access}`,
+        },
+        body: JSON.stringify(data),
+      });
+
+      if (!response.ok) {
+        return { success: false, error: "Error al actualizar el perfil" };
+      }
+
+      const responseData = await response.json();
+      
+      const userData: User = {
+        id: responseData.id,
+        email: responseData.email,
+        name: responseData.full_name || `${responseData.first_name} ${responseData.last_name}`,
+        first_name: responseData.first_name,
+        last_name: responseData.last_name,
+        bio: responseData.bio,
+        avatar: responseData.avatar,
+      };
+
+      setUser(userData);
+      localStorage.setItem("auth_user", JSON.stringify(userData));
+      
+      return { success: true };
+    } catch (error) {
+      console.error("Update profile error:", error);
+      return { success: false, error: "Error de conexión" };
+    }
+  };
+
   return (
-    <AuthContext.Provider value={{ user, isLoading, login, register, logout, getAccessToken }}>
+    <AuthContext.Provider value={{ user, isLoading, login, register, logout, getAccessToken, fetchProfile, updateProfile }}>
       {children}
     </AuthContext.Provider>
   );

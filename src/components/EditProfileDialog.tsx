@@ -15,7 +15,7 @@ interface EditProfileDialogProps {
 }
 
 const EditProfileDialog = ({ children, initialData }: EditProfileDialogProps) => {
-  const { user } = useAuth();
+  const { user, updateProfile } = useAuth();
   const [open, setOpen] = useState(false);
   const [formData, setFormData] = useState({
     firstName: "",
@@ -43,7 +43,7 @@ const EditProfileDialog = ({ children, initialData }: EditProfileDialogProps) =>
     }
   }, [user]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!formData.firstName || !formData.lastName) {
@@ -55,13 +55,25 @@ const EditProfileDialog = ({ children, initialData }: EditProfileDialogProps) =>
       return;
     }
 
-    // TODO: Integrate with backend API to update profile
-    toast({
-      title: "¡Perfil actualizado!",
-      description: "Tus cambios han sido guardados.",
+    const result = await updateProfile({
+      first_name: formData.firstName,
+      last_name: formData.lastName,
+      bio: formData.bio,
     });
-    
-    setOpen(false);
+
+    if (result.success) {
+      toast({
+        title: "¡Perfil actualizado!",
+        description: "Tus cambios han sido guardados.",
+      });
+      setOpen(false);
+    } else {
+      toast({
+        title: "Error",
+        description: result.error || "No se pudo actualizar el perfil",
+        variant: "destructive",
+      });
+    }
   };
 
   return (
