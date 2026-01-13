@@ -3,7 +3,6 @@ import FeaturedRoutesCarousel from "@/components/FeaturedRoutesCarousel";
 import UserStatsCards from "@/components/UserStatsCards";
 import NearbyRoutesMap from "@/components/NearbyRoutesMap";
 import { Button } from "@/components/ui/button";
-import { Mountain, Users, Calendar, TrendingUp } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const Index = () => {
@@ -11,25 +10,7 @@ const Index = () => {
     <div className="min-h-screen bg-background pb-20 pt-6">
 
       <main className="max-w-lg mx-auto px-4 space-y-6">
-        {/* Quick Actions */}
-        <div className="grid grid-cols-4 gap-3">
-          <Link to="/routes" className="bg-card rounded-xl p-3 shadow-elevated text-center hover-scale">
-            <Mountain className="w-5 h-5 text-primary mx-auto mb-1" />
-            <p className="text-xs font-medium text-foreground">Rutas</p>
-          </Link>
-          <Link to="/communities" className="bg-card rounded-xl p-3 shadow-elevated text-center hover-scale">
-            <Users className="w-5 h-5 text-secondary mx-auto mb-1" />
-            <p className="text-xs font-medium text-foreground">Grupos</p>
-          </Link>
-          <Link to="/events" className="bg-card rounded-xl p-3 shadow-elevated text-center hover-scale">
-            <Calendar className="w-5 h-5 text-accent mx-auto mb-1" />
-            <p className="text-xs font-medium text-foreground">Eventos</p>
-          </Link>
-          <Link to="/profile" className="bg-card rounded-xl p-3 shadow-elevated text-center hover-scale">
-            <TrendingUp className="w-5 h-5 text-primary mx-auto mb-1" />
-            <p className="text-xs font-medium text-foreground">Logros</p>
-          </Link>
-        </div>
+        {/* User Stats */}
 
         {/* User Stats */}
         <UserStatsCards />
