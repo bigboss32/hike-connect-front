@@ -1,0 +1,81 @@
+import { useInfiniteQuery } from "@tanstack/react-query";
+
+const API_BASE_URL = "https://hike-connect-back.onrender.com/api/v1";
+
+export interface ApiRoute {
+  id: string;
+  title: string;
+  location: string;
+  distance: string;
+  duration: string;
+  difficulty: "Fácil" | "Medio" | "Difícil";
+  image: string;
+  type: "pública" | "privada" | "agroturismo";
+  category: "senderismo" | "agroturismo";
+  description: string;
+  company?: string;
+  phone?: string;
+  email?: string;
+  whatsapp?: string;
+  coordinates: { lat: number; lng: number };
+  created_at: string;
+  updated_at: string;
+}
+
+interface RoutesResponse {
+  count: number;
+  page: number;
+  page_size: number;
+  results: ApiRoute[];
+}
+
+interface FetchRoutesParams {
+  page?: number;
+  category?: string;
+  type?: string;
+  search?: string;
+}
+
+const fetchRoutes = async ({ page = 1, category, type, search }: FetchRoutesParams): Promise<RoutesResponse> => {
+  const params = new URLSearchParams();
+  params.append("page", page.toString());
+  
+  if (category && category !== "todas") {
+    params.append("category", category);
+  }
+  
+  if (type && type !== "todas") {
+    if (type === "públicas") {
+      params.append("type", "pública");
+    } else if (type === "premium") {
+      params.append("type", "privada");
+    }
+  }
+  
+  if (search) {
+    params.append("search", search);
+  }
+
+  const response = await fetch(`${API_BASE_URL}/rutas/?${params.toString()}`);
+  
+  if (!response.ok) {
+    throw new Error("Error al cargar las rutas");
+  }
+  
+  return response.json();
+};
+
+export const useRoutes = (category: string, type: string, search: string) => {
+  return useInfiniteQuery({
+    queryKey: ["routes", category, type, search],
+    queryFn: ({ pageParam = 1 }) => fetchRoutes({ page: pageParam, category, type, search }),
+    getNextPageParam: (lastPage) => {
+      const totalPages = Math.ceil(lastPage.count / lastPage.page_size);
+      if (lastPage.page < totalPages) {
+        return lastPage.page + 1;
+      }
+      return undefined;
+    },
+    initialPageParam: 1,
+  });
+};
