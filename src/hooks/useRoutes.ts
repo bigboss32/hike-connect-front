@@ -1,4 +1,4 @@
-import { useInfiniteQuery } from "@tanstack/react-query";
+import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 
 const API_BASE_URL = "https://hike-connect-back.onrender.com/api/v1";
 
@@ -65,6 +65,16 @@ const fetchRoutes = async ({ page = 1, category, type, search }: FetchRoutesPara
   return response.json();
 };
 
+const fetchRouteById = async (id: string): Promise<ApiRoute> => {
+  const response = await fetch(`${API_BASE_URL}/rutas/?id=${id}`);
+  
+  if (!response.ok) {
+    throw new Error("Error al cargar la ruta");
+  }
+  
+  return response.json();
+};
+
 export const useRoutes = (category: string, type: string, search: string) => {
   return useInfiniteQuery({
     queryKey: ["routes", category, type, search],
@@ -77,5 +87,13 @@ export const useRoutes = (category: string, type: string, search: string) => {
       return undefined;
     },
     initialPageParam: 1,
+  });
+};
+
+export const useRouteById = (id: string | undefined) => {
+  return useQuery({
+    queryKey: ["route", id],
+    queryFn: () => fetchRouteById(id!),
+    enabled: !!id,
   });
 };
