@@ -1,18 +1,37 @@
 import { useParams, useNavigate } from "react-router-dom";
-import { ArrowLeft, MapPin, Clock, TrendingUp, Phone, Mail, MessageCircle } from "lucide-react";
+import { ArrowLeft, MapPin, Clock, TrendingUp, Phone, Mail, MessageCircle, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import { allRoutes } from "@/data/routes";
+import { useRouteById } from "@/hooks/useRoutes";
 import RouteMap from "@/components/RouteMap";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const RouteDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   
-  const route = allRoutes.find(r => r.id === id);
+  const { data: route, isLoading, error } = useRouteById(id);
 
-  if (!route) {
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-background pb-8">
+        <Skeleton className="h-56 w-full" />
+        <div className="max-w-lg mx-auto px-4 py-6 space-y-6">
+          <div className="flex gap-4">
+            <Skeleton className="h-5 w-24" />
+            <Skeleton className="h-5 w-20" />
+            <Skeleton className="h-5 w-16" />
+          </div>
+          <Skeleton className="h-6 w-48" />
+          <Skeleton className="h-32 w-full" />
+          <Skeleton className="h-48 w-full" />
+        </div>
+      </div>
+    );
+  }
+
+  if (error || !route) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
@@ -103,32 +122,32 @@ const RouteDetail = () => {
         </section>
 
         {/* Contacto */}
-        {route.contact && (
+        {(route.phone || route.email || route.whatsapp) && (
           <section>
             <h2 className="text-lg font-bold mb-3">Contactar</h2>
             <Card>
               <CardContent className="p-4 space-y-3">
-                {route.contact.phone && (
+                {route.phone && (
                   <a
-                    href={`tel:${route.contact.phone}`}
+                    href={`tel:${route.phone}`}
                     className="flex items-center gap-3 text-foreground hover:text-primary transition-colors"
                   >
                     <Phone className="w-5 h-5" />
-                    <span>{route.contact.phone}</span>
+                    <span>{route.phone}</span>
                   </a>
                 )}
-                {route.contact.email && (
+                {route.email && (
                   <a
-                    href={`mailto:${route.contact.email}`}
+                    href={`mailto:${route.email}`}
                     className="flex items-center gap-3 text-foreground hover:text-primary transition-colors"
                   >
                     <Mail className="w-5 h-5" />
-                    <span>{route.contact.email}</span>
+                    <span>{route.email}</span>
                   </a>
                 )}
-                {route.contact.whatsapp && (
+                {route.whatsapp && (
                   <a
-                    href={`https://wa.me/${route.contact.whatsapp}`}
+                    href={`https://wa.me/${route.whatsapp}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex items-center gap-3 text-foreground hover:text-primary transition-colors"
@@ -143,14 +162,14 @@ const RouteDetail = () => {
         )}
 
         {/* Botón de acción */}
-        {(route.type === "privada" || route.type === "agroturismo") && route.contact?.whatsapp && (
+        {(route.type === "privada" || route.type === "agroturismo") && route.whatsapp && (
           <Button 
             className="w-full" 
             size="lg"
             asChild
           >
             <a
-              href={`https://wa.me/${route.contact.whatsapp}?text=Hola, me interesa la ruta "${route.title}"`}
+              href={`https://wa.me/${route.whatsapp}?text=Hola, me interesa la ruta "${route.title}"`}
               target="_blank"
               rel="noopener noreferrer"
             >
