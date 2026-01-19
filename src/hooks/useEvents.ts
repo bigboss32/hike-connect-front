@@ -1,4 +1,5 @@
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
+import { useAuth } from "@/contexts/AuthContext";
 
 const API_BASE_URL = "https://hike-connect-back.onrender.com/api/v1";
 
@@ -27,9 +28,10 @@ interface EventsResponse {
 interface FetchEventsParams {
   page?: number;
   search?: string;
+  token?: string | null;
 }
 
-const fetchEvents = async ({ page = 1, search }: FetchEventsParams): Promise<EventsResponse> => {
+const fetchEvents = async ({ page = 1, search, token }: FetchEventsParams): Promise<EventsResponse> => {
   const params = new URLSearchParams();
   params.append("page", page.toString());
   
@@ -37,7 +39,14 @@ const fetchEvents = async ({ page = 1, search }: FetchEventsParams): Promise<Eve
     params.append("search", search);
   }
 
-  const response = await fetch(`${API_BASE_URL}/evento/?${params.toString()}`);
+  const headers: HeadersInit = {};
+  if (token) {
+    headers["Authorization"] = `Bearer ${token}`;
+  }
+
+  const response = await fetch(`${API_BASE_URL}/evento/?${params.toString()}`, {
+    headers,
+  });
   
   if (!response.ok) {
     throw new Error("Error al cargar los eventos");
@@ -46,8 +55,15 @@ const fetchEvents = async ({ page = 1, search }: FetchEventsParams): Promise<Eve
   return response.json();
 };
 
-const fetchEventById = async (id: string): Promise<ApiEvent> => {
-  const response = await fetch(`${API_BASE_URL}/evento/?id=${id}`);
+const fetchEventById = async (id: string, token?: string | null): Promise<ApiEvent> => {
+  const headers: HeadersInit = {};
+  if (token) {
+    headers["Authorization"] = `Bearer ${token}`;
+  }
+
+  const response = await fetch(`${API_BASE_URL}/evento/?id=${id}`, {
+    headers,
+  });
   
   if (!response.ok) {
     throw new Error("Error al cargar el evento");
@@ -57,9 +73,12 @@ const fetchEventById = async (id: string): Promise<ApiEvent> => {
 };
 
 export const useEvents = (search: string = "") => {
+  const { getAccessToken } = useAuth();
+  const token = getAccessToken();
+
   return useInfiniteQuery({
-    queryKey: ["events", search],
-    queryFn: ({ pageParam = 1 }) => fetchEvents({ page: pageParam, search }),
+    queryKey: ["events", search, token],
+    queryFn: ({ pageParam = 1 }) => fetchEvents({ page: pageParam, search, token }),
     getNextPageParam: (lastPage) => {
       const totalPages = Math.ceil(lastPage.count / lastPage.page_size);
       if (lastPage.page < totalPages) {
@@ -68,13 +87,17 @@ export const useEvents = (search: string = "") => {
       return undefined;
     },
     initialPageParam: 1,
+    enabled: !!token,
   });
 };
 
 export const useEventById = (id: string | undefined) => {
+  const { getAccessToken } = useAuth();
+  const token = getAccessToken();
+
   return useQuery({
-    queryKey: ["event", id],
-    queryFn: () => fetchEventById(id!),
-    enabled: !!id,
+    queryKey: ["event", id, token],
+    queryFn: () => fetchEventById(id!, token),
+    enabled: !!id && !!token,
   });
 };
