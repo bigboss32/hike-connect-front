@@ -1,86 +1,50 @@
-import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Calendar, MapPin, Users, Check } from "lucide-react";
-import { toast } from "@/hooks/use-toast";
+import { Calendar, MapPin, Users } from "lucide-react";
+import { format } from "date-fns";
+import { es } from "date-fns/locale";
+import { ApiEvent } from "@/hooks/useEvents";
 
 interface EventCardProps {
-  title: string;
-  date: string;
-  location: string;
-  participants: number;
-  maxParticipants: number;
+  event: ApiEvent;
 }
 
-const EventCard = ({
-  title,
-  date,
-  location,
-  participants,
-  maxParticipants,
-}: EventCardProps) => {
-  const [joined, setJoined] = useState(false);
-  const [currentParticipants, setCurrentParticipants] = useState(participants);
-
-  const handleJoin = () => {
-    if (joined) {
-      setJoined(false);
-      setCurrentParticipants(prev => prev - 1);
-      toast({
-        title: "Has salido del evento",
-        description: `Ya no estás inscrito en "${title}"`,
-      });
-    } else {
-      if (currentParticipants >= maxParticipants) {
-        toast({
-          title: "Evento lleno",
-          description: "Este evento ha alcanzado el máximo de participantes",
-          variant: "destructive",
-        });
-        return;
-      }
-      setJoined(true);
-      setCurrentParticipants(prev => prev + 1);
-      toast({
-        title: "¡Te has unido!",
-        description: `Estás inscrito en "${title}"`,
-      });
-    }
-  };
+const EventCard = ({ event }: EventCardProps) => {
+  const navigate = useNavigate();
+  
+  const eventDate = new Date(event.date);
+  const formattedDate = format(eventDate, "d MMM yyyy, h:mm a", { locale: es });
+  const spotsLeft = event.max_participants - event.participants_count;
+  const isFull = spotsLeft <= 0;
 
   return (
     <Card className="shadow-soft">
       <CardContent className="p-4">
-        <h3 className="font-bold text-lg text-foreground mb-3">{title}</h3>
+        <h3 className="font-bold text-lg text-foreground mb-3">{event.title}</h3>
         <div className="space-y-2 mb-4">
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <Calendar className="w-4 h-4" />
-            <span>{date}</span>
+            <span className="capitalize">{formattedDate}</span>
           </div>
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <MapPin className="w-4 h-4" />
-            <span>{location}</span>
+            <span>{event.location}</span>
           </div>
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <Users className="w-4 h-4" />
             <span>
-              {currentParticipants}/{maxParticipants} participantes
+              {event.participants_count}/{event.max_participants} participantes
+              {isFull && <span className="text-destructive ml-2">(Lleno)</span>}
             </span>
           </div>
         </div>
         <Button 
           className="w-full" 
-          variant={joined ? "secondary" : "default"}
-          onClick={handleJoin}
+          variant="outline"
+          onClick={() => navigate(`/events/${event.id}`)}
         >
-          {joined ? (
-            <>
-              <Check className="w-4 h-4 mr-2" />
-              Inscrito
-            </>
-          ) : (
-            "Unirse al evento"
-          )}
+          Ver detalles
         </Button>
       </CardContent>
     </Card>
