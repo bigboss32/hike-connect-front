@@ -25,60 +25,28 @@ interface EventsResponse {
   results: ApiEvent[];
 }
 
-interface FetchEventsParams {
-  page?: number;
-  search?: string;
-  token?: string | null;
-}
-
-const fetchEvents = async ({ page = 1, search, token }: FetchEventsParams): Promise<EventsResponse> => {
-  const params = new URLSearchParams();
-  params.append("page", page.toString());
-  
-  if (search) {
-    params.append("search", search);
-  }
-
-  const headers: HeadersInit = {};
-  if (token) {
-    headers["Authorization"] = `Bearer ${token}`;
-  }
-
-  const response = await fetch(`${API_BASE_URL}/evento/?${params.toString()}`, {
-    headers,
-  });
-  
-  if (!response.ok) {
-    throw new Error("Error al cargar los eventos");
-  }
-  
-  return response.json();
-};
-
-const fetchEventById = async (id: string, token?: string | null): Promise<ApiEvent> => {
-  const headers: HeadersInit = {};
-  if (token) {
-    headers["Authorization"] = `Bearer ${token}`;
-  }
-
-  const response = await fetch(`${API_BASE_URL}/evento/?id=${id}`, {
-    headers,
-  });
-  
-  if (!response.ok) {
-    throw new Error("Error al cargar el evento");
-  }
-  
-  return response.json();
-};
-
 export const useEvents = (search: string = "") => {
-  const { getAccessToken } = useAuth();
+  const { authFetch, getAccessToken } = useAuth();
   const token = getAccessToken();
 
   return useInfiniteQuery({
     queryKey: ["events", search, token],
-    queryFn: ({ pageParam = 1 }) => fetchEvents({ page: pageParam, search, token }),
+    queryFn: async ({ pageParam = 1 }) => {
+      const params = new URLSearchParams();
+      params.append("page", pageParam.toString());
+      
+      if (search) {
+        params.append("search", search);
+      }
+
+      const response = await authFetch(`${API_BASE_URL}/evento/?${params.toString()}`);
+      
+      if (!response.ok) {
+        throw new Error("Error al cargar los eventos");
+      }
+      
+      return response.json() as Promise<EventsResponse>;
+    },
     getNextPageParam: (lastPage) => {
       const totalPages = Math.ceil(lastPage.count / lastPage.page_size);
       if (lastPage.page < totalPages) {
@@ -92,12 +60,20 @@ export const useEvents = (search: string = "") => {
 };
 
 export const useEventById = (id: string | undefined) => {
-  const { getAccessToken } = useAuth();
+  const { authFetch, getAccessToken } = useAuth();
   const token = getAccessToken();
 
   return useQuery({
     queryKey: ["event", id, token],
-    queryFn: () => fetchEventById(id!, token),
+    queryFn: async () => {
+      const response = await authFetch(`${API_BASE_URL}/evento/?id=${id}`);
+      
+      if (!response.ok) {
+        throw new Error("Error al cargar el evento");
+      }
+      
+      return response.json() as Promise<ApiEvent>;
+    },
     enabled: !!id && !!token,
   });
 };
