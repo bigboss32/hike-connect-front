@@ -24,6 +24,8 @@ interface AuthContextType {
   register: (email: string, password: string, passwordConfirm: string, firstName: string, lastName: string) => Promise<{ success: boolean; error?: string }>;
   logout: () => void;
   getAccessToken: () => string | null;
+  refreshAccessToken: () => Promise<string | null>;
+  authFetch: (url: string, options?: RequestInit) => Promise<Response>;
   fetchProfile: () => Promise<{ success: boolean; error?: string }>;
   updateProfile: (data: { first_name?: string; last_name?: string; bio?: string }) => Promise<{ success: boolean; error?: string }>;
 }
@@ -190,6 +192,67 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     return tokens?.access || null;
   };
 
+  const refreshAccessToken = async (): Promise<string | null> => {
+    try {
+      if (!tokens?.refresh) {
+        logout();
+        return null;
+      }
+
+      const response = await fetch(`${API_BASE_URL}/token/refresh/`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ refresh: tokens.refresh }),
+      });
+
+      if (!response.ok) {
+        logout();
+        return null;
+      }
+
+      const data = await response.json();
+      const newTokens: AuthTokens = {
+        access: data.access,
+        refresh: tokens.refresh,
+      };
+
+      setTokens(newTokens);
+      localStorage.setItem("auth_tokens", JSON.stringify(newTokens));
+      
+      return data.access;
+    } catch (error) {
+      console.error("Token refresh error:", error);
+      logout();
+      return null;
+    }
+  };
+
+  const authFetch = async (url: string, options: RequestInit = {}): Promise<Response> => {
+    let accessToken = tokens?.access;
+
+    const makeRequest = async (token: string | null) => {
+      const headers = new Headers(options.headers);
+      if (token) {
+        headers.set("Authorization", `Bearer ${token}`);
+      }
+      return fetch(url, { ...options, headers });
+    };
+
+    let response = await makeRequest(accessToken);
+
+    // If unauthorized, try to refresh token
+    if (response.status === 401 && tokens?.refresh) {
+      const newToken = await refreshAccessToken();
+      if (newToken) {
+        response = await makeRequest(newToken);
+      }
+    }
+
+    return response;
+  };
+
   const fetchProfile = async (): Promise<{ success: boolean; error?: string }> => {
     try {
       if (!tokens?.access) {
@@ -271,7 +334,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, isLoading, login, register, logout, getAccessToken, fetchProfile, updateProfile }}>
+    <AuthContext.Provider value={{ user, isLoading, login, register, logout, getAccessToken, refreshAccessToken, authFetch, fetchProfile, updateProfile }}>
       {children}
     </AuthContext.Provider>
   );
