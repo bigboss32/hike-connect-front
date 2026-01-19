@@ -11,6 +11,7 @@ import RoutesPage from "./pages/Routes";
 import RouteDetail from "./pages/RouteDetail";
 import Communities from "./pages/Communities";
 import Events from "./pages/Events";
+import EventDetail from "./pages/EventDetail";
 import Profile from "./pages/Profile";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
@@ -32,6 +33,7 @@ const App = () => (
               <Route path="/routes/:id" element={<ProtectedRoute><RouteDetail /></ProtectedRoute>} />
               <Route path="/communities" element={<ProtectedRoute><Communities /></ProtectedRoute>} />
               <Route path="/events" element={<ProtectedRoute><Events /></ProtectedRoute>} />
+              <Route path="/events/:id" element={<ProtectedRoute><EventDetail /></ProtectedRoute>} />
               <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
