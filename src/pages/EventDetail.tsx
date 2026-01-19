@@ -1,9 +1,9 @@
 import { useParams, useNavigate } from "react-router-dom";
-import { ArrowLeft, MapPin, Calendar, Users, User } from "lucide-react";
+import { ArrowLeft, MapPin, Calendar, Users, User, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import { useEventById } from "@/hooks/useEvents";
+import { useEventById, useJoinEvent } from "@/hooks/useEvents";
 import RouteMap from "@/components/RouteMap";
 import { Skeleton } from "@/components/ui/skeleton";
 import { format } from "date-fns";
@@ -14,6 +14,7 @@ const EventDetail = () => {
   const navigate = useNavigate();
   
   const { data: event, isLoading, error } = useEventById(id);
+  const { mutate: joinEvent, isPending: isJoining } = useJoinEvent();
 
   if (isLoading) {
     return (
@@ -135,9 +136,15 @@ const EventDetail = () => {
         <Button 
           className="w-full" 
           size="lg"
-          disabled={isFull}
+          disabled={isFull || isJoining}
+          onClick={() => id && joinEvent(id)}
         >
-          {isFull ? "Evento lleno" : "Unirse al evento"}
+          {isJoining ? (
+            <>
+              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+              Inscribiendo...
+            </>
+          ) : isFull ? "Evento lleno" : "Unirse al evento"}
         </Button>
       </main>
     </div>

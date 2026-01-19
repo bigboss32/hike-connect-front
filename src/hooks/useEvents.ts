@@ -1,5 +1,6 @@
-import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery, useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/contexts/AuthContext";
+import { toast } from "sonner";
 
 const API_BASE_URL = "https://hike-connect-back.onrender.com/api/v1";
 
@@ -23,6 +24,10 @@ interface EventsResponse {
   page: number;
   page_size: number;
   results: ApiEvent[];
+}
+
+interface JoinEventResponse {
+  detail: string;
 }
 
 export const useEvents = (search: string = "") => {
@@ -75,5 +80,37 @@ export const useEventById = (id: string | undefined) => {
       return response.json() as Promise<ApiEvent>;
     },
     enabled: !!id && !!token,
+  });
+};
+
+export const useJoinEvent = () => {
+  const { authFetch } = useAuth();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (eventId: string): Promise<JoinEventResponse> => {
+      const response = await authFetch(`${API_BASE_URL}/evento-inscripcion/`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ event_id: eventId }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.detail || "Error al inscribirse al evento");
+      }
+
+      return response.json();
+    },
+    onSuccess: (data, eventId) => {
+      toast.success(data.detail || "¡Inscripción exitosa!");
+      queryClient.invalidateQueries({ queryKey: ["event", eventId] });
+      queryClient.invalidateQueries({ queryKey: ["events"] });
+    },
+    onError: (error: Error) => {
+      toast.error(error.message);
+    },
   });
 };
