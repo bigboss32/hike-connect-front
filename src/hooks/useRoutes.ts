@@ -1,4 +1,5 @@
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
+import { useAuth } from "@/contexts/AuthContext";
 
 const API_BASE_URL = "https://hike-connect-back.onrender.com/api/v1";
 
@@ -34,6 +35,12 @@ interface FetchRoutesParams {
   category?: string;
   type?: string;
   search?: string;
+}
+
+export interface RouteRating {
+  score: number | null;
+  rating_avg: number | null;
+  rating_count: number;
 }
 
 const fetchRoutes = async ({ page = 1, category, type, search }: FetchRoutesParams): Promise<RoutesResponse> => {
@@ -95,5 +102,24 @@ export const useRouteById = (id: string | undefined) => {
     queryKey: ["route", id],
     queryFn: () => fetchRouteById(id!),
     enabled: !!id,
+  });
+};
+
+export const useRouteRating = (routeId: string | undefined) => {
+  const { authFetch, getAccessToken } = useAuth();
+  const token = getAccessToken();
+
+  return useQuery({
+    queryKey: ["routeRating", routeId, token],
+    queryFn: async (): Promise<RouteRating> => {
+      const response = await authFetch(`${API_BASE_URL}/rate-routes/?ruta_id=${routeId}`);
+      
+      if (!response.ok) {
+        throw new Error("Error al cargar la calificación");
+      }
+      
+      return response.json();
+    },
+    enabled: !!routeId && !!token,
   });
 };
