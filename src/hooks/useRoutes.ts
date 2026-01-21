@@ -106,13 +106,24 @@ export const useRouteById = (id: string | undefined) => {
 };
 
 export const useRouteRating = (routeId: string | undefined) => {
-  const { authFetch, getAccessToken } = useAuth();
+  const { getAccessToken } = useAuth();
   const token = getAccessToken();
 
   return useQuery({
-    queryKey: ["routeRating", routeId, token],
+    queryKey: ["routeRating", routeId, !!token],
     queryFn: async (): Promise<RouteRating> => {
-      const response = await authFetch(`${API_BASE_URL}/rate-routes/?ruta_id=${routeId}`);
+      const headers: HeadersInit = {
+        "Content-Type": "application/json",
+      };
+      
+      // Add token if available (for user's personal score)
+      if (token) {
+        headers["Authorization"] = `Bearer ${token}`;
+      }
+      
+      const response = await fetch(`${API_BASE_URL}/rate-routes/?ruta_id=${routeId}`, {
+        headers,
+      });
       
       if (!response.ok) {
         throw new Error("Error al cargar la calificación");
@@ -120,6 +131,6 @@ export const useRouteRating = (routeId: string | undefined) => {
       
       return response.json();
     },
-    enabled: !!routeId && !!token,
+    enabled: !!routeId,
   });
 };
