@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { ArrowLeft, MapPin, Clock, TrendingUp, Phone, Mail, MessageCircle, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -6,13 +7,15 @@ import { Card, CardContent } from "@/components/ui/card";
 import { useRouteById, useRouteRating } from "@/hooks/useRoutes";
 import RouteMap from "@/components/RouteMap";
 import { Skeleton } from "@/components/ui/skeleton";
+import RatingModal from "@/components/RatingModal";
 
 const RouteDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const [ratingModalOpen, setRatingModalOpen] = useState(false);
   
   const { data: route, isLoading, error } = useRouteById(id);
-  const { data: rating } = useRouteRating(id);
+  const { data: rating, isLoading: isRatingLoading } = useRouteRating(id);
 
   if (isLoading) {
     return (
@@ -100,17 +103,18 @@ const RouteDetail = () => {
             <Clock className="w-5 h-5" />
             <span>{route.duration}</span>
           </div>
-          {rating && rating.rating_avg !== null && (
-            <div className="flex items-center gap-2">
-              <Star className="w-5 h-5 fill-yellow-400 text-yellow-400" />
-              <span className="font-medium text-foreground">{rating.rating_avg.toFixed(1)}</span>
-              <span className="text-sm">({rating.rating_count})</span>
-            </div>
-          )}
+          <button 
+            onClick={() => setRatingModalOpen(true)}
+            className="flex items-center gap-2 hover:opacity-80 transition-opacity"
+          >
+            <Star className={`w-5 h-5 ${(rating?.rating_avg ?? 0) > 0 ? "fill-yellow-400 text-yellow-400" : "text-muted-foreground"}`} />
+            <span className="font-medium text-foreground">{(rating?.rating_avg ?? 0).toFixed(1)}</span>
+            <span className="text-sm">({rating?.rating_count ?? 0})</span>
+          </button>
         </div>
 
-        {/* Tu calificación */}
-        {rating && rating.score !== null && (
+        {/* Tu calificación - solo mostrar si hay score */}
+        {rating && rating.score !== null && rating.score > 0 && (
           <div className="flex items-center gap-2 text-sm">
             <span className="text-muted-foreground">Tu calificación:</span>
             <div className="flex items-center gap-1">
@@ -206,6 +210,15 @@ const RouteDetail = () => {
           </Button>
         )}
       </main>
+
+      {/* Rating Modal */}
+      <RatingModal
+        open={ratingModalOpen}
+        onOpenChange={setRatingModalOpen}
+        rating={rating}
+        routeTitle={route.title}
+        isLoading={isRatingLoading}
+      />
     </div>
   );
 };
