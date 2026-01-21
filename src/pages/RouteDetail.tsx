@@ -1,9 +1,9 @@
 import { useParams, useNavigate } from "react-router-dom";
-import { ArrowLeft, MapPin, Clock, TrendingUp, Phone, Mail, MessageCircle, Loader2 } from "lucide-react";
+import { ArrowLeft, MapPin, Clock, TrendingUp, Phone, Mail, MessageCircle, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import { useRouteById } from "@/hooks/useRoutes";
+import { useRouteById, useRouteRating } from "@/hooks/useRoutes";
 import RouteMap from "@/components/RouteMap";
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -12,6 +12,7 @@ const RouteDetail = () => {
   const navigate = useNavigate();
   
   const { data: route, isLoading, error } = useRouteById(id);
+  const { data: rating } = useRouteRating(id);
 
   if (isLoading) {
     return (
@@ -86,7 +87,7 @@ const RouteDetail = () => {
 
       <main className="max-w-lg mx-auto px-4 py-6 space-y-6">
         {/* Info básica */}
-        <div className="flex items-center gap-6 text-muted-foreground">
+        <div className="flex items-center flex-wrap gap-4 text-muted-foreground">
           <div className="flex items-center gap-2">
             <MapPin className="w-5 h-5" />
             <span>{route.location}</span>
@@ -99,7 +100,33 @@ const RouteDetail = () => {
             <Clock className="w-5 h-5" />
             <span>{route.duration}</span>
           </div>
+          {rating && rating.rating_avg !== null && (
+            <div className="flex items-center gap-2">
+              <Star className="w-5 h-5 fill-yellow-400 text-yellow-400" />
+              <span className="font-medium text-foreground">{rating.rating_avg.toFixed(1)}</span>
+              <span className="text-sm">({rating.rating_count})</span>
+            </div>
+          )}
         </div>
+
+        {/* Tu calificación */}
+        {rating && rating.score !== null && (
+          <div className="flex items-center gap-2 text-sm">
+            <span className="text-muted-foreground">Tu calificación:</span>
+            <div className="flex items-center gap-1">
+              {[1, 2, 3, 4, 5].map((star) => (
+                <Star
+                  key={star}
+                  className={`w-4 h-4 ${
+                    star <= rating.score! 
+                      ? "fill-yellow-400 text-yellow-400" 
+                      : "text-muted-foreground"
+                  }`}
+                />
+              ))}
+            </div>
+          </div>
+        )}
 
         {route.company && (
           <p className="text-sm text-muted-foreground">
