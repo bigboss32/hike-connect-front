@@ -116,7 +116,6 @@ export const useRouteRating = (routeId: string | undefined) => {
         "Content-Type": "application/json",
       };
       
-      // Add token if available (for user's personal score)
       if (token) {
         headers["Authorization"] = `Bearer ${token}`;
       }
