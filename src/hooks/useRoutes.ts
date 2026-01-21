@@ -1,5 +1,6 @@
-import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery, useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/contexts/AuthContext";
+import { toast } from "sonner";
 
 const API_BASE_URL = "https://hike-connect-back.onrender.com/api/v1";
 
@@ -131,5 +132,45 @@ export const useRouteRating = (routeId: string | undefined) => {
       return response.json();
     },
     enabled: !!routeId,
+  });
+};
+
+interface RateRouteResponse {
+  detail: string;
+  created: boolean;
+  ruta_id: string;
+  score: number;
+}
+
+export const useRateRoute = () => {
+  const { authFetch } = useAuth();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ routeId, score }: { routeId: string; score: number }): Promise<RateRouteResponse> => {
+      const response = await authFetch(`${API_BASE_URL}/rate-routes/`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ ruta_id: routeId, score }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Error al calificar la ruta");
+      }
+
+      return response.json();
+    },
+    onSuccess: (data) => {
+      const message = data.created 
+        ? "¡Gracias por tu calificación!" 
+        : "Calificación actualizada";
+      toast.success(message);
+      queryClient.invalidateQueries({ queryKey: ["routeRating", data.ruta_id] });
+    },
+    onError: () => {
+      toast.error("Error al calificar la ruta");
+    },
   });
 };

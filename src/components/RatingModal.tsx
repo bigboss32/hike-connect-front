@@ -1,30 +1,54 @@
-import { Star } from "lucide-react";
+import { useState } from "react";
+import { Star, Loader2 } from "lucide-react";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { RouteRating } from "@/hooks/useRoutes";
+import { Button } from "@/components/ui/button";
+import { RouteRating, useRateRoute } from "@/hooks/useRoutes";
 
 interface RatingModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   rating: RouteRating | undefined;
+  routeId: string;
   routeTitle: string;
   isLoading?: boolean;
 }
 
-const RatingModal = ({ open, onOpenChange, rating, routeTitle, isLoading }: RatingModalProps) => {
+const RatingModal = ({ open, onOpenChange, rating, routeId, routeTitle, isLoading }: RatingModalProps) => {
   const avgRating = rating?.rating_avg ?? 0;
   const userScore = rating?.score ?? 0;
   const ratingCount = rating?.rating_count ?? 0;
+  
+  const [hoverScore, setHoverScore] = useState(0);
+  const [selectedScore, setSelectedScore] = useState(userScore);
+  
+  const { mutate: rateRoute, isPending } = useRateRoute();
+
+  // Reset selected score when modal opens with existing rating
+  const handleOpenChange = (newOpen: boolean) => {
+    if (newOpen) {
+      setSelectedScore(userScore);
+    }
+    onOpenChange(newOpen);
+  };
+
+  const handleRate = () => {
+    if (selectedScore > 0) {
+      rateRoute({ routeId, score: selectedScore });
+    }
+  };
+
+  const displayScore = hoverScore || selectedScore;
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="max-w-sm">
         <DialogHeader>
-          <DialogTitle className="text-center">Calificación</DialogTitle>
+          <DialogTitle className="text-center">Calificar ruta</DialogTitle>
         </DialogHeader>
 
         {isLoading ? (
@@ -40,7 +64,7 @@ const RatingModal = ({ open, onOpenChange, rating, routeTitle, isLoading }: Rati
                 {[1, 2, 3, 4, 5].map((star) => (
                   <Star
                     key={star}
-                    className={`w-8 h-8 ${
+                    className={`w-6 h-6 ${
                       star <= Math.round(avgRating)
                         ? "fill-yellow-400 text-yellow-400"
                         : "text-muted-foreground"
@@ -48,32 +72,63 @@ const RatingModal = ({ open, onOpenChange, rating, routeTitle, isLoading }: Rati
                   />
                 ))}
               </div>
-              <p className="text-2xl font-bold">{avgRating.toFixed(1)}</p>
+              <p className="text-xl font-bold">{avgRating.toFixed(1)}</p>
               <p className="text-sm text-muted-foreground">
                 {ratingCount} {ratingCount === 1 ? "calificación" : "calificaciones"}
               </p>
             </div>
 
-            {/* Tu calificación */}
-            <div className="border-t pt-4 text-center space-y-2">
-              <p className="text-sm text-muted-foreground">Tu calificación</p>
-              <div className="flex justify-center items-center gap-1">
+            {/* Tu calificación interactiva */}
+            <div className="border-t pt-6 text-center space-y-4">
+              <p className="text-sm font-medium">
+                {userScore > 0 ? "Actualiza tu calificación" : "¿Qué te pareció esta ruta?"}
+              </p>
+              <div 
+                className="flex justify-center items-center gap-2"
+                onMouseLeave={() => setHoverScore(0)}
+              >
                 {[1, 2, 3, 4, 5].map((star) => (
-                  <Star
+                  <button
                     key={star}
-                    className={`w-6 h-6 ${
-                      star <= userScore
-                        ? "fill-yellow-400 text-yellow-400"
-                        : "text-muted-foreground"
-                    }`}
-                  />
+                    type="button"
+                    className="p-1 transition-transform hover:scale-110 focus:outline-none"
+                    onMouseEnter={() => setHoverScore(star)}
+                    onClick={() => setSelectedScore(star)}
+                    disabled={isPending}
+                  >
+                    <Star
+                      className={`w-10 h-10 transition-colors ${
+                        star <= displayScore
+                          ? "fill-yellow-400 text-yellow-400"
+                          : "text-muted-foreground hover:text-yellow-300"
+                      }`}
+                    />
+                  </button>
                 ))}
               </div>
-              {userScore === 0 && (
-                <p className="text-xs text-muted-foreground">
-                  Aún no has calificado esta ruta
+              {selectedScore > 0 && (
+                <p className="text-sm text-muted-foreground">
+                  {selectedScore === 1 && "Muy mala"}
+                  {selectedScore === 2 && "Mala"}
+                  {selectedScore === 3 && "Regular"}
+                  {selectedScore === 4 && "Buena"}
+                  {selectedScore === 5 && "Excelente"}
                 </p>
               )}
+              <Button 
+                onClick={handleRate} 
+                disabled={selectedScore === 0 || isPending}
+                className="w-full"
+              >
+                {isPending ? (
+                  <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    Calificando...
+                  </>
+                ) : (
+                  userScore > 0 ? "Actualizar calificación" : "Calificar"
+                )}
+              </Button>
             </div>
           </div>
         )}
