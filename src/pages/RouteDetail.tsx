@@ -103,15 +103,35 @@ const RouteDetail = () => {
             <Clock className="w-5 h-5" />
             <span>{route.duration}</span>
           </div>
-          <button 
-            onClick={() => setRatingModalOpen(true)}
-            className="flex items-center gap-2 hover:opacity-80 transition-opacity"
-          >
-            <Star className={`w-5 h-5 ${(rating?.rating_avg ?? 0) > 0 ? "fill-yellow-400 text-yellow-400" : "text-muted-foreground"}`} />
-            <span className="font-medium text-foreground">{(rating?.rating_avg ?? 0).toFixed(1)}</span>
-            <span className="text-sm">({rating?.rating_count ?? 0})</span>
-          </button>
         </div>
+
+        {/* Botón de calificación prominente */}
+        <button 
+          onClick={() => setRatingModalOpen(true)}
+          className="flex items-center gap-3 p-3 rounded-lg bg-accent/50 hover:bg-accent transition-colors w-full"
+        >
+          <div className="flex items-center gap-1">
+            {[1, 2, 3, 4, 5].map((star) => (
+              <Star
+                key={star}
+                className={`w-5 h-5 ${
+                  star <= Math.round(rating?.rating_avg ?? 0)
+                    ? "fill-yellow-400 text-yellow-400"
+                    : "text-muted-foreground"
+                }`}
+              />
+            ))}
+          </div>
+          <div className="flex-1 text-left">
+            <span className="font-semibold text-foreground">{(rating?.rating_avg ?? 0).toFixed(1)}</span>
+            <span className="text-sm text-muted-foreground ml-2">
+              ({rating?.rating_count ?? 0} {(rating?.rating_count ?? 0) === 1 ? "calificación" : "calificaciones"})
+            </span>
+          </div>
+          <span className="text-sm text-primary font-medium">
+            {(rating?.score ?? 0) > 0 ? "Cambiar" : "Calificar"}
+          </span>
+        </button>
 
         {/* Tu calificación - solo mostrar si hay score */}
         {rating && rating.score !== null && rating.score > 0 && (
@@ -216,6 +236,7 @@ const RouteDetail = () => {
         open={ratingModalOpen}
         onOpenChange={setRatingModalOpen}
         rating={rating}
+        routeId={id!}
         routeTitle={route.title}
         isLoading={isRatingLoading}
       />
