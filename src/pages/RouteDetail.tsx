@@ -1,9 +1,11 @@
 import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { ArrowLeft, MapPin, Clock, TrendingUp, Phone, Mail, MessageCircle, Star } from "lucide-react";
+import { ArrowLeft, MapPin, Clock, TrendingUp, Phone, Mail, MessageCircle, Star, Info, Image, MessageSquare } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useRouteById, useRouteRating } from "@/hooks/useRoutes";
 import RouteMap from "@/components/RouteMap";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -17,6 +19,43 @@ const RouteDetail = () => {
   
   const { data: route, isLoading, error } = useRouteById(id);
   const { data: rating, isLoading: isRatingLoading } = useRouteRating(id);
+
+  // Mock data for photos and comments
+  const mockPhotos = [
+    "https://images.unsplash.com/photo-1551632811-561732d1e306?w=300&h=300&fit=crop",
+    "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=300&h=300&fit=crop",
+    "https://images.unsplash.com/photo-1454496522488-7a8e488e8606?w=300&h=300&fit=crop",
+    "https://images.unsplash.com/photo-1486870591958-9b9d0d1dda99?w=300&h=300&fit=crop",
+    "https://images.unsplash.com/photo-1483728642387-6c3bdd6c93e5?w=300&h=300&fit=crop",
+    "https://images.unsplash.com/photo-1519681393784-d120267933ba?w=300&h=300&fit=crop",
+  ];
+
+  const mockComments = [
+    {
+      id: 1,
+      user: "María García",
+      avatar: "",
+      date: "Hace 2 días",
+      comment: "¡Increíble ruta! Las vistas son espectaculares, especialmente al amanecer. Muy recomendada para quienes buscan un desafío moderado.",
+      rating: 5,
+    },
+    {
+      id: 2,
+      user: "Carlos López",
+      avatar: "",
+      date: "Hace 1 semana",
+      comment: "Buena señalización en todo el camino. Llevad suficiente agua porque no hay fuentes en el recorrido.",
+      rating: 4,
+    },
+    {
+      id: 3,
+      user: "Ana Martínez",
+      avatar: "",
+      date: "Hace 2 semanas",
+      comment: "Perfecta para ir en familia. Los niños disfrutaron mucho del paisaje y los animales que vimos en el camino.",
+      rating: 5,
+    },
+  ];
 
   if (isLoading) {
     return (
@@ -159,77 +198,162 @@ const RouteDetail = () => {
           </p>
         )}
 
-        {/* Descripción */}
-        <section>
-          <h2 className="text-lg font-bold mb-3">Descripción</h2>
-          <p className="text-muted-foreground leading-relaxed">
-            {route.description}
-          </p>
-        </section>
+        {/* Tabs de más información */}
+        <Tabs defaultValue="detalles" className="w-full">
+          <TabsList className="w-full grid grid-cols-3">
+            <TabsTrigger value="detalles" className="flex items-center gap-1.5">
+              <Info className="w-4 h-4" />
+              <span className="hidden sm:inline">Detalles</span>
+            </TabsTrigger>
+            <TabsTrigger value="fotos" className="flex items-center gap-1.5">
+              <Image className="w-4 h-4" />
+              <span className="hidden sm:inline">Fotos</span>
+            </TabsTrigger>
+            <TabsTrigger value="comentarios" className="flex items-center gap-1.5">
+              <MessageSquare className="w-4 h-4" />
+              <span className="hidden sm:inline">Comentarios</span>
+            </TabsTrigger>
+          </TabsList>
 
-        {/* Mapa */}
-        <section>
-          <h2 className="text-lg font-bold mb-3">Ubicación</h2>
-          <RouteMap coordinates={route.coordinates} title={route.title} />
-        </section>
+          {/* Tab Detalles */}
+          <TabsContent value="detalles" className="mt-4 space-y-6">
+            {/* Descripción */}
+            <section>
+              <h2 className="text-lg font-bold mb-3">Descripción</h2>
+              <p className="text-muted-foreground leading-relaxed">
+                {route.description}
+              </p>
+            </section>
 
-        {/* Contacto */}
-        {(route.phone || route.email || route.whatsapp) && (
-          <section>
-            <h2 className="text-lg font-bold mb-3">Contactar</h2>
-            <Card>
-              <CardContent className="p-4 space-y-3">
-                {route.phone && (
-                  <a
-                    href={`tel:${route.phone}`}
-                    className="flex items-center gap-3 text-foreground hover:text-primary transition-colors"
-                  >
-                    <Phone className="w-5 h-5" />
-                    <span>{route.phone}</span>
-                  </a>
-                )}
-                {route.email && (
-                  <a
-                    href={`mailto:${route.email}`}
-                    className="flex items-center gap-3 text-foreground hover:text-primary transition-colors"
-                  >
-                    <Mail className="w-5 h-5" />
-                    <span>{route.email}</span>
-                  </a>
-                )}
-                {route.whatsapp && (
-                  <a
-                    href={`https://wa.me/${route.whatsapp}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-3 text-foreground hover:text-primary transition-colors"
-                  >
-                    <MessageCircle className="w-5 h-5" />
-                    <span>WhatsApp</span>
-                  </a>
-                )}
-              </CardContent>
-            </Card>
-          </section>
-        )}
+            {/* Mapa */}
+            <section>
+              <h2 className="text-lg font-bold mb-3">Ubicación</h2>
+              <RouteMap coordinates={route.coordinates} title={route.title} />
+            </section>
 
-        {/* Botón de acción */}
-        {(route.type === "privada" || route.type === "agroturismo") && route.whatsapp && (
-          <Button 
-            className="w-full" 
-            size="lg"
-            asChild
-          >
-            <a
-              href={`https://wa.me/${route.whatsapp}?text=Hola, me interesa la ruta "${route.title}"`}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <MessageCircle className="w-5 h-5 mr-2" />
-              Reservar por WhatsApp
-            </a>
-          </Button>
-        )}
+            {/* Contacto */}
+            {(route.phone || route.email || route.whatsapp) && (
+              <section>
+                <h2 className="text-lg font-bold mb-3">Contactar</h2>
+                <Card>
+                  <CardContent className="p-4 space-y-3">
+                    {route.phone && (
+                      <a
+                        href={`tel:${route.phone}`}
+                        className="flex items-center gap-3 text-foreground hover:text-primary transition-colors"
+                      >
+                        <Phone className="w-5 h-5" />
+                        <span>{route.phone}</span>
+                      </a>
+                    )}
+                    {route.email && (
+                      <a
+                        href={`mailto:${route.email}`}
+                        className="flex items-center gap-3 text-foreground hover:text-primary transition-colors"
+                      >
+                        <Mail className="w-5 h-5" />
+                        <span>{route.email}</span>
+                      </a>
+                    )}
+                    {route.whatsapp && (
+                      <a
+                        href={`https://wa.me/${route.whatsapp}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-3 text-foreground hover:text-primary transition-colors"
+                      >
+                        <MessageCircle className="w-5 h-5" />
+                        <span>WhatsApp</span>
+                      </a>
+                    )}
+                  </CardContent>
+                </Card>
+              </section>
+            )}
+
+            {/* Botón de acción */}
+            {(route.type === "privada" || route.type === "agroturismo") && route.whatsapp && (
+              <Button 
+                className="w-full" 
+                size="lg"
+                asChild
+              >
+                <a
+                  href={`https://wa.me/${route.whatsapp}?text=Hola, me interesa la ruta "${route.title}"`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <MessageCircle className="w-5 h-5 mr-2" />
+                  Reservar por WhatsApp
+                </a>
+              </Button>
+            )}
+          </TabsContent>
+
+          {/* Tab Fotos */}
+          <TabsContent value="fotos" className="mt-4">
+            <div className="grid grid-cols-3 gap-2">
+              {mockPhotos.map((photo, index) => (
+                <div 
+                  key={index} 
+                  className="aspect-square rounded-lg overflow-hidden cursor-pointer hover:opacity-90 transition-opacity"
+                >
+                  <img
+                    src={photo}
+                    alt={`Foto ${index + 1}`}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              ))}
+            </div>
+            <p className="text-center text-sm text-muted-foreground mt-4">
+              6 fotos de la comunidad
+            </p>
+          </TabsContent>
+
+          {/* Tab Comentarios */}
+          <TabsContent value="comentarios" className="mt-4 space-y-4">
+            {mockComments.map((comment) => (
+              <Card key={comment.id}>
+                <CardContent className="p-4">
+                  <div className="flex items-start gap-3">
+                    <Avatar className="w-10 h-10">
+                      <AvatarImage src={comment.avatar} />
+                      <AvatarFallback className="bg-primary/10 text-primary">
+                        {comment.user.split(" ").map(n => n[0]).join("")}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="flex-1">
+                      <div className="flex items-center justify-between mb-1">
+                        <span className="font-semibold text-foreground">{comment.user}</span>
+                        <span className="text-xs text-muted-foreground">{comment.date}</span>
+                      </div>
+                      <div className="flex items-center gap-1 mb-2">
+                        {[1, 2, 3, 4, 5].map((star) => (
+                          <Star
+                            key={star}
+                            className={`w-3 h-3 ${
+                              star <= comment.rating
+                                ? "fill-yellow-400 text-yellow-400"
+                                : "text-muted-foreground"
+                            }`}
+                          />
+                        ))}
+                      </div>
+                      <p className="text-sm text-muted-foreground leading-relaxed">
+                        {comment.comment}
+                      </p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+            <Button variant="outline" className="w-full">
+              <MessageSquare className="w-4 h-4 mr-2" />
+              Escribir comentario
+            </Button>
+          </TabsContent>
+        </Tabs>
       </main>
 
       {/* Rating Modal */}
