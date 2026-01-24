@@ -31,22 +31,6 @@ const Index = () => {
           <NearbyRoutesMap />
         </section>
 
-        {/* CTA Section */}
-        <section className="animate-fade-in" style={{ animationDelay: "400ms" }}>
-          <div className="bg-gradient-to-r from-primary to-primary-glow rounded-xl p-5 text-center shadow-elevated">
-            <h3 className="text-lg font-bold text-white mb-1">
-              ¿Listo para tu aventura?
-            </h3>
-            <p className="text-white/90 text-sm mb-3">
-              Únete a la comunidad y encuentra compañeros de ruta
-            </p>
-            <Link to="/communities">
-              <Button variant="secondary" size="default">
-                Explorar comunidades
-              </Button>
-            </Link>
-          </div>
-        </section>
       </main>
 
       <Navigation />
