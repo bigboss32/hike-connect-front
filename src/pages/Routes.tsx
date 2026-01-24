@@ -138,6 +138,8 @@ const Routes = () => {
                 type={route.type}
                 company={route.company}
                 category={route.category}
+                rating_avg={route.rating_avg}
+                rating_count={route.rating_count}
               />
             ))}
           </div>

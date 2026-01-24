@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { MapPin, Clock, TrendingUp } from "lucide-react";
+import { MapPin, Clock, TrendingUp, Star } from "lucide-react";
 
 interface RouteCardProps {
   id: string;
@@ -14,6 +14,8 @@ interface RouteCardProps {
   type: "pública" | "privada" | "agroturismo";
   company?: string;
   category: "senderismo" | "agroturismo";
+  rating_avg?: number | null;
+  rating_count?: number;
 }
 
 const RouteCard = ({
@@ -27,6 +29,8 @@ const RouteCard = ({
   type,
   company,
   category,
+  rating_avg,
+  rating_count,
 }: RouteCardProps) => {
   const navigate = useNavigate();
   const difficultyColor = {
@@ -49,6 +53,20 @@ const RouteCard = ({
         <Badge className={`absolute top-2 right-2 ${difficultyColor[difficulty]}`}>
           {difficulty}
         </Badge>
+        {/* Rating badge */}
+        {rating_avg !== undefined && rating_avg !== null && (
+          <div className="absolute top-2 left-2 flex items-center gap-1 bg-black/60 backdrop-blur-sm px-2 py-1 rounded-full">
+            <Star className="w-3.5 h-3.5 fill-yellow-400 text-yellow-400" />
+            <span className="text-white text-xs font-semibold">
+              {rating_avg.toFixed(1)}
+            </span>
+            {rating_count !== undefined && rating_count > 0 && (
+              <span className="text-white/70 text-xs">
+                ({rating_count})
+              </span>
+            )}
+          </div>
+        )}
       </div>
       <CardContent className="p-4">
         <div className="flex items-center justify-between mb-1">
