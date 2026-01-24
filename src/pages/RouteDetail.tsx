@@ -8,6 +8,7 @@ import { useRouteById, useRouteRating } from "@/hooks/useRoutes";
 import RouteMap from "@/components/RouteMap";
 import { Skeleton } from "@/components/ui/skeleton";
 import RatingModal from "@/components/RatingModal";
+import Navigation from "@/components/Navigation";
 
 const RouteDetail = () => {
   const { id } = useParams();
@@ -53,7 +54,7 @@ const RouteDetail = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background pb-8">
+    <div className="min-h-screen bg-background pb-20">
       {/* Header Image */}
       <div className="relative h-56">
         <img
@@ -240,6 +241,8 @@ const RouteDetail = () => {
         routeTitle={route.title}
         isLoading={isRatingLoading}
       />
+
+      <Navigation />
     </div>
   );
 };
