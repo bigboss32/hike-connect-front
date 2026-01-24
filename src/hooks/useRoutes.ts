@@ -44,6 +44,29 @@ export interface RouteRating {
   rating_count: number;
 }
 
+export interface BannerRoute {
+  id: string;
+  title: string;
+  image: string;
+  difficulty: "Fácil" | "Medio" | "Difícil";
+  category: string;
+  location: string;
+  distance: string;
+  duration: string;
+  rating_avg: number | null;
+  rating_count: number;
+}
+
+const fetchBannerRoutes = async (): Promise<BannerRoute[]> => {
+  const response = await fetch(`${API_BASE_URL}/ruta-banner/`);
+  
+  if (!response.ok) {
+    throw new Error("Error al cargar las rutas destacadas");
+  }
+  
+  return response.json();
+};
+
 const fetchRoutes = async ({ page = 1, category, type, search }: FetchRoutesParams): Promise<RoutesResponse> => {
   const params = new URLSearchParams();
   params.append("page", page.toString());
@@ -103,6 +126,13 @@ export const useRouteById = (id: string | undefined) => {
     queryKey: ["route", id],
     queryFn: () => fetchRouteById(id!),
     enabled: !!id,
+  });
+};
+
+export const useBannerRoutes = () => {
+  return useQuery({
+    queryKey: ["bannerRoutes"],
+    queryFn: fetchBannerRoutes,
   });
 };
 
