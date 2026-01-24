@@ -22,6 +22,8 @@ export interface ApiRoute {
   coordinates: { lat: number; lng: number };
   created_at: string;
   updated_at: string;
+  rating_avg?: number | null;
+  rating_count?: number;
 }
 
 interface RoutesResponse {
