@@ -1,8 +1,7 @@
-import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Users, Check, MapPin, Lock } from "lucide-react";
-import { toast } from "@/hooks/use-toast";
+import { Users, Check, MapPin, Lock, Loader2 } from "lucide-react";
+import { useJoinCommunity, useLeaveCommunity } from "@/hooks/useCommunities";
 import communityImg from "@/assets/community.jpg";
 
 interface CommunityCardProps {
@@ -17,6 +16,7 @@ interface CommunityCardProps {
 }
 
 const CommunityCard = ({ 
+  id,
   name, 
   member_count, 
   description, 
@@ -25,24 +25,15 @@ const CommunityCard = ({
   is_public,
   user_is_member 
 }: CommunityCardProps) => {
-  const [joined, setJoined] = useState(user_is_member);
-  const [currentMembers, setCurrentMembers] = useState(member_count);
+  const joinMutation = useJoinCommunity();
+  const leaveMutation = useLeaveCommunity();
+  const isLoading = joinMutation.isPending || leaveMutation.isPending;
 
-  const handleJoin = () => {
-    if (joined) {
-      setJoined(false);
-      setCurrentMembers(prev => prev - 1);
-      toast({
-        title: "Has salido de la comunidad",
-        description: `Ya no eres miembro de "${name}"`,
-      });
+  const handleToggleMembership = () => {
+    if (user_is_member) {
+      leaveMutation.mutate(id);
     } else {
-      setJoined(true);
-      setCurrentMembers(prev => prev + 1);
-      toast({
-        title: "¡Te has unido!",
-        description: `Ahora eres miembro de "${name}"`,
-      });
+      joinMutation.mutate(id);
     }
   };
 
@@ -72,14 +63,17 @@ const CommunityCard = ({
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-1 text-sm text-muted-foreground">
             <Users className="w-4 h-4" />
-            <span>{currentMembers} miembros</span>
+            <span>{member_count} miembros</span>
           </div>
           <Button 
-            variant={joined ? "secondary" : "outline"} 
+            variant={user_is_member ? "secondary" : "outline"} 
             size="sm"
-            onClick={handleJoin}
+            onClick={handleToggleMembership}
+            disabled={isLoading}
           >
-            {joined ? (
+            {isLoading ? (
+              <Loader2 className="w-3 h-3 animate-spin" />
+            ) : user_is_member ? (
               <>
                 <Check className="w-3 h-3 mr-1" />
                 Miembro
