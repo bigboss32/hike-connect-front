@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Users, Check, MapPin, Lock, Loader2 } from "lucide-react";
@@ -29,7 +30,9 @@ const CommunityCard = ({
   const leaveMutation = useLeaveCommunity();
   const isLoading = joinMutation.isPending || leaveMutation.isPending;
 
-  const handleToggleMembership = () => {
+  const handleToggleMembership = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
     if (user_is_member) {
       leaveMutation.mutate(id);
     } else {
@@ -38,53 +41,55 @@ const CommunityCard = ({
   };
 
   return (
-    <Card className="overflow-hidden shadow-soft">
-      <div className="relative h-32">
-        <img
-          src={image || communityImg}
-          alt={name}
-          className="w-full h-full object-cover"
-        />
-        {!is_public && (
-          <div className="absolute top-2 right-2 bg-background/80 backdrop-blur-sm rounded-full p-1.5">
-            <Lock className="w-3.5 h-3.5 text-muted-foreground" />
-          </div>
-        )}
-      </div>
-      <CardContent className="p-4">
-        <h3 className="font-bold text-lg text-foreground mb-1">{name}</h3>
-        <div className="flex items-center gap-1 text-xs text-muted-foreground mb-2">
-          <MapPin className="w-3 h-3" />
-          <span>{location}</span>
+    <Link to={`/communities/${id}`}>
+      <Card className="overflow-hidden shadow-soft hover:shadow-md transition-shadow">
+        <div className="relative h-32">
+          <img
+            src={image || communityImg}
+            alt={name}
+            className="w-full h-full object-cover"
+          />
+          {!is_public && (
+            <div className="absolute top-2 right-2 bg-background/80 backdrop-blur-sm rounded-full p-1.5">
+              <Lock className="w-3.5 h-3.5 text-muted-foreground" />
+            </div>
+          )}
         </div>
-        <p className="text-muted-foreground text-sm mb-3 line-clamp-2">
-          {description}
-        </p>
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-1 text-sm text-muted-foreground">
-            <Users className="w-4 h-4" />
-            <span>{member_count} miembros</span>
+        <CardContent className="p-4">
+          <h3 className="font-bold text-lg text-foreground mb-1">{name}</h3>
+          <div className="flex items-center gap-1 text-xs text-muted-foreground mb-2">
+            <MapPin className="w-3 h-3" />
+            <span>{location}</span>
           </div>
-          <Button 
-            variant={user_is_member ? "secondary" : "outline"} 
-            size="sm"
-            onClick={handleToggleMembership}
-            disabled={isLoading}
-          >
-            {isLoading ? (
-              <Loader2 className="w-3 h-3 animate-spin" />
-            ) : user_is_member ? (
-              <>
-                <Check className="w-3 h-3 mr-1" />
-                Miembro
-              </>
-            ) : (
-              "Unirse"
-            )}
-          </Button>
-        </div>
-      </CardContent>
-    </Card>
+          <p className="text-muted-foreground text-sm mb-3 line-clamp-2">
+            {description}
+          </p>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-1 text-sm text-muted-foreground">
+              <Users className="w-4 h-4" />
+              <span>{member_count} miembros</span>
+            </div>
+            <Button 
+              variant={user_is_member ? "secondary" : "outline"} 
+              size="sm"
+              onClick={handleToggleMembership}
+              disabled={isLoading}
+            >
+              {isLoading ? (
+                <Loader2 className="w-3 h-3 animate-spin" />
+              ) : user_is_member ? (
+                <>
+                  <Check className="w-3 h-3 mr-1" />
+                  Miembro
+                </>
+              ) : (
+                "Unirse"
+              )}
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+    </Link>
   );
 };
 
