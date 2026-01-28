@@ -288,7 +288,14 @@ const Auth = () => {
                       value={registerConfirmPassword}
                       onChange={(e) => setRegisterConfirmPassword(e.target.value)}
                       disabled={isLoading}
+                      className={registerConfirmPassword && registerPassword !== registerConfirmPassword ? "border-destructive focus-visible:ring-destructive" : ""}
                     />
+                    {registerConfirmPassword && registerPassword !== registerConfirmPassword && (
+                      <p className="text-sm text-destructive">Las contraseñas no coinciden</p>
+                    )}
+                    {registerConfirmPassword && registerPassword === registerConfirmPassword && registerPassword.length >= 6 && (
+                      <p className="text-sm text-green-600">Las contraseñas coinciden ✓</p>
+                    )}
                   </div>
                   
                   <Button type="submit" className="w-full" disabled={isLoading}>
