@@ -249,7 +249,11 @@ const Auth = () => {
                       value={registerEmail}
                       onChange={(e) => setRegisterEmail(e.target.value)}
                       disabled={isLoading}
+                      className={registerEmail && !validateEmail(registerEmail) ? "border-destructive focus-visible:ring-destructive" : ""}
                     />
+                    {registerEmail && !validateEmail(registerEmail) && (
+                      <p className="text-sm text-destructive">Ingresa un correo válido</p>
+                    )}
                   </div>
                   
                   <div className="space-y-2">
