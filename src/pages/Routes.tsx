@@ -13,6 +13,7 @@ const Routes = () => {
   const [typeFilter, setTypeFilter] = useState<string>("todas");
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [debouncedSearch, setDebouncedSearch] = useState<string>("");
+  const [showFilters, setShowFilters] = useState(false);
   
   const observerRef = useRef<IntersectionObserver | null>(null);
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
@@ -64,6 +65,9 @@ const Routes = () => {
 
   const allRoutes = data?.pages.flatMap((page) => page.results) ?? [];
 
+  // Check if any filter is active
+  const hasActiveFilters = categoryFilter !== "todas" || typeFilter !== "todas";
+
   return (
     <div className="min-h-screen bg-background pb-20">
       <header className="bg-card border-b border-border sticky top-0 z-40 shadow-soft safe-top">
@@ -79,24 +83,37 @@ const Routes = () => {
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
             </div>
-            <Button variant="outline" size="icon">
+            <Button 
+              variant={showFilters || hasActiveFilters ? "default" : "outline"} 
+              size="icon"
+              onClick={() => setShowFilters(!showFilters)}
+              className="relative"
+            >
               <SlidersHorizontal className="w-4 h-4" />
+              {hasActiveFilters && !showFilters && (
+                <span className="absolute -top-1 -right-1 w-2 h-2 bg-primary rounded-full" />
+              )}
             </Button>
           </div>
-          <Tabs defaultValue="todas" className="w-full mb-3" onValueChange={setCategoryFilter}>
-            <TabsList className="w-full grid grid-cols-3">
-              <TabsTrigger value="todas">Todas</TabsTrigger>
-              <TabsTrigger value="senderismo">Senderismo</TabsTrigger>
-              <TabsTrigger value="agroturismo">Agroturismo</TabsTrigger>
-            </TabsList>
-          </Tabs>
-          <Tabs defaultValue="todas" className="w-full" onValueChange={setTypeFilter}>
-            <TabsList className="w-full grid grid-cols-3">
-              <TabsTrigger value="todas">Todas</TabsTrigger>
-              <TabsTrigger value="públicas">Públicas</TabsTrigger>
-              <TabsTrigger value="premium">Premium/Fincas</TabsTrigger>
-            </TabsList>
-          </Tabs>
+          
+          {showFilters && (
+            <div className="space-y-3 animate-fade-in">
+              <Tabs defaultValue={categoryFilter} className="w-full" onValueChange={setCategoryFilter}>
+                <TabsList className="w-full grid grid-cols-3">
+                  <TabsTrigger value="todas">Todas</TabsTrigger>
+                  <TabsTrigger value="senderismo">Senderismo</TabsTrigger>
+                  <TabsTrigger value="agroturismo">Agroturismo</TabsTrigger>
+                </TabsList>
+              </Tabs>
+              <Tabs defaultValue={typeFilter} className="w-full" onValueChange={setTypeFilter}>
+                <TabsList className="w-full grid grid-cols-3">
+                  <TabsTrigger value="todas">Todas</TabsTrigger>
+                  <TabsTrigger value="públicas">Públicas</TabsTrigger>
+                  <TabsTrigger value="premium">Premium/Fincas</TabsTrigger>
+                </TabsList>
+              </Tabs>
+            </div>
+          )}
         </div>
       </header>
 
