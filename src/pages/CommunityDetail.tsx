@@ -5,30 +5,14 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ArrowLeft, Users, Hash, Plus, Settings, Lock } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
+import { ArrowLeft, Users, Hash, Settings, Lock, Info } from "lucide-react";
 import CreateChannelDialog from "@/components/CreateChannelDialog";
+import { useCommunityById } from "@/hooks/useCommunities";
+import { useChannels } from "@/hooks/useChannels";
 import communityImg from "@/assets/community.jpg";
 
-// Mock data for layout
-const mockCommunity = {
-  id: "1",
-  name: "Montañeros Madrid",
-  description: "Comunidad de amantes del senderismo en la Sierra de Madrid. Salidas cada fin de semana a diferentes rutas.",
-  image: communityImg,
-  location: "Madrid, España",
-  member_count: 1247,
-  is_public: true,
-  user_is_member: true,
-};
-
-const mockChannels = [
-  { id: "1", name: "general", description: "Conversaciones generales", is_public: true, post_count: 156 },
-  { id: "2", name: "rutas", description: "Comparte y descubre nuevas rutas", is_public: true, post_count: 89 },
-  { id: "3", name: "eventos", description: "Organización de eventos y quedadas", is_public: true, post_count: 45 },
-  { id: "4", name: "fotos", description: "Comparte fotos de tus aventuras", is_public: true, post_count: 234 },
-  { id: "5", name: "admin", description: "Canal privado de administración", is_public: false, post_count: 12 },
-];
-
+// Mock members for now (no API endpoint provided)
 const mockMembers = [
   { id: "1", name: "Carlos López", avatar: null, role: "admin" },
   { id: "2", name: "María García", avatar: null, role: "moderator" },
@@ -40,6 +24,27 @@ const mockMembers = [
 const CommunityDetail = () => {
   const { id } = useParams();
   const [activeTab, setActiveTab] = useState("channels");
+  
+  const { data: community, isLoading: communityLoading } = useCommunityById(id);
+  const { data: channels, isLoading: channelsLoading } = useChannels(id);
+
+  if (communityLoading) {
+    return (
+      <div className="min-h-screen bg-background pb-20">
+        <div className="h-40 bg-muted animate-pulse" />
+        <div className="max-w-lg mx-auto px-4 -mt-8">
+          <Card>
+            <CardContent className="p-4">
+              <Skeleton className="h-6 w-48 mb-2" />
+              <Skeleton className="h-4 w-32 mb-3" />
+              <Skeleton className="h-16 w-full" />
+            </CardContent>
+          </Card>
+        </div>
+        <Navigation />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background pb-20">
@@ -47,8 +52,8 @@ const CommunityDetail = () => {
       <div className="relative">
         <div className="h-40 overflow-hidden">
           <img
-            src={mockCommunity.image}
-            alt={mockCommunity.name}
+            src={community?.image || communityImg}
+            alt={community?.name}
             className="w-full h-full object-cover"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent" />
@@ -72,24 +77,24 @@ const CommunityDetail = () => {
           <CardContent className="p-4">
             <div className="flex items-start justify-between mb-3">
               <div>
-                <h1 className="text-xl font-bold text-foreground">{mockCommunity.name}</h1>
-                <p className="text-sm text-muted-foreground">{mockCommunity.location}</p>
+                <h1 className="text-xl font-bold text-foreground">{community?.name}</h1>
+                <p className="text-sm text-muted-foreground">{community?.location}</p>
               </div>
-              {!mockCommunity.is_public && (
+              {!community?.is_public && (
                 <div className="bg-muted rounded-full p-1.5">
                   <Lock className="w-4 h-4 text-muted-foreground" />
                 </div>
               )}
             </div>
-            <p className="text-sm text-muted-foreground mb-4">{mockCommunity.description}</p>
+            <p className="text-sm text-muted-foreground mb-4">{community?.description}</p>
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-1 text-sm text-muted-foreground">
                 <Users className="w-4 h-4" />
-                <span>{mockCommunity.member_count} miembros</span>
+                <span>{community?.member_count} miembros</span>
               </div>
               <div className="flex items-center gap-1 text-sm text-muted-foreground">
                 <Hash className="w-4 h-4" />
-                <span>{mockChannels.length} canales</span>
+                <span>{channels?.length || 0} canales</span>
               </div>
             </div>
           </CardContent>
@@ -115,30 +120,55 @@ const CommunityDetail = () => {
               <h2 className="font-semibold text-foreground">Canales</h2>
               <CreateChannelDialog />
             </div>
-            <div className="space-y-2">
-              {mockChannels.map((channel) => (
-                <Link key={channel.id} to={`/communities/${id}/channels/${channel.id}`}>
-                  <Card className="hover:bg-muted/50 transition-colors cursor-pointer">
-                    <CardContent className="p-3 flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
-                          {channel.is_public ? (
-                            <Hash className="w-5 h-5 text-primary" />
-                          ) : (
-                            <Lock className="w-5 h-5 text-muted-foreground" />
-                          )}
-                        </div>
-                        <div>
-                          <h3 className="font-medium text-foreground">{channel.name}</h3>
-                          <p className="text-xs text-muted-foreground">{channel.description}</p>
-                        </div>
+            {channelsLoading ? (
+              <div className="space-y-2">
+                {[1, 2, 3].map((i) => (
+                  <Card key={i}>
+                    <CardContent className="p-3 flex items-center gap-3">
+                      <Skeleton className="w-10 h-10 rounded-lg" />
+                      <div className="flex-1">
+                        <Skeleton className="h-4 w-24 mb-1" />
+                        <Skeleton className="h-3 w-40" />
                       </div>
-                      <span className="text-xs text-muted-foreground">{channel.post_count} posts</span>
                     </CardContent>
                   </Card>
-                </Link>
-              ))}
-            </div>
+                ))}
+              </div>
+            ) : channels && channels.length > 0 ? (
+              <div className="space-y-2">
+                {channels.map((channel) => (
+                  <Link key={channel.id} to={`/communities/${id}/channels/${channel.id}`}>
+                    <Card className="hover:bg-muted/50 transition-colors cursor-pointer">
+                      <CardContent className="p-3 flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+                            {channel.is_info ? (
+                              <Info className="w-5 h-5 text-muted-foreground" />
+                            ) : channel.is_read_only ? (
+                              <Lock className="w-5 h-5 text-muted-foreground" />
+                            ) : (
+                              <Hash className="w-5 h-5 text-primary" />
+                            )}
+                          </div>
+                          <div>
+                            <h3 className="font-medium text-foreground">{channel.name}</h3>
+                            <p className="text-xs text-muted-foreground">{channel.description}</p>
+                          </div>
+                        </div>
+                        <span className="text-xs text-muted-foreground">{channel.post_count} posts</span>
+                      </CardContent>
+                    </Card>
+                  </Link>
+                ))}
+              </div>
+            ) : (
+              <Card>
+                <CardContent className="p-6 text-center">
+                  <Hash className="w-12 h-12 text-muted-foreground mx-auto mb-2" />
+                  <p className="text-muted-foreground">No hay canales en esta comunidad</p>
+                </CardContent>
+              </Card>
+            )}
           </TabsContent>
 
           <TabsContent value="members" className="mt-4">
