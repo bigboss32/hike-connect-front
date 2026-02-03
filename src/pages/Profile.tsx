@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Navigation from "@/components/Navigation";
 import { Card, CardContent } from "@/components/ui/card";
@@ -10,15 +10,85 @@ import EditProfileDialog from "@/components/EditProfileDialog";
 import SettingsDialog from "@/components/SettingsDialog";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
+import { Skeleton } from "@/components/ui/skeleton";
+
+const ProfileSkeleton = () => (
+  <div className="min-h-screen bg-background pb-20">
+    <header className="bg-card border-b border-border">
+      <div className="max-w-lg mx-auto px-4 py-4">
+        <div className="flex items-center justify-between">
+          <Skeleton className="h-8 w-24" />
+          <div className="flex items-center gap-2">
+            <Skeleton className="h-10 w-10 rounded-full" />
+            <Skeleton className="h-10 w-10 rounded-full" />
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main className="max-w-lg mx-auto px-4 py-6">
+      <Card className="mb-6 shadow-soft">
+        <CardContent className="p-6">
+          <div className="flex items-start gap-4 mb-4">
+            <Skeleton className="w-20 h-20 rounded-full" />
+            <div className="flex-1 space-y-2">
+              <Skeleton className="h-6 w-32" />
+              <Skeleton className="h-4 w-48" />
+              <Skeleton className="h-5 w-24" />
+            </div>
+          </div>
+          <Skeleton className="h-4 w-full mb-2" />
+          <Skeleton className="h-4 w-3/4 mb-4" />
+          <Skeleton className="h-10 w-full" />
+        </CardContent>
+      </Card>
+
+      <div className="grid grid-cols-3 gap-4 mb-6">
+        {[1, 2, 3].map((i) => (
+          <Card key={i} className="shadow-soft">
+            <CardContent className="p-4 text-center space-y-2">
+              <Skeleton className="h-8 w-12 mx-auto" />
+              <Skeleton className="h-3 w-16 mx-auto" />
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+
+      <Card className="shadow-soft">
+        <CardContent className="p-4">
+          <Skeleton className="h-6 w-24 mb-4" />
+          <div className="space-y-3">
+            {[1, 2].map((i) => (
+              <div key={i} className="flex items-center gap-3">
+                <Skeleton className="w-10 h-10 rounded-full" />
+                <div className="space-y-1">
+                  <Skeleton className="h-4 w-24" />
+                  <Skeleton className="h-3 w-40" />
+                </div>
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+    </main>
+
+    <Navigation />
+  </div>
+);
 
 const Profile = () => {
   const { user, logout, fetchProfile } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const [isLoadingProfile, setIsLoadingProfile] = useState(true);
 
   useEffect(() => {
-    // Fetch profile data when component mounts
-    fetchProfile();
+    const loadProfile = async () => {
+      setIsLoadingProfile(true);
+      await fetchProfile();
+      setIsLoadingProfile(false);
+    };
+    loadProfile();
   }, []);
 
   const handleLogout = () => {
@@ -29,6 +99,10 @@ const Profile = () => {
     });
     navigate("/auth", { replace: true });
   };
+
+  if (isLoadingProfile) {
+    return <ProfileSkeleton />;
+  }
 
   if (!user) {
     return null;
