@@ -143,7 +143,7 @@ const Auth = () => {
     <div className="min-h-screen bg-background flex flex-col items-center justify-center p-4">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <img src={maroaIcon} alt="MAROÁ" className="w-32 h-32 mx-auto" />
+          <img src={maroaIcon} alt="MAROÁ" className="w-48 h-48 mx-auto" />
           <p className="text-muted-foreground mt-2">Tu comunidad de senderismo</p>
         </div>
 
