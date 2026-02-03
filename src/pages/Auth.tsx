@@ -8,7 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Eye, EyeOff } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import MaroaLogo from "@/components/MaroaLogo";
+import maroaIcon from "@/assets/maroa-icon.svg";
 
 const Auth = () => {
   const navigate = useNavigate();
@@ -143,7 +143,7 @@ const Auth = () => {
     <div className="min-h-screen bg-background flex flex-col items-center justify-center p-4">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <MaroaLogo size={96} showText className="mx-auto" />
+          <img src={maroaIcon} alt="MAROÁ" className="w-32 h-32 mx-auto" />
           <p className="text-muted-foreground mt-2">Tu comunidad de senderismo</p>
         </div>
 
