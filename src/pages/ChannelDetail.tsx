@@ -5,67 +5,39 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
-import { ArrowLeft, Hash, Heart, MessageCircle, Send, MoreVertical, Image } from "lucide-react";
-
-// Mock data for layout
-const mockChannel = {
-  id: "1",
-  name: "general",
-  description: "Conversaciones generales",
-  community_name: "Montañeros Madrid",
-};
-
-const mockPosts = [
-  {
-    id: "1",
-    author: { name: "Carlos López", avatar: null },
-    content: "¡Buenos días a todos! ¿Alguien se apunta a la ruta del domingo? Estamos pensando en ir a La Pedriza.",
-    image: null,
-    likes: 12,
-    comments: 5,
-    created_at: "Hace 2 horas",
-    user_liked: false,
-  },
-  {
-    id: "2",
-    author: { name: "María García", avatar: null },
-    content: "Acabo de volver de la Ruta del Agua en Cercedilla. ¡Espectacular! Os dejo unas fotos 📸",
-    image: "https://images.unsplash.com/photo-1551632811-561732d1e306?w=600",
-    likes: 34,
-    comments: 8,
-    created_at: "Hace 5 horas",
-    user_liked: true,
-  },
-  {
-    id: "3",
-    author: { name: "Pedro Martínez", avatar: null },
-    content: "¿Conocéis alguna ruta fácil para principiantes cerca de Navacerrada? Es para llevar a mi familia.",
-    image: null,
-    likes: 6,
-    comments: 12,
-    created_at: "Ayer",
-    user_liked: false,
-  },
-  {
-    id: "4",
-    author: { name: "Ana Rodríguez", avatar: null },
-    content: "Recordad llevar agua suficiente este fin de semana, se esperan temperaturas altas. ¡Cuidaos! 💧",
-    image: null,
-    likes: 28,
-    comments: 3,
-    created_at: "Hace 2 días",
-    user_liked: true,
-  },
-];
+import { Skeleton } from "@/components/ui/skeleton";
+import { ArrowLeft, Hash, Send, MoreVertical, Image } from "lucide-react";
+import { usePosts, useCreatePost } from "@/hooks/usePosts";
+import { useChannels } from "@/hooks/useChannels";
+import { formatDistanceToNow } from "date-fns";
+import { es } from "date-fns/locale";
 
 const ChannelDetail = () => {
   const { communityId, channelId } = useParams();
   const [newPost, setNewPost] = useState("");
+  
+  const { data: channels } = useChannels(communityId);
+  const { data: postsData, isLoading: postsLoading } = usePosts({ canalId: channelId });
+  const createPost = useCreatePost();
+  
+  const currentChannel = channels?.find(c => c.id === channelId);
 
   const handleSubmitPost = () => {
-    if (newPost.trim()) {
-      // Mock: would call API here
+    if (newPost.trim() && communityId && channelId) {
+      createPost.mutate({
+        comunidad_id: communityId,
+        canal_id: channelId,
+        content: newPost.trim(),
+      });
       setNewPost("");
+    }
+  };
+
+  const formatDate = (dateString: string) => {
+    try {
+      return formatDistanceToNow(new Date(dateString), { addSuffix: true, locale: es });
+    } catch {
+      return dateString;
     }
   };
 
@@ -84,8 +56,8 @@ const ChannelDetail = () => {
               <Hash className="w-4 h-4 text-primary" />
             </div>
             <div className="min-w-0">
-              <h1 className="font-bold text-foreground truncate">{mockChannel.name}</h1>
-              <p className="text-xs text-muted-foreground truncate">{mockChannel.community_name}</p>
+              <h1 className="font-bold text-foreground truncate">{currentChannel?.name || "Canal"}</h1>
+              <p className="text-xs text-muted-foreground truncate">{currentChannel?.description}</p>
             </div>
           </div>
           <Button variant="ghost" size="icon">
@@ -96,52 +68,60 @@ const ChannelDetail = () => {
 
       {/* Posts */}
       <main className="max-w-lg mx-auto px-4 py-4">
-        <div className="space-y-4">
-          {mockPosts.map((post) => (
-            <Card key={post.id} className="shadow-soft">
-              <CardContent className="p-4">
-                {/* Author */}
-                <div className="flex items-center gap-3 mb-3">
-                  <Avatar className="w-10 h-10">
-                    <AvatarImage src={post.author.avatar || undefined} />
-                    <AvatarFallback className="bg-primary/10 text-primary text-sm">
-                      {post.author.name.split(' ').map(n => n[0]).join('')}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div className="flex-1">
-                    <h3 className="font-medium text-foreground text-sm">{post.author.name}</h3>
-                    <p className="text-xs text-muted-foreground">{post.created_at}</p>
+        {postsLoading ? (
+          <div className="space-y-4">
+            {[1, 2, 3].map((i) => (
+              <Card key={i} className="shadow-soft">
+                <CardContent className="p-4">
+                  <div className="flex items-center gap-3 mb-3">
+                    <Skeleton className="w-10 h-10 rounded-full" />
+                    <div className="flex-1">
+                      <Skeleton className="h-4 w-24 mb-1" />
+                      <Skeleton className="h-3 w-16" />
+                    </div>
                   </div>
-                  <Button variant="ghost" size="icon" className="h-8 w-8">
-                    <MoreVertical className="w-4 h-4" />
-                  </Button>
-                </div>
-
-                {/* Content */}
-                <p className="text-foreground text-sm mb-3">{post.content}</p>
-
-                {/* Image */}
-                {post.image && (
-                  <div className="rounded-lg overflow-hidden mb-3">
-                    <img src={post.image} alt="Post" className="w-full h-48 object-cover" />
+                  <Skeleton className="h-16 w-full" />
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        ) : postsData?.results && postsData.results.length > 0 ? (
+          <div className="space-y-4">
+            {postsData.results.map((post) => (
+              <Card key={post.id} className="shadow-soft">
+                <CardContent className="p-4">
+                  {/* Author */}
+                  <div className="flex items-center gap-3 mb-3">
+                    <Avatar className="w-10 h-10">
+                      <AvatarImage src={post.author_image || undefined} />
+                      <AvatarFallback className="bg-primary/10 text-primary text-sm">
+                        {post.author_name.split(' ').map(n => n[0]).join('')}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="flex-1">
+                      <h3 className="font-medium text-foreground text-sm">{post.author_name}</h3>
+                      <p className="text-xs text-muted-foreground">{formatDate(post.created_at)}</p>
+                    </div>
+                    <Button variant="ghost" size="icon" className="h-8 w-8">
+                      <MoreVertical className="w-4 h-4" />
+                    </Button>
                   </div>
-                )}
 
-                {/* Actions */}
-                <div className="flex items-center gap-4 pt-2 border-t border-border">
-                  <button className={`flex items-center gap-1.5 text-sm ${post.user_liked ? 'text-red-500' : 'text-muted-foreground'} hover:text-red-500 transition-colors`}>
-                    <Heart className={`w-4 h-4 ${post.user_liked ? 'fill-current' : ''}`} />
-                    <span>{post.likes}</span>
-                  </button>
-                  <button className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors">
-                    <MessageCircle className="w-4 h-4" />
-                    <span>{post.comments}</span>
-                  </button>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+                  {/* Content */}
+                  <p className="text-foreground text-sm">{post.content}</p>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        ) : (
+          <Card>
+            <CardContent className="p-8 text-center">
+              <Hash className="w-12 h-12 text-muted-foreground mx-auto mb-2" />
+              <p className="text-muted-foreground">No hay mensajes aún</p>
+              <p className="text-sm text-muted-foreground mt-1">¡Sé el primero en publicar!</p>
+            </CardContent>
+          </Card>
+        )}
       </main>
 
       {/* Create post input */}
@@ -159,7 +139,7 @@ const ChannelDetail = () => {
           <Button 
             size="icon" 
             onClick={handleSubmitPost}
-            disabled={!newPost.trim()}
+            disabled={!newPost.trim() || createPost.isPending}
           >
             <Send className="w-4 h-4" />
           </Button>
