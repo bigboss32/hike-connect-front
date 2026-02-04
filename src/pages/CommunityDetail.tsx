@@ -10,16 +10,8 @@ import { ArrowLeft, Users, Hash, Settings, Lock, Info } from "lucide-react";
 import CreateChannelDialog from "@/components/CreateChannelDialog";
 import { useCommunityById } from "@/hooks/useCommunities";
 import { useChannels } from "@/hooks/useChannels";
+import { useCommunityMembers } from "@/hooks/useCommunityMembers";
 import communityImg from "@/assets/community.jpg";
-
-// Mock members for now (no API endpoint provided)
-const mockMembers = [
-  { id: "1", name: "Carlos López", avatar: null, role: "admin" },
-  { id: "2", name: "María García", avatar: null, role: "moderator" },
-  { id: "3", name: "Pedro Martínez", avatar: null, role: "member" },
-  { id: "4", name: "Ana Rodríguez", avatar: null, role: "member" },
-  { id: "5", name: "Luis Fernández", avatar: null, role: "member" },
-];
 
 const CommunityDetail = () => {
   const { id } = useParams();
@@ -27,6 +19,7 @@ const CommunityDetail = () => {
   
   const { data: community, isLoading: communityLoading } = useCommunityById(id);
   const { data: channels, isLoading: channelsLoading } = useChannels(id);
+  const { data: membersData, isLoading: membersLoading } = useCommunityMembers(id);
 
   if (communityLoading) {
     return (
@@ -172,33 +165,61 @@ const CommunityDetail = () => {
           </TabsContent>
 
           <TabsContent value="members" className="mt-4">
-            <h2 className="font-semibold text-foreground mb-4">Miembros ({mockMembers.length})</h2>
-            <div className="space-y-2">
-              {mockMembers.map((member) => (
-                <Card key={member.id}>
-                  <CardContent className="p-3 flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <Avatar className="w-10 h-10">
-                        <AvatarImage src={member.avatar || undefined} />
-                        <AvatarFallback className="bg-primary/10 text-primary">
-                          {member.name.split(' ').map(n => n[0]).join('')}
-                        </AvatarFallback>
-                      </Avatar>
-                      <div>
-                        <h3 className="font-medium text-foreground">{member.name}</h3>
-                        <p className="text-xs text-muted-foreground capitalize">{member.role}</p>
+            <h2 className="font-semibold text-foreground mb-4">
+              Miembros ({membersData?.count || 0})
+            </h2>
+            {membersLoading ? (
+              <div className="space-y-2">
+                {[1, 2, 3].map((i) => (
+                  <Card key={i}>
+                    <CardContent className="p-3 flex items-center gap-3">
+                      <Skeleton className="w-10 h-10 rounded-full" />
+                      <div className="flex-1">
+                        <Skeleton className="h-4 w-24 mb-1" />
+                        <Skeleton className="h-3 w-16" />
                       </div>
-                    </div>
-                    {member.role === "admin" && (
-                      <span className="text-xs bg-primary/10 text-primary px-2 py-1 rounded-full">Admin</span>
-                    )}
-                    {member.role === "moderator" && (
-                      <span className="text-xs bg-muted text-muted-foreground px-2 py-1 rounded-full">Mod</span>
-                    )}
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            ) : membersData && membersData.results.length > 0 ? (
+              <div className="space-y-2">
+                {membersData.results.map((member) => (
+                  <Card key={member.id}>
+                    <CardContent className="p-3 flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <Avatar className="w-10 h-10">
+                          <AvatarImage src={member.user_image || undefined} />
+                          <AvatarFallback className="bg-primary/10 text-primary">
+                            {member.user_name.split(' ').map(n => n[0]).join('')}
+                          </AvatarFallback>
+                        </Avatar>
+                        <div>
+                          <h3 className="font-medium text-foreground">{member.user_name}</h3>
+                          <p className="text-xs text-muted-foreground capitalize">{member.role}</p>
+                        </div>
+                      </div>
+                      {member.role === "owner" && (
+                        <span className="text-xs bg-primary/10 text-primary px-2 py-1 rounded-full">Owner</span>
+                      )}
+                      {member.role === "admin" && (
+                        <span className="text-xs bg-primary/10 text-primary px-2 py-1 rounded-full">Admin</span>
+                      )}
+                      {member.role === "moderator" && (
+                        <span className="text-xs bg-muted text-muted-foreground px-2 py-1 rounded-full">Mod</span>
+                      )}
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            ) : (
+              <Card>
+                <CardContent className="p-6 text-center">
+                  <Users className="w-12 h-12 text-muted-foreground mx-auto mb-2" />
+                  <p className="text-muted-foreground">No hay miembros en esta comunidad</p>
+                </CardContent>
+              </Card>
+            )}
           </TabsContent>
         </Tabs>
       </div>
