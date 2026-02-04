@@ -8,6 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useRouteById, useRouteRating } from "@/hooks/useRoutes";
 import RouteMap from "@/components/RouteMap";
+import RouteReservationSection from "@/components/RouteReservationSection";
 import { Skeleton } from "@/components/ui/skeleton";
 import RatingModal from "@/components/RatingModal";
 import Navigation from "@/components/Navigation";
@@ -271,20 +272,30 @@ const RouteDetail = () => {
               </section>
             )}
 
-            {/* Botón de acción */}
+            {/* Sección de Reserva */}
+            <section>
+              <RouteReservationSection 
+                routeId={id!} 
+                routeTitle={route.title}
+                price={route.type === "privada" ? 45000 : undefined}
+              />
+            </section>
+
+            {/* Botón de acción WhatsApp */}
             {(route.type === "privada" || route.type === "agroturismo") && route.whatsapp && (
               <Button 
+                variant="outline"
                 className="w-full" 
                 size="lg"
                 asChild
               >
                 <a
-                  href={`https://wa.me/${route.whatsapp}?text=Hola, me interesa la ruta "${route.title}"`}
+                  href={`https://wa.me/${route.whatsapp}?text=${encodeURIComponent(`Hola, me interesa la ruta "${route.title}"`)}`}
                   target="_blank"
                   rel="noopener noreferrer"
                 >
                   <MessageCircle className="w-5 h-5 mr-2" />
-                  Reservar por WhatsApp
+                  Consultar por WhatsApp
                 </a>
               </Button>
             )}
