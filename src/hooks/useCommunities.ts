@@ -131,6 +131,11 @@ export const useLeaveCommunity = () => {
         throw new Error("Error al salir de la comunidad");
       }
 
+      // 204 No Content - successful deletion
+      if (response.status === 204) {
+        return { success: true };
+      }
+
       return response.json();
     },
     onSuccess: () => {
