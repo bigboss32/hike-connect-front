@@ -1,5 +1,6 @@
 import { Mountain, Route, Users, Trophy } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
+import { useUserCommunityStats } from "@/hooks/useCommunityMembers";
 
 interface StatCardProps {
   icon: React.ReactNode;
@@ -24,12 +25,13 @@ const StatCard = ({ icon, value, label, color, delay }: StatCardProps) => (
 
 const UserStatsCards = () => {
   const { user } = useAuth();
+  const { data: communityStats } = useUserCommunityStats();
   
-  // Simulated stats - in production these would come from the backend
+  // Stats with real community count from API
   const stats = {
     routesCompleted: 12,
     kmTraveled: 87.5,
-    communitiesJoined: 3,
+    communitiesJoined: communityStats?.total_communities || 0,
     achievements: 8,
   };
 
