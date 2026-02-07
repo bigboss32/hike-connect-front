@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import Navigation from "@/components/Navigation";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { Settings, Award, MapPin, Calendar, LogOut } from "lucide-react";
+import { Settings, Award, MapPin, Calendar, LogOut, ChevronRight, Trophy } from "lucide-react";
 import EditProfileDialog from "@/components/EditProfileDialog";
 import SettingsDialog from "@/components/SettingsDialog";
 import { useAuth } from "@/contexts/AuthContext";
@@ -186,31 +186,42 @@ const Profile = () => {
           </Card>
         </div>
 
-        <Card className="shadow-soft">
-          <CardContent className="p-4">
-            <h3 className="font-bold text-lg text-foreground mb-4">Logros</h3>
-            <div className="space-y-3">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-                  <MapPin className="w-5 h-5 text-primary" />
+        <Link to="/achievements" className="block group">
+          <Card className="shadow-soft hover:shadow-md transition-shadow">
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-2">
+                  <Trophy className="w-5 h-5 text-primary" />
+                  <h3 className="font-bold text-lg text-foreground">Logros</h3>
                 </div>
-                <div>
-                  <p className="font-medium text-sm">Primera Ruta</p>
-                  <p className="text-xs text-muted-foreground">Completaste tu primer sendero</p>
-                </div>
-              </div>
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-secondary/10 flex items-center justify-center">
-                  <Calendar className="w-5 h-5 text-secondary" />
-                </div>
-                <div>
-                  <p className="font-medium text-sm">Organizador</p>
-                  <p className="text-xs text-muted-foreground">Creaste tu primer evento</p>
+                <div className="flex items-center gap-1 text-sm text-muted-foreground group-hover:text-primary transition-colors">
+                  <span>Ver todos</span>
+                  <ChevronRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
                 </div>
               </div>
-            </div>
-          </CardContent>
-        </Card>
+              <div className="space-y-3">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                    <MapPin className="w-5 h-5 text-primary" />
+                  </div>
+                  <div>
+                    <p className="font-medium text-sm">Primera Ruta</p>
+                    <p className="text-xs text-muted-foreground">Completaste tu primer sendero</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-secondary/10 flex items-center justify-center">
+                    <Calendar className="w-5 h-5 text-secondary" />
+                  </div>
+                  <div>
+                    <p className="font-medium text-sm">Organizador</p>
+                    <p className="text-xs text-muted-foreground">Creaste tu primer evento</p>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </Link>
       </main>
 
       <Navigation />
