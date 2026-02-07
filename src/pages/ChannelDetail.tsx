@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import Navigation from "@/components/Navigation";
 import { Button } from "@/components/ui/button";
@@ -6,21 +6,42 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
-import { ArrowLeft, Hash, Send, MoreVertical, Image } from "lucide-react";
+import { ArrowLeft, Hash, Send, MoreVertical, Image, Wifi, WifiOff } from "lucide-react";
 import { usePosts, useCreatePost } from "@/hooks/usePosts";
 import { useChannels } from "@/hooks/useChannels";
+import { useChannelWebSocket } from "@/hooks/useChannelWebSocket";
 import { formatDistanceToNow } from "date-fns";
 import { es } from "date-fns/locale";
 
 const ChannelDetail = () => {
   const { communityId, channelId } = useParams();
   const [newPost, setNewPost] = useState("");
+  const messagesEndRef = useRef<HTMLDivElement>(null);
   
   const { data: channels } = useChannels(communityId);
   const { data: postsData, isLoading: postsLoading } = usePosts({ canalId: channelId });
   const createPost = useCreatePost();
   
+  const { isConnected, canWrite, typingUsers, sendTyping } = useChannelWebSocket({
+    channelId,
+    enabled: !!channelId,
+  });
+  
   const currentChannel = channels?.find(c => c.id === channelId);
+
+  // Auto-scroll to bottom when new posts arrive
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [postsData?.results?.length]);
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setNewPost(e.target.value);
+    if (e.target.value.trim()) {
+      sendTyping(true);
+    } else {
+      sendTyping(false);
+    }
+  };
 
   const handleSubmitPost = () => {
     if (newPost.trim() && communityId && channelId) {
@@ -30,6 +51,14 @@ const ChannelDetail = () => {
         content: newPost.trim(),
       });
       setNewPost("");
+      sendTyping(false);
+    }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      handleSubmitPost();
     }
   };
 
@@ -56,8 +85,21 @@ const ChannelDetail = () => {
               <Hash className="w-4 h-4 text-primary" />
             </div>
             <div className="min-w-0">
-              <h1 className="font-bold text-foreground truncate">{currentChannel?.name || "Canal"}</h1>
-              <p className="text-xs text-muted-foreground truncate">{currentChannel?.description}</p>
+              <div className="flex items-center gap-2">
+                <h1 className="font-bold text-foreground truncate">{currentChannel?.name || "Canal"}</h1>
+                {isConnected ? (
+                  <Wifi className="w-3 h-3 text-primary shrink-0" />
+                ) : (
+                  <WifiOff className="w-3 h-3 text-destructive shrink-0" />
+                )}
+              </div>
+              <p className="text-xs text-muted-foreground truncate">
+                {typingUsers.length > 0
+                  ? typingUsers.length === 1
+                    ? `${typingUsers[0]} está escribiendo...`
+                    : `${typingUsers.join(", ")} están escribiendo...`
+                  : currentChannel?.description}
+              </p>
             </div>
           </div>
           <Button variant="ghost" size="icon">
@@ -112,6 +154,7 @@ const ChannelDetail = () => {
                 </CardContent>
               </Card>
             ))}
+            <div ref={messagesEndRef} />
           </div>
         ) : (
           <Card>
@@ -131,15 +174,17 @@ const ChannelDetail = () => {
             <Image className="w-5 h-5 text-muted-foreground" />
           </Button>
           <Input
-            placeholder="Escribe un mensaje..."
+            placeholder={canWrite ? "Escribe un mensaje..." : "Solo lectura"}
             value={newPost}
-            onChange={(e) => setNewPost(e.target.value)}
+            onChange={handleInputChange}
+            onKeyDown={handleKeyDown}
             className="flex-1"
+            disabled={!canWrite}
           />
           <Button 
             size="icon" 
             onClick={handleSubmitPost}
-            disabled={!newPost.trim() || createPost.isPending}
+            disabled={!newPost.trim() || createPost.isPending || !canWrite}
           >
             <Send className="w-4 h-4" />
           </Button>
