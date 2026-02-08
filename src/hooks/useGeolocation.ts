@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
+import { Geolocation } from "@capacitor/geolocation";
 
 interface GeolocationState {
   latitude: number | null;
@@ -10,16 +11,12 @@ interface GeolocationState {
 
 interface UseGeolocationOptions {
   enableHighAccuracy?: boolean;
-  timeout?: number;
-  maximumAge?: number;
   watch?: boolean;
 }
 
 const useGeolocation = (options: UseGeolocationOptions = {}) => {
   const {
     enableHighAccuracy = true,
-    timeout = 10000,
-    maximumAge = 60000,
     watch = false,
   } = options;
 
@@ -31,76 +28,86 @@ const useGeolocation = (options: UseGeolocationOptions = {}) => {
     error: null,
   });
 
-  const onSuccess = useCallback((position: GeolocationPosition) => {
-    setState({
-      latitude: position.coords.latitude,
-      longitude: position.coords.longitude,
-      accuracy: position.coords.accuracy,
-      loading: false,
-      error: null,
-    });
-  }, []);
+  const requestAndGetLocation = useCallback(async () => {
+    try {
+      setState((s) => ({ ...s, loading: true, error: null }));
 
-  const onError = useCallback((error: GeolocationPositionError) => {
-    let message = "Error desconocido al obtener ubicación";
-    switch (error.code) {
-      case error.PERMISSION_DENIED:
-        message = "Permiso de ubicación denegado";
-        break;
-      case error.POSITION_UNAVAILABLE:
-        message = "Ubicación no disponible";
-        break;
-      case error.TIMEOUT:
-        message = "Tiempo de espera agotado";
-        break;
-    }
-    setState((prev) => ({ ...prev, loading: false, error: message }));
-  }, []);
+      // 🔥 pedir permisos
+      const perm = await Geolocation.requestPermissions();
 
-  const refresh = useCallback(() => {
-    if (!navigator.geolocation) {
-      setState((prev) => ({
-        ...prev,
+      if (perm.location !== "granted") {
+        setState((s) => ({
+          ...s,
+          loading: false,
+          error: "Permiso de ubicación denegado",
+        }));
+        return;
+      }
+
+      const pos = await Geolocation.getCurrentPosition({
+        enableHighAccuracy,
+      });
+
+      setState({
+        latitude: pos.coords.latitude,
+        longitude: pos.coords.longitude,
+        accuracy: pos.coords.accuracy,
         loading: false,
-        error: "Geolocalización no soportada en este dispositivo",
+        error: null,
+      });
+
+    } catch (err: any) {
+      setState((s) => ({
+        ...s,
+        loading: false,
+        error: err.message || "Error obteniendo ubicación",
       }));
-      return;
     }
-    setState((prev) => ({ ...prev, loading: true, error: null }));
-    navigator.geolocation.getCurrentPosition(onSuccess, onError, {
-      enableHighAccuracy,
-      timeout,
-      maximumAge,
-    });
-  }, [enableHighAccuracy, timeout, maximumAge, onSuccess, onError]);
+  }, [enableHighAccuracy]);
 
   useEffect(() => {
-    if (!navigator.geolocation) {
-      setState((prev) => ({
-        ...prev,
-        loading: false,
-        error: "Geolocalización no soportada en este dispositivo",
-      }));
-      return;
-    }
+    let watchId: string | null = null;
 
-    navigator.geolocation.getCurrentPosition(onSuccess, onError, {
-      enableHighAccuracy,
-      timeout,
-      maximumAge,
-    });
+    const init = async () => {
+      await requestAndGetLocation();
 
-    if (watch) {
-      const watchId = navigator.geolocation.watchPosition(onSuccess, onError, {
-        enableHighAccuracy,
-        timeout,
-        maximumAge,
-      });
-      return () => navigator.geolocation.clearWatch(watchId);
-    }
-  }, [watch, enableHighAccuracy, timeout, maximumAge, onSuccess, onError]);
+      if (watch) {
+        watchId = await Geolocation.watchPosition(
+          { enableHighAccuracy },
+          (position, err) => {
+            if (position) {
+              setState((s) => ({
+                ...s,
+                latitude: position.coords.latitude,
+                longitude: position.coords.longitude,
+                accuracy: position.coords.accuracy,
+              }));
+            }
 
-  return { ...state, refresh };
+            if (err) {
+              setState((s) => ({
+                ...s,
+                error: err.message,
+              }));
+            }
+          }
+        );
+      }
+    };
+
+    init();
+
+    return () => {
+      if (watchId) {
+        Geolocation.clearWatch({ id: watchId });
+      }
+    };
+  }, [watch, enableHighAccuracy, requestAndGetLocation]);
+
+  return {
+    ...state,
+    refresh: requestAndGetLocation,
+  };
 };
 
 export default useGeolocation;

@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, Fingerprint } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import maroaIcon from "@/assets/maroa-icon.svg";
 import EmailVerificationForm from "@/components/EmailVerificationForm";
@@ -16,18 +16,21 @@ type AuthView = "main" | "verify-email" | "password-reset";
 
 const Auth = () => {
   const navigate = useNavigate();
-  const { login, register, user, isLoading: authLoading } = useAuth();
+  const { 
+    login, 
+    register, 
+    user, 
+    isLoading: authLoading, 
+    loginWithBiometric, 
+    enableBiometric, 
+    isBiometricAvailable, 
+    isBiometricEnabled 
+  } = useAuth();
   const { toast } = useToast();
 
   const [view, setView] = useState<AuthView>("main");
   const [pendingEmail, setPendingEmail] = useState("");
-  
-  useEffect(() => {
-    if (!authLoading && user) {
-      navigate("/", { replace: true });
-    }
-  }, [user, authLoading, navigate]);
-  
+  const [showBiometricButton, setShowBiometricButton] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   
@@ -40,18 +43,68 @@ const Auth = () => {
   const [registerPassword, setRegisterPassword] = useState("");
   const [registerConfirmPassword, setRegisterConfirmPassword] = useState("");
 
+  // Redirigir si ya está autenticado
+  useEffect(() => {
+    if (!authLoading && user) {
+      navigate("/", { replace: true });
+    }
+  }, [user, authLoading, navigate]);
+
+  // Verificar si la biometría está disponible y habilitada
+  useEffect(() => {
+    checkBiometric();
+  }, []);
+
+  const checkBiometric = async () => {
+    try {
+      const available = await isBiometricAvailable();
+      const enabled = await isBiometricEnabled();
+      setShowBiometricButton(available && enabled);
+    } catch (error) {
+      console.error("Error verificando biometría:", error);
+    }
+  };
+
   const validateEmail = (email: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+
+  const handleBiometricLogin = async () => {
+    setIsLoading(true);
+    const result = await loginWithBiometric();
+    setIsLoading(false);
+
+    if (result.success) {
+      toast({ 
+        title: "¡Bienvenido!", 
+        description: "Has iniciado sesión con huella" 
+      });
+      navigate("/");
+    } else {
+      toast({ 
+        title: "Error", 
+        description: result.error || "Error al iniciar sesión con huella", 
+        variant: "destructive" 
+      });
+    }
+  };
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!loginEmail || !loginPassword) {
-      toast({ title: "Error", description: "Por favor completa todos los campos", variant: "destructive" });
+      toast({ 
+        title: "Error", 
+        description: "Por favor completa todos los campos", 
+        variant: "destructive" 
+      });
       return;
     }
     
     if (!validateEmail(loginEmail)) {
-      toast({ title: "Error", description: "Por favor ingresa un correo válido", variant: "destructive" });
+      toast({ 
+        title: "Error", 
+        description: "Por favor ingresa un correo válido", 
+        variant: "destructive" 
+      });
       return;
     }
     
@@ -60,17 +113,47 @@ const Auth = () => {
     setIsLoading(false);
     
     if (result.success) {
-      toast({ title: "¡Bienvenido!", description: "Has iniciado sesión correctamente" });
+      toast({ 
+        title: "¡Bienvenido!", 
+        description: "Has iniciado sesión correctamente" 
+      });
+
+      const available = await isBiometricAvailable();
+      const enabled = await isBiometricEnabled();
+      
+      if (available && !enabled) {
+        const userWants = window.confirm('¿Deseas habilitar inicio de sesión con huella?');
+        
+        if (userWants) {
+          const biometricResult = await enableBiometric(loginEmail, loginPassword);
+          
+          if (biometricResult.success) {
+            toast({ 
+              title: "¡Listo!", 
+              description: "Huella habilitada correctamente" 
+            });
+            setShowBiometricButton(true);
+          }
+        }
+      }
+
       navigate("/");
     } else {
-      // Check if backend says email not verified
       const errorMsg = result.error || "";
       if (errorMsg.toLowerCase().includes("verific") || errorMsg.toLowerCase().includes("confirm")) {
         setPendingEmail(loginEmail);
         setView("verify-email");
-        toast({ title: "Verificación pendiente", description: result.error, variant: "destructive" });
+        toast({ 
+          title: "Verificación pendiente", 
+          description: result.error, 
+          variant: "destructive" 
+        });
       } else {
-        toast({ title: "Error", description: result.error || "Error al iniciar sesión", variant: "destructive" });
+        toast({ 
+          title: "Error", 
+          description: result.error || "Error al iniciar sesión", 
+          variant: "destructive" 
+        });
       }
     }
   };
@@ -78,42 +161,75 @@ const Auth = () => {
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    // Validaciones
     if (!registerFirstName || !registerLastName || !registerEmail || !registerPassword || !registerConfirmPassword) {
-      toast({ title: "Error", description: "Por favor completa todos los campos", variant: "destructive" });
+      toast({ 
+        title: "Error", 
+        description: "Por favor completa todos los campos", 
+        variant: "destructive" 
+      });
       return;
     }
     
     if (!validateEmail(registerEmail)) {
-      toast({ title: "Error", description: "Por favor ingresa un correo válido", variant: "destructive" });
+      toast({ 
+        title: "Error", 
+        description: "Por favor ingresa un correo válido", 
+        variant: "destructive" 
+      });
       return;
     }
     
     if (registerPassword.length < 6) {
-      toast({ title: "Error", description: "La contraseña debe tener al menos 6 caracteres", variant: "destructive" });
+      toast({ 
+        title: "Error", 
+        description: "La contraseña debe tener al menos 6 caracteres", 
+        variant: "destructive" 
+      });
       return;
     }
     
     if (registerPassword !== registerConfirmPassword) {
-      toast({ title: "Error", description: "Las contraseñas no coinciden", variant: "destructive" });
+      toast({ 
+        title: "Error", 
+        description: "Las contraseñas no coinciden", 
+        variant: "destructive" 
+      });
       return;
     }
     
     setIsLoading(true);
-    const result = await register(registerEmail, registerPassword, registerConfirmPassword, registerFirstName, registerLastName);
+    const result = await register(
+      registerEmail, 
+      registerPassword, 
+      registerConfirmPassword, 
+      registerFirstName, 
+      registerLastName
+    );
     setIsLoading(false);
     
     if (result.success) {
-      toast({ title: "¡Cuenta creada!", description: result.message || "Revisa tu correo para verificar tu cuenta" });
+      toast({ 
+        title: "¡Cuenta creada!", 
+        description: result.message || "Revisa tu correo para verificar tu cuenta" 
+      });
       setPendingEmail(registerEmail);
       setView("verify-email");
     } else {
-      toast({ title: "Error", description: result.error || "Error al registrarse", variant: "destructive" });
+      toast({ 
+        title: "Error", 
+        description: result.error || "Error al registrarse", 
+        variant: "destructive" 
+      });
     }
   };
 
   const handleVerified = () => {
     setView("main");
-    toast({ title: "¡Listo!", description: "Ahora puedes iniciar sesión" });
+    toast({ 
+      title: "¡Listo!", 
+      description: "Ahora puedes iniciar sesión" 
+    });
   };
 
   const handlePasswordResetComplete = () => {
@@ -124,7 +240,11 @@ const Auth = () => {
     <div className="min-h-screen bg-background flex flex-col items-center justify-center p-4">
       <div className="w-full max-w-md">
         <div className="text-center mb-6">
-          <img src={maroaIcon} alt="MAROÁ" className="w-56 h-56 mx-auto" />
+          <img 
+            src={maroaIcon} 
+            alt="MAROÁ" 
+            className="w-56 h-56 mx-auto"
+          />
         </div>
 
         <Card>
@@ -205,14 +325,40 @@ const Auth = () => {
                       {isLoading ? "Iniciando sesión..." : "Iniciar Sesión"}
                     </Button>
 
-                    <Button
-                      type="button"
-                      variant="link"
-                      className="w-full text-sm text-muted-foreground"
-                      onClick={() => setView("password-reset")}
-                    >
-                      ¿Olvidaste tu contraseña?
-                    </Button>
+                    {/* Botón de huella al lado del botón de inicio de sesión */}
+                    {showBiometricButton && (
+                      <div className="flex gap-2">
+                        <Button
+                          type="button"
+                          variant="outline"
+                          className="flex-1 border-primary hover:bg-primary/10"
+                          onClick={handleBiometricLogin}
+                          disabled={isLoading}
+                        >
+                          <Fingerprint className="h-5 w-5" />
+                        </Button>
+                        <Button 
+                          type="button" 
+                          variant="link" 
+                          className="flex-1 text-sm text-muted-foreground"
+                          onClick={() => setView("password-reset")}
+                        >
+                          ¿Olvidaste tu contraseña?
+                        </Button>
+                      </div>
+                    )}
+
+                    {/* Si no hay botón de huella, mostrar solo el enlace de contraseña */}
+                    {!showBiometricButton && (
+                      <Button
+                        type="button"
+                        variant="link"
+                        className="w-full text-sm text-muted-foreground"
+                        onClick={() => setView("password-reset")}
+                      >
+                        ¿Olvidaste tu contraseña?
+                      </Button>
+                    )}
                   </form>
                 </TabsContent>
                 

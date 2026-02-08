@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from "react";
+import { useBiometric } from "../hooks/useBiometric";
 
 const API_BASE_URL = "https://hike-connect-back.onrender.com/api/v1";
 
@@ -33,6 +34,11 @@ interface AuthContextType {
   requestPasswordReset: (email: string) => Promise<{ success: boolean; error?: string; message?: string }>;
   verifyPasswordReset: (email: string, code: string) => Promise<{ success: boolean; error?: string; message?: string }>;
   confirmPasswordReset: (email: string, code: string, password: string, passwordConfirm: string) => Promise<{ success: boolean; error?: string; message?: string }>;
+  loginWithBiometric: () => Promise<{ success: boolean; error?: string }>;
+  enableBiometric: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
+  disableBiometric: () => Promise<{ success: boolean; error?: string }>;
+  isBiometricAvailable: () => Promise<boolean>;
+  isBiometricEnabled: () => Promise<boolean>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -53,12 +59,12 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [user, setUser] = useState<User | null>(null);
   const [tokens, setTokens] = useState<AuthTokens | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  
+  const biometric = useBiometric();
 
   useEffect(() => {
-    // Check for existing session
     const storedUser = localStorage.getItem("auth_user");
     const storedTokens = localStorage.getItem("auth_tokens");
-    
     if (storedUser && storedTokens) {
       setUser(JSON.parse(storedUser));
       setTokens(JSON.parse(storedTokens));
@@ -70,31 +76,20 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     try {
       const response = await fetch(`${API_BASE_URL}/login`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
       });
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
-        return { 
-          success: false, 
-          error: errorData.detail || errorData.message || "Correo o contraseña incorrectos" 
-        };
+        return { success: false, error: errorData.detail || errorData.message || "Correo o contraseña incorrectos" };
       }
 
       const data = await response.json();
-      
-      const authTokens: AuthTokens = {
-        access: data.access,
-        refresh: data.refresh,
-      };
-
+      const authTokens: AuthTokens = { access: data.access, refresh: data.refresh };
       setTokens(authTokens);
       localStorage.setItem("auth_tokens", JSON.stringify(authTokens));
 
-      // Fetch user profile with the new token
       const profileRes = await fetch(`${API_BASE_URL}/profile/`, {
         method: "GET",
         headers: { "Authorization": `Bearer ${data.access}` },
@@ -114,12 +109,11 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         setUser(userData);
         localStorage.setItem("auth_user", JSON.stringify(userData));
       } else {
-        // Fallback: use email as name if profile fetch fails
         const userData: User = { id: 0, email, name: email.split("@")[0] };
         setUser(userData);
         localStorage.setItem("auth_user", JSON.stringify(userData));
       }
-      
+
       return { success: true };
     } catch (error) {
       console.error("Login error:", error);
@@ -128,20 +122,18 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   };
 
   const register = async (
-    email: string, 
-    password: string, 
+    email: string,
+    password: string,
     passwordConfirm: string,
-    firstName: string, 
+    firstName: string,
     lastName: string
   ): Promise<{ success: boolean; error?: string }> => {
     try {
       const response = await fetch(`${API_BASE_URL}/register`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ 
-          email, 
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email,
           password,
           password_confirm: passwordConfirm,
           first_name: firstName,
@@ -151,35 +143,25 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
-        return { 
-          success: false, 
-          error: errorData.detail || errorData.message || "Error al registrar. Intenta de nuevo." 
-        };
+        return { success: false, error: errorData.detail || errorData.message || "Error al registrar. Intenta de nuevo." };
       }
 
-      // If registration returns tokens, use them; otherwise prompt login
       const data = await response.json();
-      
       if (data.access && data.user) {
         const userData: User = {
           id: data.user.id,
           email: data.user.email,
-          name: data.user.full_name || name,
+          name: data.user.full_name || `${firstName} ${lastName}`,
           first_name: data.user.first_name,
           last_name: data.user.last_name,
         };
-
-        const authTokens: AuthTokens = {
-          access: data.access,
-          refresh: data.refresh,
-        };
-
+        const authTokens: AuthTokens = { access: data.access, refresh: data.refresh };
         setUser(userData);
         setTokens(authTokens);
         localStorage.setItem("auth_user", JSON.stringify(userData));
         localStorage.setItem("auth_tokens", JSON.stringify(authTokens));
       }
-      
+
       return { success: true };
     } catch (error) {
       console.error("Register error:", error);
@@ -209,9 +191,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     }
   };
 
-  const getAccessToken = () => {
-    return tokens?.access || null;
-  };
+  const getAccessToken = () => tokens?.access || null;
 
   const refreshAccessToken = async (): Promise<string | null> => {
     try {
@@ -222,9 +202,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
       const response = await fetch(`${API_BASE_URL}/token/refresh/`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ refresh: tokens.refresh }),
       });
 
@@ -234,14 +212,9 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       }
 
       const data = await response.json();
-      const newTokens: AuthTokens = {
-        access: data.access,
-        refresh: tokens.refresh,
-      };
-
+      const newTokens: AuthTokens = { access: data.access, refresh: tokens.refresh };
       setTokens(newTokens);
       localStorage.setItem("auth_tokens", JSON.stringify(newTokens));
-      
       return data.access;
     } catch (error) {
       console.error("Token refresh error:", error);
@@ -255,20 +228,14 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
     const makeRequest = async (token: string | null) => {
       const headers = new Headers(options.headers);
-      if (token) {
-        headers.set("Authorization", `Bearer ${token}`);
-      }
+      if (token) headers.set("Authorization", `Bearer ${token}`);
       return fetch(url, { ...options, headers });
     };
 
     let response = await makeRequest(accessToken);
-
-    // If unauthorized, try to refresh token
     if (response.status === 401 && tokens?.refresh) {
       const newToken = await refreshAccessToken();
-      if (newToken) {
-        response = await makeRequest(newToken);
-      }
+      if (newToken) response = await makeRequest(newToken);
     }
 
     return response;
@@ -276,23 +243,16 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
   const fetchProfile = async (): Promise<{ success: boolean; error?: string }> => {
     try {
-      if (!tokens?.access) {
-        return { success: false, error: "No hay sesión activa" };
-      }
+      if (!tokens?.access) return { success: false, error: "No hay sesión activa" };
 
       const response = await fetch(`${API_BASE_URL}/profile/`, {
         method: "GET",
-        headers: {
-          "Authorization": `Bearer ${tokens.access}`,
-        },
+        headers: { "Authorization": `Bearer ${tokens.access}` },
       });
 
-      if (!response.ok) {
-        return { success: false, error: "Error al obtener el perfil" };
-      }
+      if (!response.ok) return { success: false, error: "Error al obtener el perfil" };
 
       const data = await response.json();
-      
       const userData: User = {
         id: data.id,
         email: data.email,
@@ -302,10 +262,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         bio: data.bio,
         avatar: data.avatar,
       };
-
       setUser(userData);
       localStorage.setItem("auth_user", JSON.stringify(userData));
-      
       return { success: true };
     } catch (error) {
       console.error("Fetch profile error:", error);
@@ -315,9 +273,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
   const updateProfile = async (data: { first_name?: string; last_name?: string; bio?: string }): Promise<{ success: boolean; error?: string }> => {
     try {
-      if (!tokens?.access) {
-        return { success: false, error: "No hay sesión activa" };
-      }
+      if (!tokens?.access) return { success: false, error: "No hay sesión activa" };
 
       const response = await fetch(`${API_BASE_URL}/profile/`, {
         method: "PATCH",
@@ -328,12 +284,9 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         body: JSON.stringify(data),
       });
 
-      if (!response.ok) {
-        return { success: false, error: "Error al actualizar el perfil" };
-      }
+      if (!response.ok) return { success: false, error: "Error al actualizar el perfil" };
 
       const responseData = await response.json();
-      
       const userData: User = {
         id: responseData.id,
         email: responseData.email,
@@ -343,10 +296,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         bio: responseData.bio,
         avatar: responseData.avatar,
       };
-
       setUser(userData);
       localStorage.setItem("auth_user", JSON.stringify(userData));
-      
       return { success: true };
     } catch (error) {
       console.error("Update profile error:", error);
@@ -361,6 +312,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, code }),
       });
+
       const data = await response.json().catch(() => ({}));
       if (!response.ok) {
         return { success: false, error: data.detail || data.message || data.error || "Código inválido o expirado" };
@@ -378,6 +330,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email }),
       });
+
       const data = await response.json().catch(() => ({}));
       if (!response.ok) {
         return { success: false, error: data.detail || data.message || data.error || "No se pudo reenviar el código" };
@@ -395,6 +348,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email }),
       });
+
       const data = await response.json().catch(() => ({}));
       if (!response.ok) {
         return { success: false, error: data.detail || data.message || data.error || "Error al solicitar recuperación" };
@@ -412,6 +366,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, code }),
       });
+
       const data = await response.json().catch(() => ({}));
       if (!response.ok) {
         return { success: false, error: data.detail || data.message || data.error || "Código inválido" };
@@ -429,6 +384,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, code, password, password_confirm: passwordConfirm }),
       });
+
       const data = await response.json().catch(() => ({}));
       if (!response.ok) {
         return { success: false, error: data.detail || data.message || data.error || "Error al actualizar contraseña" };
@@ -439,11 +395,95 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     }
   };
 
+  // FUNCIONES BIOMÉTRICAS
+  const isBiometricAvailable = async (): Promise<boolean> => {
+    const result = await biometric.checkBiometricAvailability();
+    return result.isAvailable;
+  };
+
+  const loginWithBiometric = async (): Promise<{ success: boolean; error?: string }> => {
+    try {
+      const enabled = await biometric.isBiometricEnabled();
+      if (!enabled) {
+        return { success: false, error: 'Biometría no configurada' };
+      }
+
+      const authenticated = await biometric.authenticateWithBiometric('Inicia sesión con tu huella o Face ID');
+      if (!authenticated) {
+        return { success: false, error: 'Autenticación biométrica fallida' };
+      }
+
+      const credentials = await biometric.getBiometricCredentials();
+      if (!credentials) {
+        return { success: false, error: 'No se encontraron credenciales guardadas' };
+      }
+
+      return await login(credentials.email, credentials.password);
+    } catch (error) {
+      console.error('Biometric login error:', error);
+      return { success: false, error: 'Error en autenticación biométrica' };
+    }
+  };
+
+  const enableBiometric = async (email: string, password: string): Promise<{ success: boolean; error?: string }> => {
+    try {
+      const available = await isBiometricAvailable();
+      if (!available) {
+        return { success: false, error: 'Biometría no disponible en este dispositivo' };
+      }
+
+      const authenticated = await biometric.authenticateWithBiometric('Activa el inicio de sesión biométrico');
+      if (!authenticated) {
+        return { success: false, error: 'Autenticación cancelada' };
+      }
+
+      const saved = await biometric.saveBiometricCredentials(email, password);
+      if (!saved) {
+        return { success: false, error: 'Error al guardar credenciales' };
+      }
+
+      return { success: true };
+    } catch (error) {
+      console.error('Enable biometric error:', error);
+      return { success: false, error: 'Error al activar biometría' };
+    }
+  };
+
+  const disableBiometricAuth = async (): Promise<{ success: boolean; error?: string }> => {
+    try {
+      const disabled = await biometric.disableBiometric();
+      return disabled ? { success: true } : { success: false, error: 'Error al desactivar biometría' };
+    } catch (error) {
+      console.error('Disable biometric error:', error);
+      return { success: false, error: 'Error al desactivar biometría' };
+    }
+  };
+
   return (
-    <AuthContext.Provider value={{ 
-      user, isLoading, login, register, logout, getAccessToken, refreshAccessToken, authFetch, fetchProfile, updateProfile,
-      verifyEmail, resendVerification, requestPasswordReset, verifyPasswordReset, confirmPasswordReset
-    }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        isLoading,
+        login,
+        register,
+        logout,
+        getAccessToken,
+        refreshAccessToken,
+        authFetch,
+        fetchProfile,
+        updateProfile,
+        verifyEmail,
+        resendVerification,
+        requestPasswordReset,
+        verifyPasswordReset,
+        confirmPasswordReset,
+        loginWithBiometric,
+        enableBiometric,
+        disableBiometric: disableBiometricAuth,
+        isBiometricAvailable,
+        isBiometricEnabled: biometric.isBiometricEnabled,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );
