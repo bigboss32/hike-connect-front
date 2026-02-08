@@ -20,14 +20,19 @@ interface AuthTokens {
 interface AuthContextType {
   user: User | null;
   isLoading: boolean;
-  login: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
-  register: (email: string, password: string, passwordConfirm: string, firstName: string, lastName: string) => Promise<{ success: boolean; error?: string }>;
+  login: (email: string, password: string) => Promise<{ success: boolean; error?: string; message?: string }>;
+  register: (email: string, password: string, passwordConfirm: string, firstName: string, lastName: string) => Promise<{ success: boolean; error?: string; message?: string }>;
   logout: () => void;
   getAccessToken: () => string | null;
   refreshAccessToken: () => Promise<string | null>;
   authFetch: (url: string, options?: RequestInit) => Promise<Response>;
   fetchProfile: () => Promise<{ success: boolean; error?: string }>;
   updateProfile: (data: { first_name?: string; last_name?: string; bio?: string }) => Promise<{ success: boolean; error?: string }>;
+  verifyEmail: (email: string, code: string) => Promise<{ success: boolean; error?: string; message?: string }>;
+  resendVerification: (email: string) => Promise<{ success: boolean; error?: string; message?: string }>;
+  requestPasswordReset: (email: string) => Promise<{ success: boolean; error?: string; message?: string }>;
+  verifyPasswordReset: (email: string, code: string) => Promise<{ success: boolean; error?: string; message?: string }>;
+  confirmPasswordReset: (email: string, code: string, password: string, passwordConfirm: string) => Promise<{ success: boolean; error?: string; message?: string }>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -333,8 +338,96 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     }
   };
 
+  const verifyEmail = async (email: string, code: string): Promise<{ success: boolean; error?: string; message?: string }> => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/verify-email/`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, code }),
+      });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        return { success: false, error: data.detail || data.message || data.error || "Código inválido o expirado" };
+      }
+      return { success: true, message: data.detail || data.message || "Correo verificado correctamente" };
+    } catch (error) {
+      return { success: false, error: "Error de conexión. Intenta de nuevo." };
+    }
+  };
+
+  const resendVerification = async (email: string): Promise<{ success: boolean; error?: string; message?: string }> => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/resend-verification/`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        return { success: false, error: data.detail || data.message || data.error || "No se pudo reenviar el código" };
+      }
+      return { success: true, message: data.detail || data.message || "Código reenviado" };
+    } catch (error) {
+      return { success: false, error: "Error de conexión. Intenta de nuevo." };
+    }
+  };
+
+  const requestPasswordReset = async (email: string): Promise<{ success: boolean; error?: string; message?: string }> => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/password-reset/request/`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        return { success: false, error: data.detail || data.message || data.error || "Error al solicitar recuperación" };
+      }
+      return { success: true, message: data.detail || data.message || "Código enviado a tu correo" };
+    } catch (error) {
+      return { success: false, error: "Error de conexión. Intenta de nuevo." };
+    }
+  };
+
+  const verifyPasswordReset = async (email: string, code: string): Promise<{ success: boolean; error?: string; message?: string }> => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/password-reset/verify/`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, code }),
+      });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        return { success: false, error: data.detail || data.message || data.error || "Código inválido" };
+      }
+      return { success: true, message: data.detail || data.message || "Código verificado" };
+    } catch (error) {
+      return { success: false, error: "Error de conexión. Intenta de nuevo." };
+    }
+  };
+
+  const confirmPasswordReset = async (email: string, code: string, password: string, passwordConfirm: string): Promise<{ success: boolean; error?: string; message?: string }> => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/password-reset/confirm/`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, code, password, password_confirm: passwordConfirm }),
+      });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        return { success: false, error: data.detail || data.message || data.error || "Error al actualizar contraseña" };
+      }
+      return { success: true, message: data.detail || data.message || "Contraseña actualizada correctamente" };
+    } catch (error) {
+      return { success: false, error: "Error de conexión. Intenta de nuevo." };
+    }
+  };
+
   return (
-    <AuthContext.Provider value={{ user, isLoading, login, register, logout, getAccessToken, refreshAccessToken, authFetch, fetchProfile, updateProfile }}>
+    <AuthContext.Provider value={{ 
+      user, isLoading, login, register, logout, getAccessToken, refreshAccessToken, authFetch, fetchProfile, updateProfile,
+      verifyEmail, resendVerification, requestPasswordReset, verifyPasswordReset, confirmPasswordReset
+    }}>
       {children}
     </AuthContext.Provider>
   );
