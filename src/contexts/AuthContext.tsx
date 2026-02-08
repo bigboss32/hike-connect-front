@@ -86,23 +86,39 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
       const data = await response.json();
       
-      const userData: User = {
-        id: data.user.id,
-        email: data.user.email,
-        name: data.user.full_name || data.user.first_name || data.user.email.split("@")[0],
-        first_name: data.user.first_name,
-        last_name: data.user.last_name,
-      };
-
       const authTokens: AuthTokens = {
         access: data.access,
         refresh: data.refresh,
       };
 
-      setUser(userData);
       setTokens(authTokens);
-      localStorage.setItem("auth_user", JSON.stringify(userData));
       localStorage.setItem("auth_tokens", JSON.stringify(authTokens));
+
+      // Fetch user profile with the new token
+      const profileRes = await fetch(`${API_BASE_URL}/profile/`, {
+        method: "GET",
+        headers: { "Authorization": `Bearer ${data.access}` },
+      });
+
+      if (profileRes.ok) {
+        const profileData = await profileRes.json();
+        const userData: User = {
+          id: profileData.id,
+          email: profileData.email,
+          name: profileData.full_name || `${profileData.first_name || ""} ${profileData.last_name || ""}`.trim() || email.split("@")[0],
+          first_name: profileData.first_name,
+          last_name: profileData.last_name,
+          bio: profileData.bio,
+          avatar: profileData.avatar,
+        };
+        setUser(userData);
+        localStorage.setItem("auth_user", JSON.stringify(userData));
+      } else {
+        // Fallback: use email as name if profile fetch fails
+        const userData: User = { id: 0, email, name: email.split("@")[0] };
+        setUser(userData);
+        localStorage.setItem("auth_user", JSON.stringify(userData));
+      }
       
       return { success: true };
     } catch (error) {
