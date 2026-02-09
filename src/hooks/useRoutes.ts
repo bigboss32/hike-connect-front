@@ -2,6 +2,17 @@ import { useInfiniteQuery, useQuery, useMutation, useQueryClient } from "@tansta
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 
+const getStoredAccessToken = (): string | null => {
+  try {
+    const tokens = localStorage.getItem("auth_tokens");
+    if (tokens) {
+      const parsed = JSON.parse(tokens);
+      return parsed.access || null;
+    }
+  } catch {}
+  return null;
+};
+
 const API_BASE_URL = "https://hike-connect-back.onrender.com/api/v1";
 
 export interface ApiRoute {
@@ -38,6 +49,7 @@ interface FetchRoutesParams {
   category?: string;
   type?: string;
   search?: string;
+  token?: string | null;
 }
 
 export interface RouteRating {
@@ -59,8 +71,13 @@ export interface BannerRoute {
   rating_count: number;
 }
 
-const fetchBannerRoutes = async (): Promise<BannerRoute[]> => {
-  const response = await fetch(`${API_BASE_URL}/ruta-banner/`);
+const fetchBannerRoutes = async (token: string | null): Promise<BannerRoute[]> => {
+  const headers: HeadersInit = {};
+  if (token) {
+    headers["Authorization"] = `Bearer ${token}`;
+  }
+
+  const response = await fetch(`${API_BASE_URL}/ruta-banner/`, { headers });
   
   if (!response.ok) {
     throw new Error("Error al cargar las rutas destacadas");
@@ -69,7 +86,7 @@ const fetchBannerRoutes = async (): Promise<BannerRoute[]> => {
   return response.json();
 };
 
-const fetchRoutes = async ({ page = 1, category, type, search }: FetchRoutesParams): Promise<RoutesResponse> => {
+const fetchRoutes = async ({ page = 1, category, type, search, token }: FetchRoutesParams): Promise<RoutesResponse> => {
   const params = new URLSearchParams();
   params.append("page", page.toString());
   
@@ -89,7 +106,12 @@ const fetchRoutes = async ({ page = 1, category, type, search }: FetchRoutesPara
     params.append("search", search);
   }
 
-  const response = await fetch(`${API_BASE_URL}/rutas/?${params.toString()}`);
+  const headers: HeadersInit = {};
+  if (token) {
+    headers["Authorization"] = `Bearer ${token}`;
+  }
+
+  const response = await fetch(`${API_BASE_URL}/rutas/?${params.toString()}`, { headers });
   
   if (!response.ok) {
     throw new Error("Error al cargar las rutas");
@@ -109,9 +131,10 @@ const fetchRouteById = async (id: string): Promise<ApiRoute> => {
 };
 
 export const useRoutes = (category: string, type: string, search: string) => {
+  const token = getStoredAccessToken();
   return useInfiniteQuery({
     queryKey: ["routes", category, type, search],
-    queryFn: ({ pageParam = 1 }) => fetchRoutes({ page: pageParam, category, type, search }),
+    queryFn: ({ pageParam = 1 }) => fetchRoutes({ page: pageParam, category, type, search, token }),
     getNextPageParam: (lastPage) => {
       const totalPages = Math.ceil(lastPage.count / lastPage.page_size);
       if (lastPage.page < totalPages) {
@@ -132,9 +155,10 @@ export const useRouteById = (id: string | undefined) => {
 };
 
 export const useBannerRoutes = () => {
+  const token = getStoredAccessToken();
   return useQuery({
     queryKey: ["bannerRoutes"],
-    queryFn: fetchBannerRoutes,
+    queryFn: () => fetchBannerRoutes(token),
   });
 };
 
