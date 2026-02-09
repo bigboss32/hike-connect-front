@@ -34,7 +34,7 @@ export const useBiometric = () => {
 
       return {
         isAvailable: result.isAvailable,
-        biometryType: result.biometryType,
+        biometryType: String(result.biometryType),
       };
 
     } catch (error) {
@@ -127,7 +127,7 @@ export const useBiometric = () => {
       const password = await SecureStorage.get('biometric_password');
 
       if (email && password) {
-        return { email, password };
+        return { email: String(email), password: String(password) };
       }
 
       return null;
