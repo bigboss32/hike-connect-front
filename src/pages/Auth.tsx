@@ -321,44 +321,53 @@ const Auth = () => {
                       </div>
                     </div>
                     
-                    <Button type="submit" className="w-full" disabled={isLoading}>
+                    <Button 
+                      type="submit" 
+                      className="w-full h-12" 
+                      disabled={isLoading}
+                    >
                       {isLoading ? "Iniciando sesión..." : "Iniciar Sesión"}
                     </Button>
 
-                    {/* Botón de huella al lado del botón de inicio de sesión */}
+                    {/* Divider con "O" - Armonizado con colores de la app */}
                     {showBiometricButton && (
-                      <div className="flex gap-2">
-                        <Button
-                          type="button"
-                          variant="outline"
-                          className="flex-1 border-primary hover:bg-primary/10"
-                          onClick={handleBiometricLogin}
-                          disabled={isLoading}
-                        >
-                          <Fingerprint className="h-5 w-5" />
-                        </Button>
-                        <Button 
-                          type="button" 
-                          variant="link" 
-                          className="flex-1 text-sm text-muted-foreground"
-                          onClick={() => setView("password-reset")}
-                        >
-                          ¿Olvidaste tu contraseña?
-                        </Button>
+                      <div className="relative py-3">
+                        <div className="absolute inset-0 flex items-center">
+                          <div className="w-full border-t border-gray-200 dark:border-gray-700"></div>
+                        </div>
+                        <div className="relative flex justify-center">
+                          <span className="bg-card px-3 text-sm text-muted-foreground">
+                            O
+                          </span>
+                        </div>
                       </div>
                     )}
 
-                    {/* Si no hay botón de huella, mostrar solo el enlace de contraseña */}
-                    {!showBiometricButton && (
+                    {/* Botón de huella (mismo tamaño que Iniciar Sesión) */}
+                    {showBiometricButton && (
+                      <Button
+                        type="button"
+                        variant="outline"
+                        className="w-full h-12 border-primary text-primary hover:bg-primary hover:text-primary-foreground"
+                        onClick={handleBiometricLogin}
+                        disabled={isLoading}
+                      >
+                        <Fingerprint className="mr-2 h-5 w-5" />
+                        Iniciar con Huella
+                      </Button>
+                    )}
+
+                    {/* Enlace "¿Olvidaste tu contraseña?" */}
+                    <div className="text-center pt-2">
                       <Button
                         type="button"
                         variant="link"
-                        className="w-full text-sm text-muted-foreground"
+                        className="text-sm text-muted-foreground hover:text-primary"
                         onClick={() => setView("password-reset")}
                       >
                         ¿Olvidaste tu contraseña?
                       </Button>
-                    )}
+                    </div>
                   </form>
                 </TabsContent>
                 
@@ -456,7 +465,7 @@ const Auth = () => {
                       )}
                     </div>
                     
-                    <Button type="submit" className="w-full" disabled={isLoading}>
+                    <Button type="submit" className="w-full h-12" disabled={isLoading}>
                       {isLoading ? "Creando cuenta..." : "Crear Cuenta"}
                     </Button>
                   </form>
