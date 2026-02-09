@@ -5,9 +5,10 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { Settings, Award, MapPin, Calendar, LogOut, ChevronRight, Trophy } from "lucide-react";
+import { Settings, Award, MapPin, Calendar, LogOut, ChevronRight, Trophy, Route } from "lucide-react";
 import EditProfileDialog from "@/components/EditProfileDialog";
 import SettingsDialog from "@/components/SettingsDialog";
+import RouteHistoryDialog from "@/components/RouteHistoryDialog";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -166,24 +167,28 @@ const Profile = () => {
         </Card>
 
         <div className="grid grid-cols-3 gap-4 mb-6">
-          <Card className="shadow-soft">
-            <CardContent className="p-4 text-center">
-              <p className="text-2xl font-bold text-primary">24</p>
-              <p className="text-xs text-muted-foreground">Rutas</p>
-            </CardContent>
-          </Card>
+          <RouteHistoryDialog>
+            <Card className="shadow-soft cursor-pointer hover:shadow-md transition-shadow group">
+              <CardContent className="p-4 text-center">
+                <p className="text-2xl font-bold text-primary group-hover:scale-110 transition-transform">24</p>
+                <p className="text-xs text-muted-foreground">Rutas</p>
+              </CardContent>
+            </Card>
+          </RouteHistoryDialog>
           <Card className="shadow-soft">
             <CardContent className="p-4 text-center">
               <p className="text-2xl font-bold text-secondary">156</p>
               <p className="text-xs text-muted-foreground">km</p>
             </CardContent>
           </Card>
-          <Card className="shadow-soft">
-            <CardContent className="p-4 text-center">
-              <p className="text-2xl font-bold text-accent">8</p>
-              <p className="text-xs text-muted-foreground">Eventos</p>
-            </CardContent>
-          </Card>
+          <Link to="/achievements">
+            <Card className="shadow-soft cursor-pointer hover:shadow-md transition-shadow group">
+              <CardContent className="p-4 text-center">
+                <p className="text-2xl font-bold text-accent group-hover:scale-110 transition-transform">8</p>
+                <p className="text-xs text-muted-foreground">Logros</p>
+              </CardContent>
+            </Card>
+          </Link>
         </div>
 
         <Link to="/achievements" className="block group">
