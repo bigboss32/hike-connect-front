@@ -73,7 +73,7 @@ const ChannelDetail = () => {
   return (
     <div className="min-h-screen bg-background pb-36">
       {/* Header */}
-      <header className="sticky top-0 z-40 bg-card border-b border-border">
+      <header className="bg-card border-b border-border">
         <div className="max-w-lg mx-auto px-4 py-3 flex items-center gap-3">
           <Link to={`/communities/${communityId}`}>
             <Button variant="ghost" size="icon" className="shrink-0">

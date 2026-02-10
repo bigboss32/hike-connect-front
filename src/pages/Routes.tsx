@@ -126,7 +126,7 @@ const Routes = () => {
 
   return (
     <div className="min-h-screen bg-background pb-20">
-      <header className="bg-card border-b border-border sticky top-0 z-40 shadow-soft safe-top">
+      <header className="bg-card border-b border-border shadow-soft safe-top">
         <div className="max-w-lg mx-auto px-4 py-4">
           <h1 className="text-2xl font-bold text-foreground mb-4">Explorar Rutas</h1>
           <div className="flex gap-2">
