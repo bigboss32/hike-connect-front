@@ -120,8 +120,13 @@ const fetchRoutes = async ({ page = 1, category, type, search, token }: FetchRou
   return response.json();
 };
 
-const fetchRouteById = async (id: string): Promise<ApiRoute> => {
-  const response = await fetch(`${API_BASE_URL}/rutas/?id=${id}`);
+const fetchRouteById = async (id: string, token: string | null): Promise<ApiRoute> => {
+  const headers: HeadersInit = {};
+  if (token) {
+    headers["Authorization"] = `Bearer ${token}`;
+  }
+
+  const response = await fetch(`${API_BASE_URL}/rutas/?id=${id}`, { headers });
   
   if (!response.ok) {
     throw new Error("Error al cargar la ruta");
@@ -147,9 +152,10 @@ export const useRoutes = (category: string, type: string, search: string) => {
 };
 
 export const useRouteById = (id: string | undefined) => {
+  const token = getStoredAccessToken();
   return useQuery({
     queryKey: ["route", id],
-    queryFn: () => fetchRouteById(id!),
+    queryFn: () => fetchRouteById(id!, token),
     enabled: !!id,
   });
 };
