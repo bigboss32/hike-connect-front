@@ -3,6 +3,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useUserCommunityStats } from "@/hooks/useCommunityMembers";
 import { Link } from "react-router-dom";
 import RouteHistoryDialog from "@/components/RouteHistoryDialog";
+import MyCommunityDialog from "@/components/MyCommunityDialog";
 
 interface StatCardProps {
   icon: React.ReactNode;
@@ -69,13 +70,16 @@ const UserStatsCards = () => {
             className="cursor-pointer hover:shadow-md transition-shadow"
           />
         </RouteHistoryDialog>
-        <StatCard
-          icon={<Users className="w-5 h-5 text-white" />}
-          value={stats.communitiesJoined}
-          label="Comunidades"
-          color="bg-accent"
-          delay={200}
-        />
+        <MyCommunityDialog>
+          <StatCard
+            icon={<Users className="w-5 h-5 text-white" />}
+            value={stats.communitiesJoined}
+            label="Comunidades"
+            color="bg-accent"
+            delay={200}
+            className="cursor-pointer hover:shadow-md transition-shadow"
+          />
+        </MyCommunityDialog>
         <Link to="/achievements">
           <StatCard
             icon={<Trophy className="w-5 h-5 text-white" />}
