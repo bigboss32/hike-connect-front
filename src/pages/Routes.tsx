@@ -1,4 +1,5 @@
 import Navigation from "@/components/Navigation";
+import ScrollHeader from "@/components/ScrollHeader";
 import RouteCard from "@/components/RouteCard";
 import RouteFiltersDialog, { type RouteFilters } from "@/components/RouteFiltersDialog";
 import { Input } from "@/components/ui/input";
@@ -126,7 +127,7 @@ const Routes = () => {
 
   return (
     <div className="min-h-screen bg-background pb-20">
-      <header className="bg-card border-b border-border shadow-soft safe-top">
+      <ScrollHeader className="bg-card border-b border-border shadow-soft safe-top">
         <div className="max-w-lg mx-auto px-4 py-4">
           <h1 className="text-2xl font-bold text-foreground mb-4">Explorar Rutas</h1>
           <div className="flex gap-2">
@@ -187,7 +188,7 @@ const Routes = () => {
             </div>
           )}
         </div>
-      </header>
+      </ScrollHeader>
 
       <RouteFiltersDialog
         open={showFiltersModal}

@@ -22,6 +22,7 @@ import {
   Flag
 } from "lucide-react";
 import Navigation from "@/components/Navigation";
+import ScrollHeader from "@/components/ScrollHeader";
 import AchievementBadge from "@/components/AchievementBadge";
 import AchievementShowcase from "@/components/AchievementShowcase";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -105,12 +106,12 @@ const Achievements = () => {
   return (
     <div className="min-h-screen bg-background pb-20">
       {/* Header */}
-      <div className="bg-background/80 backdrop-blur-lg border-b">
+      <ScrollHeader className="bg-background/80 backdrop-blur-lg border-b">
         <div className="px-4 py-4">
           <h1 className="text-2xl font-bold text-foreground">Mis Logros</h1>
           <p className="text-sm text-muted-foreground">Tu progreso como explorador</p>
         </div>
-      </div>
+      </ScrollHeader>
 
       <div className="px-4 py-4 space-y-6">
         {/* Showcase */}
