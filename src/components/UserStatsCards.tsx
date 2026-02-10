@@ -1,6 +1,8 @@
 import { Mountain, Route, Users, Trophy } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useUserCommunityStats } from "@/hooks/useCommunityMembers";
+import { Link } from "react-router-dom";
+import RouteHistoryDialog from "@/components/RouteHistoryDialog";
 
 interface StatCardProps {
   icon: React.ReactNode;
@@ -8,12 +10,15 @@ interface StatCardProps {
   label: string;
   color: string;
   delay: number;
+  onClick?: () => void;
+  className?: string;
 }
 
-const StatCard = ({ icon, value, label, color, delay }: StatCardProps) => (
+const StatCard = ({ icon, value, label, color, delay, onClick, className = "" }: StatCardProps) => (
   <div 
-    className="bg-card rounded-xl p-4 shadow-elevated text-center animate-fade-in"
+    className={`bg-card rounded-xl p-4 shadow-elevated text-center animate-fade-in ${onClick ? "cursor-pointer hover:shadow-md transition-shadow" : ""} ${className}`}
     style={{ animationDelay: `${delay}ms` }}
+    onClick={onClick}
   >
     <div className={`w-10 h-10 rounded-full ${color} mx-auto mb-2 flex items-center justify-center`}>
       {icon}
@@ -27,7 +32,6 @@ const UserStatsCards = () => {
   const { user } = useAuth();
   const { data: communityStats } = useUserCommunityStats();
   
-  // Stats with real community count from API
   const stats = {
     routesCompleted: 12,
     kmTraveled: 87.5,
@@ -45,20 +49,26 @@ const UserStatsCards = () => {
       </div>
       
       <div className="grid grid-cols-2 gap-3">
-        <StatCard
-          icon={<Route className="w-5 h-5 text-white" />}
-          value={stats.routesCompleted}
-          label="Rutas completadas"
-          color="bg-primary"
-          delay={0}
-        />
-        <StatCard
-          icon={<Mountain className="w-5 h-5 text-white" />}
-          value={`${stats.kmTraveled} km`}
-          label="Recorridos"
-          color="bg-secondary"
-          delay={100}
-        />
+        <RouteHistoryDialog>
+          <StatCard
+            icon={<Route className="w-5 h-5 text-white" />}
+            value={stats.routesCompleted}
+            label="Rutas completadas"
+            color="bg-primary"
+            delay={0}
+            className="cursor-pointer hover:shadow-md transition-shadow"
+          />
+        </RouteHistoryDialog>
+        <RouteHistoryDialog>
+          <StatCard
+            icon={<Mountain className="w-5 h-5 text-white" />}
+            value={`${stats.kmTraveled} km`}
+            label="Recorridos"
+            color="bg-secondary"
+            delay={100}
+            className="cursor-pointer hover:shadow-md transition-shadow"
+          />
+        </RouteHistoryDialog>
         <StatCard
           icon={<Users className="w-5 h-5 text-white" />}
           value={stats.communitiesJoined}
@@ -66,13 +76,16 @@ const UserStatsCards = () => {
           color="bg-accent"
           delay={200}
         />
-        <StatCard
-          icon={<Trophy className="w-5 h-5 text-white" />}
-          value={stats.achievements}
-          label="Logros"
-          color="bg-gradient-to-br from-yellow-500 to-orange-500"
-          delay={300}
-        />
+        <Link to="/achievements">
+          <StatCard
+            icon={<Trophy className="w-5 h-5 text-white" />}
+            value={stats.achievements}
+            label="Logros"
+            color="bg-gradient-to-br from-yellow-500 to-orange-500"
+            delay={300}
+            className="cursor-pointer hover:shadow-md transition-shadow"
+          />
+        </Link>
       </div>
     </div>
   );
