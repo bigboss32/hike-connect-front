@@ -105,7 +105,7 @@ const Achievements = () => {
   return (
     <div className="min-h-screen bg-background pb-20">
       {/* Header */}
-      <div className="sticky top-0 z-40 bg-background/80 backdrop-blur-lg border-b">
+      <div className="bg-background/80 backdrop-blur-lg border-b">
         <div className="px-4 py-4">
           <h1 className="text-2xl font-bold text-foreground">Mis Logros</h1>
           <p className="text-sm text-muted-foreground">Tu progreso como explorador</p>
