@@ -140,7 +140,7 @@ const RouteFiltersDialog = ({ open, onOpenChange, filters, onFiltersChange }: Ro
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-md mx-auto max-h-[85vh] overflow-y-auto">
+      <DialogContent className="max-w-md mx-auto max-h-[85vh] overflow-y-auto scrollbar-none [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none]">
         <DialogHeader className="flex flex-row items-center justify-between">
           <DialogTitle className="text-xl font-bold">{dialogTitle}</DialogTitle>
           {hasActiveFilters && (
