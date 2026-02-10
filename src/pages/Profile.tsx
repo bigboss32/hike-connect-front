@@ -6,7 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { Settings, Award, MapPin, Calendar, LogOut, ChevronRight, Trophy, Route } from "lucide-react";
+import { Settings, Award, MapPin, Calendar, LogOut, ChevronRight, Trophy, Route, Crown } from "lucide-react";
 import EditProfileDialog from "@/components/EditProfileDialog";
 import SettingsDialog from "@/components/SettingsDialog";
 import RouteHistoryDialog from "@/components/RouteHistoryDialog";
@@ -224,6 +224,26 @@ const Profile = () => {
                     <p className="text-xs text-muted-foreground">Creaste tu primer evento</p>
                   </div>
                 </div>
+              </div>
+            </CardContent>
+          </Card>
+        </Link>
+
+        {/* Salón de las Leyendas */}
+        <Link to="/legends" className="block group mt-6">
+          <Card className="shadow-soft hover:shadow-md transition-shadow border-primary/20 bg-gradient-to-r from-primary/5 to-secondary/5">
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-amber-500/15 flex items-center justify-center">
+                    <Crown className="w-5 h-5 text-amber-500" />
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-foreground">Salón de las Leyendas</h3>
+                    <p className="text-xs text-muted-foreground">Quienes hicieron esto posible</p>
+                  </div>
+                </div>
+                <ChevronRight className="w-5 h-5 text-muted-foreground group-hover:text-primary group-hover:translate-x-0.5 transition-all" />
               </div>
             </CardContent>
           </Card>
