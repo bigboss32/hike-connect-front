@@ -12,7 +12,7 @@ const ScrollHeader = ({ children, className }: ScrollHeaderProps) => {
   return (
     <header
       className={cn(
-        "sticky top-0 z-40 transition-transform duration-300 ease-in-out",
+        "sticky top-0 z-40 transition-transform duration-500 ease-[cubic-bezier(0.25,0.1,0.25,1)]",
         !isVisible && "-translate-y-full",
         className
       )}
