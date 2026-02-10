@@ -1,6 +1,6 @@
 import Navigation from "@/components/Navigation";
 import RouteCard from "@/components/RouteCard";
-import RouteFiltersDialog from "@/components/RouteFiltersDialog";
+import RouteFiltersDialog, { type RouteFilters } from "@/components/RouteFiltersDialog";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -10,12 +10,16 @@ import { useRoutes } from "@/hooks/useRoutes";
 import { Skeleton } from "@/components/ui/skeleton";
 
 const Routes = () => {
-  const [filters, setFilters] = useState({
+  const [filters, setFilters] = useState<RouteFilters>({
     category: "todas",
     type: "todas",
     maxDistance: 50,
     difficulty: "todas",
     maxDuration: 12,
+    companion: "todas",
+    experience: "todas",
+    format: "todas",
+    agroDuration: 24,
   });
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [debouncedSearch, setDebouncedSearch] = useState<string>("");
@@ -97,7 +101,11 @@ const Routes = () => {
     filters.type !== "todas" || 
     filters.maxDistance < 50 || 
     filters.difficulty !== "todas" ||
-    filters.maxDuration < 12;
+    filters.maxDuration < 12 ||
+    filters.companion !== "todas" ||
+    filters.experience !== "todas" ||
+    filters.format !== "todas" ||
+    filters.agroDuration < 24;
 
   // Get active filter labels for display
   const getActiveFilterLabels = () => {
@@ -107,6 +115,10 @@ const Routes = () => {
     if (filters.difficulty !== "todas") labels.push(filters.difficulty);
     if (filters.maxDistance < 50) labels.push(`≤${filters.maxDistance}km`);
     if (filters.maxDuration < 12) labels.push(`≤${filters.maxDuration}h`);
+    if (filters.companion !== "todas") labels.push(filters.companion);
+    if (filters.experience !== "todas") labels.push(filters.experience.replace(/_/g, " "));
+    if (filters.format !== "todas") labels.push(filters.format);
+    if (filters.agroDuration < 24) labels.push(`≤${filters.agroDuration}h`);
     return labels;
   };
 
@@ -163,6 +175,10 @@ const Routes = () => {
                   maxDistance: 50,
                   difficulty: "todas",
                   maxDuration: 12,
+                  companion: "todas",
+                  experience: "todas",
+                  format: "todas",
+                  agroDuration: 24,
                 })}
               >
                 <X className="w-3 h-3 mr-1" />
