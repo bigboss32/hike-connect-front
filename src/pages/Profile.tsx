@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import ScrollHeader from "@/components/ScrollHeader";
 import { useNavigate, Link } from "react-router-dom";
 import Navigation from "@/components/Navigation";
 import { Card, CardContent } from "@/components/ui/card";
@@ -120,7 +121,7 @@ const Profile = () => {
 
   return (
     <div className="min-h-screen bg-background pb-20">
-      <header className="bg-card border-b border-border">
+      <ScrollHeader className="bg-card border-b border-border">
         <div className="max-w-lg mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <h1 className="text-2xl font-bold text-foreground">Perfil</h1>
@@ -136,7 +137,7 @@ const Profile = () => {
             </div>
           </div>
         </div>
-      </header>
+      </ScrollHeader>
 
       <main className="max-w-lg mx-auto px-4 py-6">
         <Card className="mb-6 shadow-soft">

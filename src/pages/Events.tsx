@@ -1,5 +1,6 @@
 import { useEffect, useRef, useCallback } from "react";
 import Navigation from "@/components/Navigation";
+import ScrollHeader from "@/components/ScrollHeader";
 import EventCard from "@/components/EventCard";
 import CreateEventDialog from "@/components/CreateEventDialog";
 import { useEvents } from "@/hooks/useEvents";
@@ -54,7 +55,7 @@ const Events = () => {
 
   return (
     <div className="min-h-screen bg-background pb-20">
-      <header className="bg-card border-b border-border" style={{position: 'static'}}>
+      <ScrollHeader className="bg-card border-b border-border">
         <div className="max-w-lg mx-auto px-4 py-4">
           <div className="flex items-center justify-between mb-4">
             <h1 className="text-2xl font-bold text-foreground">Eventos</h1>
@@ -64,7 +65,7 @@ const Events = () => {
             Próximas salidas de senderismo
           </p>
         </div>
-      </header>
+      </ScrollHeader>
 
       <main className="max-w-lg mx-auto px-4 py-6">
         <div className="grid gap-4">

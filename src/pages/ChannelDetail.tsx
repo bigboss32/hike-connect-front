@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from "react";
+import ScrollHeader from "@/components/ScrollHeader";
 import { useParams, Link } from "react-router-dom";
 import Navigation from "@/components/Navigation";
 import { Button } from "@/components/ui/button";
@@ -73,7 +74,7 @@ const ChannelDetail = () => {
   return (
     <div className="min-h-screen bg-background pb-36">
       {/* Header */}
-      <header className="bg-card border-b border-border">
+      <ScrollHeader className="bg-card border-b border-border">
         <div className="max-w-lg mx-auto px-4 py-3 flex items-center gap-3">
           <Link to={`/communities/${communityId}`}>
             <Button variant="ghost" size="icon" className="shrink-0">
@@ -106,7 +107,7 @@ const ChannelDetail = () => {
             <MoreVertical className="w-5 h-5" />
           </Button>
         </div>
-      </header>
+      </ScrollHeader>
 
       {/* Posts */}
       <main className="max-w-lg mx-auto px-4 py-4">
