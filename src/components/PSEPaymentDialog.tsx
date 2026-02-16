@@ -274,6 +274,12 @@ const PSEPaymentDialog = ({
             <p className="text-sm text-muted-foreground text-center">
               Tu pago de <span className="font-semibold text-foreground">${amountPesos.toLocaleString("es-CO")} COP</span> ha sido procesado exitosamente.
             </p>
+            {redirectUrl && (
+              <Button variant="outline" size="sm" onClick={() => openBankUrl(redirectUrl)}>
+                <ExternalLink className="w-4 h-4 mr-2" />
+                Ver comprobante
+              </Button>
+            )}
             <Button onClick={() => onOpenChange(false)} className="mt-2">
               Continuar
             </Button>
@@ -287,8 +293,14 @@ const PSEPaymentDialog = ({
             </div>
             <p className="text-lg font-bold text-destructive">Pago Rechazado</p>
             <p className="text-sm text-muted-foreground text-center">
-              La transacción fue rechazada por tu banco. Intenta con otro medio de pago.
+              La transacción fue rechazada por tu banco.
             </p>
+            {redirectUrl && (
+              <Button variant="outline" size="sm" onClick={() => openBankUrl(redirectUrl)}>
+                <ExternalLink className="w-4 h-4 mr-2" />
+                Ver comprobante
+              </Button>
+            )}
             <Button variant="outline" onClick={() => setStatus("idle")} className="mt-2">
               Reintentar
             </Button>
@@ -302,8 +314,14 @@ const PSEPaymentDialog = ({
             </div>
             <p className="text-lg font-bold text-destructive">Error en el pago</p>
             <p className="text-sm text-muted-foreground text-center">
-              Ocurrió un error procesando tu pago. Inténtalo de nuevo.
+              Ocurrió un error procesando tu pago.
             </p>
+            {redirectUrl && (
+              <Button variant="outline" size="sm" onClick={() => openBankUrl(redirectUrl)}>
+                <ExternalLink className="w-4 h-4 mr-2" />
+                Ver comprobante
+              </Button>
+            )}
             <Button variant="outline" onClick={() => setStatus("idle")} className="mt-2">
               Reintentar
             </Button>
@@ -317,8 +335,14 @@ const PSEPaymentDialog = ({
             </div>
             <p className="text-lg font-bold">Tiempo agotado</p>
             <p className="text-sm text-muted-foreground text-center">
-              No recibimos confirmación de tu banco. Si completaste el pago, tu reserva se actualizará automáticamente.
+              No recibimos confirmación de tu banco.
             </p>
+            {redirectUrl && (
+              <Button variant="outline" size="sm" onClick={() => openBankUrl(redirectUrl)}>
+                <ExternalLink className="w-4 h-4 mr-2" />
+                Ver comprobante
+              </Button>
+            )}
             <Button variant="outline" onClick={() => onOpenChange(false)} className="mt-2">
               Cerrar
             </Button>
