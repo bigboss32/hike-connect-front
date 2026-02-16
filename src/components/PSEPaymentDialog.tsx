@@ -92,6 +92,7 @@ const PSEPaymentDialog = ({
   const [paymentId, setPaymentId] = useState<number | null>(null);
   const pollingRef = useRef<NodeJS.Timeout | null>(null);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const redirectedRef = useRef(false);
 
   const amountInCents = amountPesos * 100;
 
@@ -116,6 +117,7 @@ const PSEPaymentDialog = ({
       setStatus("idle");
       setRedirectUrl("");
       setPaymentId(null);
+      redirectedRef.current = false;
     }
   }, [open, stopPolling]);
 
@@ -131,8 +133,9 @@ const PSEPaymentDialog = ({
           const data = await res.json();
           const s = data.status?.toUpperCase();
 
-          // Always redirect if there's a URL and we haven't opened it yet
-          if (data.redirect_url && data.redirect_url !== redirectUrl) {
+          // Auto-redirect only once
+          if (data.redirect_url && !redirectedRef.current) {
+            redirectedRef.current = true;
             setRedirectUrl(data.redirect_url);
             openBankUrl(data.redirect_url);
           }
@@ -204,6 +207,7 @@ const PSEPaymentDialog = ({
       // Redirect if URL exists
       if (data.redirect_url) {
         setStatus("redirecting");
+        redirectedRef.current = true;
         openBankUrl(data.redirect_url);
       }
 
