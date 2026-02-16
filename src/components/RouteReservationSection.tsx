@@ -16,7 +16,9 @@ import {
   CheckCircle2,
   Loader2,
   Sparkles,
-  MapPin
+  MapPin,
+  CreditCard,
+  ArrowLeft
 } from "lucide-react";
 import { 
   Collapsible, 
@@ -25,6 +27,7 @@ import {
 } from "@/components/ui/collapsible";
 import { toast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
+import PSEPaymentDialog from "@/components/PSEPaymentDialog";
 
 interface Participant {
   id: number;
@@ -48,13 +51,17 @@ const createEmptyParticipant = (id: number): Participant => ({
   emergencyContactPhone: "",
 });
 
+type ReservationStep = "form" | "confirm" | "success";
+
 const RouteReservationSection = ({ routeId, routeTitle, price }: RouteReservationSectionProps) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [participants, setParticipants] = useState<Participant[]>([createEmptyParticipant(1)]);
   const [selectedDate, setSelectedDate] = useState("");
   const [expandedParticipant, setExpandedParticipant] = useState<number | null>(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isReserved, setIsReserved] = useState(false);
+  const [step, setStep] = useState<ReservationStep>("form");
+  const [amountPesos, setAmountPesos] = useState(price ? String(price) : "");
+  const [showPaymentDialog, setShowPaymentDialog] = useState(false);
 
   const addParticipant = () => {
     const newId = Math.max(...participants.map(p => p.id)) + 1;
@@ -101,22 +108,26 @@ const RouteReservationSection = ({ routeId, routeTitle, price }: RouteReservatio
   const allParticipantsComplete = participants.every(isParticipantComplete);
   const canSubmit = allParticipantsComplete && selectedDate !== "";
 
-  const handleSubmit = async () => {
+  const handleConfirmParticipants = () => {
     if (!canSubmit) return;
-    
-    setIsSubmitting(true);
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    
-    setIsSubmitting(false);
-    setIsReserved(true);
-    
-    toast({
-      title: "¡Reserva confirmada!",
-      description: `Tu reserva para ${participants.length} persona(s) ha sido registrada.`,
-    });
+    setStep("confirm");
   };
 
-  if (isReserved) {
+  const totalAmount = amountPesos ? parseInt(amountPesos) * participants.length : 0;
+
+  const handlePaymentComplete = (status: "approved" | "declined" | "error") => {
+    if (status === "approved") {
+      setStep("success");
+      setShowPaymentDialog(false);
+      toast({
+        title: "¡Reserva confirmada!",
+        description: `Tu reserva para ${participants.length} persona(s) ha sido pagada exitosamente.`,
+      });
+    }
+  };
+
+  // Success state
+  if (step === "success") {
     return (
       <Card className="border-primary/30 bg-gradient-to-br from-primary/5 to-primary/10 overflow-hidden">
         <CardContent className="p-8 text-center relative">
@@ -142,10 +153,11 @@ const RouteReservationSection = ({ routeId, routeTitle, price }: RouteReservatio
               <span>{routeTitle}</span>
             </div>
             <Button variant="outline" onClick={() => {
-              setIsReserved(false);
+              setStep("form");
               setParticipants([createEmptyParticipant(1)]);
               setSelectedDate("");
               setExpandedParticipant(1);
+              setAmountPesos(price ? String(price) : "");
             }}>
               Hacer otra reserva
             </Button>
@@ -155,6 +167,106 @@ const RouteReservationSection = ({ routeId, routeTitle, price }: RouteReservatio
     );
   }
 
+  // Confirmation step - review participants + enter amount + pay
+  if (step === "confirm") {
+    return (
+      <Card className="border-primary/20 overflow-hidden">
+        <CardHeader className="pb-3">
+          <div className="flex items-center gap-3">
+            <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setStep("form")}>
+              <ArrowLeft className="w-4 h-4" />
+            </Button>
+            <CardTitle className="text-lg">Confirmar Reserva</CardTitle>
+          </div>
+        </CardHeader>
+        <CardContent className="space-y-5">
+          {/* Date */}
+          <div className="flex items-center gap-2 text-sm">
+            <Calendar className="w-4 h-4 text-primary" />
+            <span className="text-muted-foreground">Fecha:</span>
+            <span className="font-semibold">
+              {new Date(selectedDate).toLocaleDateString('es-ES', { 
+                weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' 
+              })}
+            </span>
+          </div>
+
+          {/* Participant list */}
+          <div className="space-y-2">
+            <p className="text-sm font-medium flex items-center gap-2">
+              <Users className="w-4 h-4 text-primary" />
+              {participants.length} {participants.length === 1 ? "Participante" : "Participantes"}
+            </p>
+            <div className="space-y-2">
+              {participants.map((p, i) => (
+                <div key={p.id} className="flex items-center gap-3 p-3 rounded-xl bg-muted/40">
+                  <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center text-sm font-bold text-primary">
+                    {i + 1}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-medium text-sm truncate">{p.fullName}</p>
+                    <p className="text-xs text-muted-foreground">{p.phone}</p>
+                  </div>
+                  <CheckCircle2 className="w-4 h-4 text-primary shrink-0" />
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Amount input */}
+          <div className="space-y-2">
+            <Label className="flex items-center gap-2">
+              <CreditCard className="w-4 h-4 text-primary" />
+              Valor a pagar (COP) *
+            </Label>
+            <div className="relative">
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground font-medium">$</span>
+              <Input
+                type="number"
+                placeholder="50000"
+                value={amountPesos}
+                onChange={(e) => setAmountPesos(e.target.value)}
+                className="h-12 pl-8 text-lg font-semibold rounded-xl"
+                min="1"
+              />
+            </div>
+            {amountPesos && parseInt(amountPesos) > 0 && participants.length > 1 && (
+              <p className="text-sm text-muted-foreground">
+                Total: <span className="font-semibold text-foreground">${totalAmount.toLocaleString("es-CO")} COP</span> ({participants.length} × ${parseInt(amountPesos).toLocaleString("es-CO")})
+              </p>
+            )}
+          </div>
+
+          {/* Pay button */}
+          <Button
+            className="w-full h-14 rounded-xl text-base font-semibold shadow-lg shadow-primary/25"
+            disabled={!amountPesos || parseInt(amountPesos) <= 0}
+            onClick={() => setShowPaymentDialog(true)}
+          >
+            <CreditCard className="w-5 h-5 mr-2" />
+            Pagar con PSE
+            {totalAmount > 0 && (
+              <span className="ml-2 opacity-80">
+                • ${totalAmount.toLocaleString("es-CO")}
+              </span>
+            )}
+          </Button>
+
+          {/* PSE Payment Dialog */}
+          <PSEPaymentDialog
+            open={showPaymentDialog}
+            onOpenChange={setShowPaymentDialog}
+            amountPesos={totalAmount}
+            routeTitle={routeTitle}
+            participantCount={participants.length}
+            onPaymentComplete={handlePaymentComplete}
+          />
+        </CardContent>
+      </Card>
+    );
+  }
+
+  // Form step (original)
   return (
     <Card className="border-primary/20 overflow-hidden">
       <Collapsible open={isExpanded} onOpenChange={setIsExpanded}>
@@ -260,7 +372,6 @@ const RouteReservationSection = ({ routeId, routeTitle, price }: RouteReservatio
                         onClick={() => setExpandedParticipant(isOpen ? null : participant.id)}
                       >
                         <div className="flex items-center gap-3">
-                          {/* Avatar con progreso */}
                           <div className="relative">
                             <div className={cn(
                               "w-10 h-10 rounded-xl flex items-center justify-center text-sm font-bold transition-all",
@@ -274,7 +385,6 @@ const RouteReservationSection = ({ routeId, routeTitle, price }: RouteReservatio
                                 index + 1
                               )}
                             </div>
-                            {/* Barra de progreso circular */}
                             {!isComplete && completionPercent > 0 && (
                               <svg className="absolute inset-0 w-10 h-10 -rotate-90">
                                 <circle
@@ -329,7 +439,6 @@ const RouteReservationSection = ({ routeId, routeTitle, price }: RouteReservatio
                         <div className="p-4 pt-0 space-y-4 animate-in slide-in-from-top-2 duration-200">
                           <div className="h-px bg-border mb-4" />
                           
-                          {/* Datos personales */}
                           <div className="grid gap-4 sm:grid-cols-2">
                             <div className="space-y-2">
                               <Label htmlFor={`name-${participant.id}`} className="text-xs text-muted-foreground uppercase tracking-wide">
@@ -359,7 +468,6 @@ const RouteReservationSection = ({ routeId, routeTitle, price }: RouteReservatio
                             </div>
                           </div>
 
-                          {/* Contacto de emergencia */}
                           <div className="pt-2">
                             <div className="flex items-center gap-2 mb-3">
                               <div className="w-6 h-6 rounded-lg bg-amber-500/10 flex items-center justify-center">
@@ -415,7 +523,7 @@ const RouteReservationSection = ({ routeId, routeTitle, price }: RouteReservatio
               </Button>
             </div>
 
-            {/* Footer con botón de confirmación */}
+            {/* Footer */}
             <div className="pt-4 border-t space-y-4">
               {!canSubmit && (
                 <div className={cn(
@@ -440,24 +548,15 @@ const RouteReservationSection = ({ routeId, routeTitle, price }: RouteReservatio
 
               <Button 
                 className="w-full h-14 rounded-xl text-base font-semibold shadow-lg shadow-primary/25 transition-all hover:shadow-xl hover:shadow-primary/30 disabled:shadow-none" 
-                disabled={!canSubmit || isSubmitting}
-                onClick={handleSubmit}
+                disabled={!canSubmit}
+                onClick={handleConfirmParticipants}
               >
-                {isSubmitting ? (
-                  <>
-                    <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                    Procesando reserva...
-                  </>
-                ) : (
-                  <>
-                    <CheckCircle2 className="w-5 h-5 mr-2" />
-                    Confirmar Reserva
-                    {price && (
-                      <span className="ml-2 opacity-80">
-                        • ${(price * participants.length).toLocaleString()}
-                      </span>
-                    )}
-                  </>
+                <CheckCircle2 className="w-5 h-5 mr-2" />
+                Confirmar Participantes
+                {price && (
+                  <span className="ml-2 opacity-80">
+                    • ${(price * participants.length).toLocaleString()}
+                  </span>
                 )}
               </Button>
             </div>
