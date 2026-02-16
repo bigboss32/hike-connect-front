@@ -119,8 +119,8 @@ const PSEPaymentDialog = ({
           const data = await res.json();
           const s = data.status?.toUpperCase();
 
-          // If polling returns a redirect_url we didn't have before, open it
-          if (data.redirect_url && !redirectUrl) {
+          // Always redirect if there's a URL and we haven't opened it yet
+          if (data.redirect_url && data.redirect_url !== redirectUrl) {
             setRedirectUrl(data.redirect_url);
             window.open(data.redirect_url, "_blank");
           }
@@ -133,9 +133,8 @@ const PSEPaymentDialog = ({
             stopPolling();
             setStatus("declined");
             onPaymentComplete("declined");
-          } else if (s === "PENDING" || s === "ERROR") {
-            // Keep polling — transaction still processing
           }
+          // Any other status (PENDING, ERROR, etc.) → keep polling
         } catch {
           // Keep polling on network errors
         }
