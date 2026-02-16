@@ -119,6 +119,12 @@ const PSEPaymentDialog = ({
           const data = await res.json();
           const s = data.status?.toUpperCase();
 
+          // If there's a redirect_url, keep polling (payment still in process at bank)
+          if (data.redirect_url && (s === "PENDING" || s === "ERROR")) {
+            // Keep polling — user may still be at bank
+            return;
+          }
+
           if (s === "APPROVED") {
             stopPolling();
             setStatus("approved");
@@ -127,7 +133,7 @@ const PSEPaymentDialog = ({
             stopPolling();
             setStatus("declined");
             onPaymentComplete("declined");
-          } else if (s === "ERROR") {
+          } else if (s === "ERROR" && !data.redirect_url) {
             stopPolling();
             setStatus("error");
             onPaymentComplete("error");
@@ -185,18 +191,26 @@ const PSEPaymentDialog = ({
       const data = await res.json();
       setPaymentId(data.payment_id);
       setRedirectUrl(data.redirect_url);
-      setStatus("redirecting");
 
-      // Open bank redirect
+      // Always redirect if redirect_url exists, regardless of status
       if (data.redirect_url) {
+        setStatus("redirecting");
         window.open(data.redirect_url, "_blank");
-      }
 
-      // Start polling
-      setTimeout(() => {
-        setStatus("polling");
-        startPolling(data.payment_id);
-      }, 2000);
+        // Start polling after redirect
+        setTimeout(() => {
+          setStatus("polling");
+          startPolling(data.payment_id);
+        }, 2000);
+      } else {
+        // No redirect URL - check status directly
+        if (data.status === "APPROVED") {
+          setStatus("approved");
+          onPaymentComplete("approved");
+        } else {
+          setStatus("error");
+        }
+      }
     } catch (err: any) {
       setStatus("error");
       toast({
