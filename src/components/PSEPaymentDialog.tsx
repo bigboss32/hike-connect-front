@@ -34,9 +34,11 @@ const API_BASE_URL = "https://hike-connect-back.onrender.com/api/v1";
 
 const openBankUrl = async (url: string) => {
   if (Capacitor.isNativePlatform()) {
+    // iOS muestra "Done", Android muestra flecha atrás automáticamente
     await Browser.open({ url, presentationStyle: "fullscreen" });
   } else {
-    window.location.href = url;
+    // En web abrimos nueva pestaña para no perder el estado de la app
+    window.open(url, "_blank", "noopener,noreferrer");
   }
 };
 
