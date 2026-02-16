@@ -1,4 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from "react";
+import { Browser } from "@capacitor/browser";
+import { Capacitor } from "@capacitor/core";
 import {
   Dialog,
   DialogContent,
@@ -29,6 +31,14 @@ import { toast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 
 const API_BASE_URL = "https://hike-connect-back.onrender.com/api/v1";
+
+const openBankUrl = async (url: string) => {
+  if (Capacitor.isNativePlatform()) {
+    await Browser.open({ url, presentationStyle: "fullscreen" });
+  } else {
+    window.location.href = url;
+  }
+};
 
 const BANKS = [
   { code: "1007", name: "Bancolombia" },
@@ -122,7 +132,7 @@ const PSEPaymentDialog = ({
           // Always redirect if there's a URL and we haven't opened it yet
           if (data.redirect_url && data.redirect_url !== redirectUrl) {
             setRedirectUrl(data.redirect_url);
-            window.open(data.redirect_url, "_blank");
+            openBankUrl(data.redirect_url);
           }
 
           if (s === "APPROVED") {
@@ -192,7 +202,7 @@ const PSEPaymentDialog = ({
       // Redirect if URL exists
       if (data.redirect_url) {
         setStatus("redirecting");
-        window.open(data.redirect_url, "_blank");
+        openBankUrl(data.redirect_url);
       }
 
       // Always start polling regardless of redirect_url or status
@@ -228,11 +238,9 @@ const PSEPaymentDialog = ({
               Se abrió una pestaña con tu banco. Completa el pago allí.
             </p>
             {redirectUrl && (
-              <Button variant="outline" size="sm" asChild>
-                <a href={redirectUrl} target="_blank" rel="noopener noreferrer">
-                  <ExternalLink className="w-4 h-4 mr-2" />
-                  Abrir enlace del banco
-                </a>
+              <Button variant="outline" size="sm" onClick={() => openBankUrl(redirectUrl)}>
+                <ExternalLink className="w-4 h-4 mr-2" />
+                Abrir enlace del banco
               </Button>
             )}
           </div>
@@ -249,11 +257,9 @@ const PSEPaymentDialog = ({
               Completa el pago en la pestaña de tu banco. Verificamos automáticamente.
             </p>
             {redirectUrl && (
-              <Button variant="outline" size="sm" asChild>
-                <a href={redirectUrl} target="_blank" rel="noopener noreferrer">
-                  <ExternalLink className="w-4 h-4 mr-2" />
-                  Volver al banco
-                </a>
+              <Button variant="outline" size="sm" onClick={() => openBankUrl(redirectUrl)}>
+                <ExternalLink className="w-4 h-4 mr-2" />
+                Volver al banco
               </Button>
             )}
           </div>
