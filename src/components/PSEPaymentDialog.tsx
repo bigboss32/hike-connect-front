@@ -119,10 +119,10 @@ const PSEPaymentDialog = ({
           const data = await res.json();
           const s = data.status?.toUpperCase();
 
-          // If there's a redirect_url, keep polling (payment still in process at bank)
-          if (data.redirect_url && (s === "PENDING" || s === "ERROR")) {
-            // Keep polling — user may still be at bank
-            return;
+          // If polling returns a redirect_url we didn't have before, open it
+          if (data.redirect_url && !redirectUrl) {
+            setRedirectUrl(data.redirect_url);
+            window.open(data.redirect_url, "_blank");
           }
 
           if (s === "APPROVED") {
@@ -133,10 +133,8 @@ const PSEPaymentDialog = ({
             stopPolling();
             setStatus("declined");
             onPaymentComplete("declined");
-          } else if (s === "ERROR" && !data.redirect_url) {
-            stopPolling();
-            setStatus("error");
-            onPaymentComplete("error");
+          } else if (s === "PENDING" || s === "ERROR") {
+            // Keep polling — transaction still processing
           }
         } catch {
           // Keep polling on network errors
@@ -192,25 +190,17 @@ const PSEPaymentDialog = ({
       setPaymentId(data.payment_id);
       setRedirectUrl(data.redirect_url);
 
-      // Always redirect if redirect_url exists, regardless of status
+      // Redirect if URL exists
       if (data.redirect_url) {
         setStatus("redirecting");
         window.open(data.redirect_url, "_blank");
-
-        // Start polling after redirect
-        setTimeout(() => {
-          setStatus("polling");
-          startPolling(data.payment_id);
-        }, 2000);
-      } else {
-        // No redirect URL - check status directly
-        if (data.status === "APPROVED") {
-          setStatus("approved");
-          onPaymentComplete("approved");
-        } else {
-          setStatus("error");
-        }
       }
+
+      // Always start polling regardless of redirect_url or status
+      setTimeout(() => {
+        setStatus("polling");
+        startPolling(data.payment_id);
+      }, data.redirect_url ? 2000 : 500);
     } catch (err: any) {
       setStatus("error");
       toast({
