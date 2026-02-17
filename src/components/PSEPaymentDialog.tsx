@@ -361,7 +361,7 @@ const PSEPaymentDialog = ({
 
   if (status !== "idle") {
     return (
-      <Dialog open={open} onOpenChange={status === "polling" || status === "submitting" || status === "redirecting" ? undefined : onOpenChange}>
+      <Dialog open={open} onOpenChange={(v) => { if (!v) { stopPolling(); onOpenChange(false); } }}>
         <DialogContent className="max-w-md">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
