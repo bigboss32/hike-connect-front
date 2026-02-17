@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Settings, Award, MapPin, Calendar, LogOut, ChevronRight, Trophy, Route, Crown } from "lucide-react";
+import MyBookingsSection from "@/components/MyBookingsSection";
 import EditProfileDialog from "@/components/EditProfileDialog";
 import SettingsDialog from "@/components/SettingsDialog";
 import RouteHistoryDialog from "@/components/RouteHistoryDialog";
@@ -190,6 +191,9 @@ const Profile = () => {
               </CardContent>
             </Card>
           </Link>
+        </div>
+        <div className="mb-6">
+          <MyBookingsSection />
         </div>
 
         <Link to="/achievements" className="block group">
