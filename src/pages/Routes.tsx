@@ -237,6 +237,9 @@ const Routes = () => {
                 category={route.category}
                 rating_avg={route.rating_avg}
                 rating_count={route.rating_count}
+                base_price={route.base_price}
+                requires_payment={route.requires_payment}
+                max_capacity={route.max_capacity}
               />
             ))}
           </div>

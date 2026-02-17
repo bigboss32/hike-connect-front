@@ -35,6 +35,16 @@ export interface ApiRoute {
   updated_at: string;
   rating_avg?: number | null;
   rating_count?: number;
+  base_price?: string | null;
+  requires_payment?: boolean;
+  max_capacity?: number | null;
+  min_participants?: number | null;
+  max_participants_per_booking?: number | null;
+  requires_date_selection?: boolean;
+  is_active?: boolean;
+  included_services?: string;
+  requirements?: string;
+  what_to_bring?: string;
 }
 
 interface RoutesResponse {
