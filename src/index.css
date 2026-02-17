@@ -121,3 +121,12 @@ All colors MUST be HSL.
 .animate-shimmer {
   animation: shimmer 2s infinite;
 }
+
+/* Mapbox popups: force dark text on light background */
+.mapboxgl-popup-content {
+  color: #1a1a1a !important;
+  background: #fff !important;
+}
+.mapboxgl-popup-tip {
+  border-top-color: #fff !important;
+}
