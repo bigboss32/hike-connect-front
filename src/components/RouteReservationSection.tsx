@@ -27,7 +27,7 @@ import {
 } from "@/components/ui/collapsible";
 import { toast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
-import PSEPaymentDialog from "@/components/PSEPaymentDialog";
+import PSEPaymentDialog, { type PaymentParticipant } from "@/components/PSEPaymentDialog";
 
 interface Participant {
   id: number;
@@ -60,7 +60,6 @@ const RouteReservationSection = ({ routeId, routeTitle, price }: RouteReservatio
   const [expandedParticipant, setExpandedParticipant] = useState<number | null>(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [step, setStep] = useState<ReservationStep>("form");
-  const [amountPesos, setAmountPesos] = useState(price ? String(price) : "");
   const [showPaymentDialog, setShowPaymentDialog] = useState(false);
 
   const addParticipant = () => {
@@ -113,7 +112,16 @@ const RouteReservationSection = ({ routeId, routeTitle, price }: RouteReservatio
     setStep("confirm");
   };
 
-  const totalAmount = amountPesos ? parseInt(amountPesos) * participants.length : 0;
+  const totalAmount = price ? price * participants.length : 0;
+
+  const buildPaymentParticipants = (): PaymentParticipant[] => {
+    return participants.map(p => ({
+      full_name: p.fullName,
+      phone: p.phone,
+      emergency_contact_name: p.emergencyContactName,
+      emergency_contact_phone: p.emergencyContactPhone,
+    }));
+  };
 
   const handlePaymentComplete = (status: "approved" | "declined" | "error") => {
     if (status === "approved") {
@@ -157,7 +165,6 @@ const RouteReservationSection = ({ routeId, routeTitle, price }: RouteReservatio
               setParticipants([createEmptyParticipant(1)]);
               setSelectedDate("");
               setExpandedParticipant(1);
-              setAmountPesos(price ? String(price) : "");
             }}>
               Hacer otra reserva
             </Button>
@@ -213,34 +220,24 @@ const RouteReservationSection = ({ routeId, routeTitle, price }: RouteReservatio
             </div>
           </div>
 
-          {/* Amount input */}
-          <div className="space-y-2">
-            <Label className="flex items-center gap-2">
-              <CreditCard className="w-4 h-4 text-primary" />
-              Valor a pagar (COP) *
-            </Label>
-            <div className="relative">
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground font-medium">$</span>
-              <Input
-                type="number"
-                placeholder="50000"
-                value={amountPesos}
-                onChange={(e) => setAmountPesos(e.target.value)}
-                className="h-12 pl-8 text-lg font-semibold rounded-xl"
-                min="1"
-              />
+          {/* Total amount */}
+          {price && (
+            <div className="p-4 rounded-xl bg-primary/5 border border-primary/20">
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-muted-foreground">Total a pagar</span>
+                <span className="text-xl font-bold text-primary">${totalAmount.toLocaleString("es-CO")} COP</span>
+              </div>
+              {participants.length > 1 && (
+                <p className="text-xs text-muted-foreground mt-1">
+                  {participants.length} × ${price.toLocaleString("es-CO")} COP
+                </p>
+              )}
             </div>
-            {amountPesos && parseInt(amountPesos) > 0 && participants.length > 1 && (
-              <p className="text-sm text-muted-foreground">
-                Total: <span className="font-semibold text-foreground">${totalAmount.toLocaleString("es-CO")} COP</span> ({participants.length} × ${parseInt(amountPesos).toLocaleString("es-CO")})
-              </p>
-            )}
-          </div>
+          )}
 
           {/* Pay button */}
           <Button
             className="w-full h-14 rounded-xl text-base font-semibold shadow-lg shadow-primary/25"
-            disabled={!amountPesos || parseInt(amountPesos) <= 0}
             onClick={() => setShowPaymentDialog(true)}
           >
             <CreditCard className="w-5 h-5 mr-2" />
@@ -256,9 +253,11 @@ const RouteReservationSection = ({ routeId, routeTitle, price }: RouteReservatio
           <PSEPaymentDialog
             open={showPaymentDialog}
             onOpenChange={setShowPaymentDialog}
-            amountPesos={totalAmount}
+            routeId={routeId}
             routeTitle={routeTitle}
-            participantCount={participants.length}
+            bookingDate={selectedDate}
+            participants={buildPaymentParticipants()}
+            pricePerPerson={price}
             onPaymentComplete={handlePaymentComplete}
           />
         </CardContent>
