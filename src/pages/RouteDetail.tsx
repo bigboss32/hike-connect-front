@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { ArrowLeft, MapPin, Clock, TrendingUp, Phone, Mail, MessageCircle, Star, Info, Image, MessageSquare } from "lucide-react";
+import { ArrowLeft, MapPin, Clock, TrendingUp, Phone, Mail, MessageCircle, Star, Info, Image, MessageSquare, DollarSign, Users, CheckCircle2, AlertCircle, Backpack } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
@@ -226,6 +226,106 @@ const RouteDetail = () => {
               </p>
             </section>
 
+            {/* Precio y capacidad */}
+            {(route.base_price || route.max_capacity) && (
+              <section>
+                <h2 className="text-lg font-bold mb-3">Información de reserva</h2>
+                <Card>
+                  <CardContent className="p-4 space-y-3">
+                    {route.base_price && (
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2 text-muted-foreground">
+                          <DollarSign className="w-5 h-5" />
+                          <span>Precio base</span>
+                        </div>
+                        <span className="text-xl font-bold text-primary">
+                          {new Intl.NumberFormat("es-CO", { style: "currency", currency: "COP", minimumFractionDigits: 0 }).format(parseFloat(route.base_price))}
+                        </span>
+                      </div>
+                    )}
+                    {route.max_capacity && (
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2 text-muted-foreground">
+                          <Users className="w-5 h-5" />
+                          <span>Capacidad máxima</span>
+                        </div>
+                        <span className="font-semibold text-foreground">{route.max_capacity} personas</span>
+                      </div>
+                    )}
+                    {route.min_participants != null && route.min_participants > 1 && (
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2 text-muted-foreground">
+                          <Users className="w-5 h-5" />
+                          <span>Mínimo participantes</span>
+                        </div>
+                        <span className="font-semibold text-foreground">{route.min_participants}</span>
+                      </div>
+                    )}
+                    {route.max_participants_per_booking && (
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2 text-muted-foreground">
+                          <Users className="w-5 h-5" />
+                          <span>Máx. por reserva</span>
+                        </div>
+                        <span className="font-semibold text-foreground">{route.max_participants_per_booking}</span>
+                      </div>
+                    )}
+                    {route.requires_payment && (
+                      <Badge variant="secondary" className="mt-2">
+                        <DollarSign className="w-3 h-3 mr-1" />
+                        Requiere pago anticipado
+                      </Badge>
+                    )}
+                  </CardContent>
+                </Card>
+              </section>
+            )}
+
+            {/* Servicios incluidos */}
+            {route.included_services && route.included_services.trim() !== "" && (
+              <section>
+                <h2 className="text-lg font-bold mb-3 flex items-center gap-2">
+                  <CheckCircle2 className="w-5 h-5 text-primary" />
+                  Servicios incluidos
+                </h2>
+                <Card>
+                  <CardContent className="p-4">
+                    <p className="text-muted-foreground leading-relaxed whitespace-pre-line">{route.included_services}</p>
+                  </CardContent>
+                </Card>
+              </section>
+            )}
+
+            {/* Requisitos */}
+            {route.requirements && route.requirements.trim() !== "" && (
+              <section>
+                <h2 className="text-lg font-bold mb-3 flex items-center gap-2">
+                  <AlertCircle className="w-5 h-5 text-secondary" />
+                  Requisitos
+                </h2>
+                <Card>
+                  <CardContent className="p-4">
+                    <p className="text-muted-foreground leading-relaxed whitespace-pre-line">{route.requirements}</p>
+                  </CardContent>
+                </Card>
+              </section>
+            )}
+
+            {/* Qué llevar */}
+            {route.what_to_bring && route.what_to_bring.trim() !== "" && (
+              <section>
+                <h2 className="text-lg font-bold mb-3 flex items-center gap-2">
+                  <Backpack className="w-5 h-5 text-accent" />
+                  Qué llevar
+                </h2>
+                <Card>
+                  <CardContent className="p-4">
+                    <p className="text-muted-foreground leading-relaxed whitespace-pre-line">{route.what_to_bring}</p>
+                  </CardContent>
+                </Card>
+              </section>
+            )}
+
             {/* Mapa */}
             <section>
               <h2 className="text-lg font-bold mb-3">Ubicación</h2>
@@ -277,7 +377,7 @@ const RouteDetail = () => {
               <RouteReservationSection 
                 routeId={id!} 
                 routeTitle={route.title}
-                price={route.type === "privada" ? 45000 : undefined}
+                price={route.base_price ? parseFloat(route.base_price) : undefined}
               />
             </section>
 
