@@ -40,14 +40,10 @@ const openBankUrl = async (url: string) => {
   }
 };
 
-const BANKS = [
-  { code: "1007", name: "Bancolombia" },
-  { code: "1019", name: "Scotiabank Colpatria" },
-  { code: "1040", name: "Banco Agrario" },
-  { code: "1052", name: "Banco AV Villas" },
-  { code: "1001", name: "Banco de Bogotá" },
-  { code: "1002", name: "Banco Popular" },
-];
+interface Bank {
+  code: string;
+  name: string;
+}
 
 const ID_TYPES = [
   { value: "CC", label: "Cédula de Ciudadanía" },
@@ -89,6 +85,8 @@ const PSEPaymentDialog = ({
 }: PSEPaymentDialogProps) => {
   const { authFetch, user } = useAuth();
   const [status, setStatus] = useState<PaymentStatus>("idle");
+  const [banks, setBanks] = useState<Bank[]>([]);
+  const [banksLoading, setBanksLoading] = useState(false);
   const [formData, setFormData] = useState({
     userLegalId: "",
     userLegalIdType: "CC",
@@ -101,6 +99,29 @@ const PSEPaymentDialog = ({
   const pollingRef = useRef<NodeJS.Timeout | null>(null);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
   const redirectedRef = useRef(false);
+
+  useEffect(() => {
+    if (!open || banks.length > 0) return;
+    const fetchBanks = async () => {
+      setBanksLoading(true);
+      try {
+        const res = await authFetch(`${API_BASE_URL}/payments/`);
+        if (res.ok) {
+          const json = await res.json();
+          const list = (json.data || []).map((b: any) => ({
+            code: b.financial_institution_code,
+            name: b.financial_institution_name,
+          }));
+          setBanks(list);
+        }
+      } catch {
+        // silent
+      } finally {
+        setBanksLoading(false);
+      }
+    };
+    fetchBanks();
+  }, [open, authFetch, banks.length]);
 
   const estimatedTotal = pricePerPerson ? pricePerPerson * participants.length : null;
 
@@ -460,11 +481,11 @@ const PSEPaymentDialog = ({
               value={formData.financialInstitutionCode}
               onValueChange={(v) => setFormData({ ...formData, financialInstitutionCode: v })}
             >
-              <SelectTrigger>
-                <SelectValue placeholder="Selecciona tu banco" />
+              <SelectTrigger disabled={banksLoading}>
+                <SelectValue placeholder={banksLoading ? "Cargando bancos..." : "Selecciona tu banco"} />
               </SelectTrigger>
               <SelectContent>
-                {BANKS.map((b) => (
+                {banks.map((b) => (
                   <SelectItem key={b.code} value={b.code}>
                     {b.name}
                   </SelectItem>
