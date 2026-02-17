@@ -34,10 +34,8 @@ const API_BASE_URL = "https://hike-connect-back.onrender.com/api/v1";
 
 const openBankUrl = async (url: string) => {
   if (Capacitor.isNativePlatform()) {
-    // iOS muestra "Done", Android muestra flecha atrás automáticamente
     await Browser.open({ url, presentationStyle: "fullscreen" });
   } else {
-    // En web abrimos nueva pestaña para no perder el estado de la app
     window.open(url, "_blank", "noopener,noreferrer");
   }
 };
@@ -61,40 +59,50 @@ const ID_TYPES = [
 
 type PaymentStatus = "idle" | "submitting" | "redirecting" | "polling" | "approved" | "declined" | "error" | "timeout";
 
+export interface PaymentParticipant {
+  full_name: string;
+  phone: string;
+  emergency_contact_name: string;
+  emergency_contact_phone: string;
+}
+
 interface PSEPaymentDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  amountPesos: number;
+  routeId: string;
   routeTitle: string;
-  participantCount: number;
+  bookingDate: string;
+  participants: PaymentParticipant[];
+  pricePerPerson?: number;
   onPaymentComplete: (status: "approved" | "declined" | "error") => void;
 }
 
 const PSEPaymentDialog = ({
   open,
   onOpenChange,
-  amountPesos,
+  routeId,
   routeTitle,
-  participantCount,
+  bookingDate,
+  participants,
+  pricePerPerson,
   onPaymentComplete,
 }: PSEPaymentDialogProps) => {
   const { authFetch, user } = useAuth();
   const [status, setStatus] = useState<PaymentStatus>("idle");
   const [formData, setFormData] = useState({
-    fullName: user?.name || "",
     userLegalId: "",
     userLegalIdType: "CC",
     financialInstitutionCode: "",
-    phoneNumber: "",
     userType: "0",
   });
   const [redirectUrl, setRedirectUrl] = useState("");
-  const [paymentId, setPaymentId] = useState<number | null>(null);
+  const [paymentId, setPaymentId] = useState<string | null>(null);
+  const [confirmedAmount, setConfirmedAmount] = useState<number | null>(null);
   const pollingRef = useRef<NodeJS.Timeout | null>(null);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
   const redirectedRef = useRef(false);
 
-  const amountInCents = amountPesos * 100;
+  const estimatedTotal = pricePerPerson ? pricePerPerson * participants.length : null;
 
   const stopPolling = useCallback(() => {
     if (pollingRef.current) {
@@ -117,23 +125,24 @@ const PSEPaymentDialog = ({
       setStatus("idle");
       setRedirectUrl("");
       setPaymentId(null);
+      setConfirmedAmount(null);
       redirectedRef.current = false;
     }
   }, [open, stopPolling]);
 
   const startPolling = useCallback(
-    (pId: number) => {
-      // Poll every 4 seconds
+    (pId: string) => {
       pollingRef.current = setInterval(async () => {
         try {
-          const res = await authFetch(
-            `${API_BASE_URL}/payments/${pId}/status/`
-          );
+          const res = await authFetch(`${API_BASE_URL}/payments/${pId}/status/`);
           if (!res.ok) return;
           const data = await res.json();
           const s = data.status?.toUpperCase();
 
-          // Auto-redirect only once
+          if (data.amount) {
+            setConfirmedAmount(parseFloat(data.amount));
+          }
+
           if (data.redirect_url && !redirectedRef.current) {
             redirectedRef.current = true;
             setRedirectUrl(data.redirect_url);
@@ -148,14 +157,16 @@ const PSEPaymentDialog = ({
             stopPolling();
             setStatus("declined");
             onPaymentComplete("declined");
+          } else if (s === "ERROR") {
+            stopPolling();
+            setStatus("error");
+            onPaymentComplete("error");
           }
-          // Any other status (PENDING, ERROR, etc.) → keep polling
         } catch {
           // Keep polling on network errors
         }
       }, 4000);
 
-      // 5 minute timeout
       timeoutRef.current = setTimeout(() => {
         stopPolling();
         setStatus("timeout");
@@ -165,14 +176,10 @@ const PSEPaymentDialog = ({
   );
 
   const handleSubmit = async () => {
-    if (
-      !formData.fullName ||
-      !formData.userLegalId ||
-      !formData.financialInstitutionCode
-    ) {
+    if (!formData.userLegalId || !formData.financialInstitutionCode) {
       toast({
         title: "Campos requeridos",
-        description: "Completa nombre, documento y banco.",
+        description: "Completa documento y banco.",
         variant: "destructive",
       });
       return;
@@ -185,13 +192,13 @@ const PSEPaymentDialog = ({
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          amount_in_cents: amountInCents,
+          ruta_id: routeId,
+          booking_date: bookingDate,
+          participants: participants,
           user_legal_id: formData.userLegalId,
           user_legal_id_type: formData.userLegalIdType,
           financial_institution_code: formData.financialInstitutionCode,
           user_type: parseInt(formData.userType),
-          phone_number: formData.phoneNumber || undefined,
-          full_name: formData.fullName,
         }),
       });
 
@@ -202,16 +209,18 @@ const PSEPaymentDialog = ({
 
       const data = await res.json();
       setPaymentId(data.payment_id);
-      setRedirectUrl(data.redirect_url);
+      setRedirectUrl(data.redirect_url || "");
 
-      // Redirect if URL exists
+      if (data.amount) {
+        setConfirmedAmount(parseFloat(data.amount));
+      }
+
       if (data.redirect_url) {
         setStatus("redirecting");
         redirectedRef.current = true;
         openBankUrl(data.redirect_url);
       }
 
-      // Always start polling regardless of redirect_url or status
       setTimeout(() => {
         setStatus("polling");
         startPolling(data.payment_id);
@@ -226,6 +235,9 @@ const PSEPaymentDialog = ({
     }
   };
 
+  const displayAmount = confirmedAmount ?? estimatedTotal;
+  const formatAmount = (amount: number) => `$${amount.toLocaleString("es-CO")} COP`;
+
   const renderStatusContent = () => {
     switch (status) {
       case "submitting":
@@ -233,6 +245,7 @@ const PSEPaymentDialog = ({
           <div className="flex flex-col items-center gap-4 py-8">
             <Loader2 className="w-12 h-12 text-primary animate-spin" />
             <p className="text-lg font-semibold">Creando transacción...</p>
+            <p className="text-sm text-muted-foreground">Validando disponibilidad y calculando monto...</p>
           </div>
         );
       case "redirecting":
@@ -278,7 +291,13 @@ const PSEPaymentDialog = ({
             </div>
             <p className="text-lg font-bold text-green-600">¡Pago Aprobado!</p>
             <p className="text-sm text-muted-foreground text-center">
-              Tu pago de <span className="font-semibold text-foreground">${amountPesos.toLocaleString("es-CO")} COP</span> ha sido procesado exitosamente.
+              {displayAmount && (
+                <>Tu pago de <span className="font-semibold text-foreground">{formatAmount(displayAmount)}</span> ha sido procesado exitosamente.</>
+              )}
+              {!displayAmount && "Tu pago ha sido procesado exitosamente."}
+            </p>
+            <p className="text-xs text-muted-foreground">
+              {participants.length} {participants.length === 1 ? "participante" : "participantes"} • {new Date(bookingDate).toLocaleDateString("es-ES", { day: "numeric", month: "long", year: "numeric" })}
             </p>
             {redirectUrl && (
               <Button variant="outline" size="sm" onClick={() => openBankUrl(redirectUrl)}>
@@ -388,21 +407,19 @@ const PSEPaymentDialog = ({
         {/* Summary */}
         <div className="p-4 rounded-xl bg-muted/50 space-y-1">
           <p className="text-sm text-muted-foreground">Ruta: <span className="font-medium text-foreground">{routeTitle}</span></p>
-          <p className="text-sm text-muted-foreground">Participantes: <span className="font-medium text-foreground">{participantCount}</span></p>
-          <p className="text-lg font-bold text-primary">${amountPesos.toLocaleString("es-CO")} COP</p>
+          <p className="text-sm text-muted-foreground">Fecha: <span className="font-medium text-foreground">
+            {new Date(bookingDate).toLocaleDateString("es-ES", { day: "numeric", month: "long", year: "numeric" })}
+          </span></p>
+          <p className="text-sm text-muted-foreground">Participantes: <span className="font-medium text-foreground">{participants.length}</span></p>
+          {estimatedTotal && (
+            <p className="text-lg font-bold text-primary">{formatAmount(estimatedTotal)}</p>
+          )}
+          {estimatedTotal && participants.length > 1 && pricePerPerson && (
+            <p className="text-xs text-muted-foreground">({participants.length} × {formatAmount(pricePerPerson)})</p>
+          )}
         </div>
 
         <div className="space-y-4">
-          {/* Full name */}
-          <div className="space-y-2">
-            <Label>Nombre completo *</Label>
-            <Input
-              placeholder="Miguel Garzon"
-              value={formData.fullName}
-              onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
-            />
-          </div>
-
           {/* Document */}
           <div className="grid grid-cols-5 gap-2">
             <div className="col-span-2 space-y-2">
@@ -456,17 +473,6 @@ const PSEPaymentDialog = ({
             </Select>
           </div>
 
-          {/* Phone */}
-          <div className="space-y-2">
-            <Label>Teléfono</Label>
-            <Input
-              type="tel"
-              placeholder="573107650926"
-              value={formData.phoneNumber}
-              onChange={(e) => setFormData({ ...formData, phoneNumber: e.target.value })}
-            />
-          </div>
-
           {/* User type */}
           <div className="space-y-2">
             <Label>Tipo de persona</Label>
@@ -486,7 +492,10 @@ const PSEPaymentDialog = ({
 
           <Button onClick={handleSubmit} className="w-full h-12 font-semibold">
             <CreditCard className="w-5 h-5 mr-2" />
-            Pagar ${amountPesos.toLocaleString("es-CO")} COP
+            Pagar con PSE
+            {estimatedTotal && (
+              <span className="ml-2 opacity-80">• {formatAmount(estimatedTotal)}</span>
+            )}
           </Button>
         </div>
       </DialogContent>
