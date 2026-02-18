@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 import ScrollHeader from "@/components/ScrollHeader";
-import { useNavigate, Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 import Navigation from "@/components/Navigation";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { Award, MapPin, Calendar, LogOut, ChevronRight, Trophy, Route, Crown } from "lucide-react";
+import { Award, MapPin, Calendar, ChevronRight, Trophy, Route, Crown } from "lucide-react";
 import EditProfileDialog from "@/components/EditProfileDialog";
 import RouteHistoryDialog from "@/components/RouteHistoryDialog";
 import { useAuth } from "@/contexts/AuthContext";
@@ -78,8 +78,7 @@ const ProfileSkeleton = () => (
 );
 
 const Profile = () => {
-  const { user, logout, fetchProfile } = useAuth();
-  const navigate = useNavigate();
+  const { user, fetchProfile } = useAuth();
   const { toast } = useToast();
   const [isLoadingProfile, setIsLoadingProfile] = useState(true);
 
@@ -91,15 +90,6 @@ const Profile = () => {
     };
     loadProfile();
   }, []);
-
-  const handleLogout = () => {
-    logout();
-    toast({
-      title: "Sesión cerrada",
-      description: "Has cerrado sesión correctamente",
-    });
-    navigate("/auth", { replace: true });
-  };
 
   if (isLoadingProfile) {
     return <ProfileSkeleton />;
@@ -124,9 +114,6 @@ const Profile = () => {
         <div className="max-w-lg mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <h1 className="text-2xl font-bold text-foreground">Perfil</h1>
-            <Button variant="ghost" size="icon" onClick={handleLogout}>
-              <LogOut className="w-5 h-5" />
-            </Button>
           </div>
         </div>
       </ScrollHeader>
