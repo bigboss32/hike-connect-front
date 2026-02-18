@@ -1,6 +1,6 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import ScrollHeader from "@/components/ScrollHeader";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
@@ -16,9 +16,29 @@ import { cn } from "@/lib/utils";
 
 const ChannelDetail = () => {
   const { communityId, channelId } = useParams();
+  const navigate = useNavigate();
   const [newPost, setNewPost] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const touchStartX = useRef<number | null>(null);
+  const touchStartY = useRef<number | null>(null);
   const { user } = useAuth();
+
+  const handleTouchStart = useCallback((e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX;
+    touchStartY.current = e.touches[0].clientY;
+  }, []);
+
+  const handleTouchEnd = useCallback((e: React.TouchEvent) => {
+    if (touchStartX.current === null || touchStartY.current === null) return;
+    const deltaX = e.changedTouches[0].clientX - touchStartX.current;
+    const deltaY = Math.abs(e.changedTouches[0].clientY - touchStartY.current);
+    // Swipe right: deltaX > 80px and mostly horizontal
+    if (deltaX > 80 && deltaY < 60) {
+      navigate(`/communities/${communityId}`);
+    }
+    touchStartX.current = null;
+    touchStartY.current = null;
+  }, [navigate, communityId]);
   
   const { data: channels } = useChannels(communityId);
   const { data: postsData, isLoading: postsLoading } = usePosts({ canalId: channelId });
@@ -74,7 +94,7 @@ const ChannelDetail = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
+    <div className="min-h-screen bg-background flex flex-col" onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd}>
       {/* Header */}
       <ScrollHeader className="bg-card border-b border-border">
         <div className="max-w-lg mx-auto px-4 py-3 flex items-center gap-3">

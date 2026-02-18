@@ -8,7 +8,7 @@ import { Link } from "react-router-dom";
 
 const Index = () => {
   return (
-    <div className="min-h-screen bg-background pb-20 pt-6">
+    <div className="min-h-screen bg-background pb-28 pt-6">
 
       <main className="max-w-lg mx-auto px-4 space-y-6">
         {/* User Stats */}
