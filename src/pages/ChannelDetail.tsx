@@ -1,7 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import ScrollHeader from "@/components/ScrollHeader";
 import { useParams, Link } from "react-router-dom";
-import Navigation from "@/components/Navigation";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
@@ -113,7 +112,7 @@ const ChannelDetail = () => {
       </ScrollHeader>
 
       {/* Messages area - flex-1 to fill space between header and input */}
-      <main className="flex-1 overflow-y-auto pb-32">
+      <main className="flex-1 overflow-y-auto pb-20">
         <div className="max-w-lg mx-auto px-4 py-4">
           {postsLoading ? (
             <div className="space-y-4">
@@ -192,8 +191,8 @@ const ChannelDetail = () => {
         </div>
       </main>
 
-      {/* Input bar */}
-      <div className="fixed bottom-[4rem] left-0 right-0 bg-card/95 backdrop-blur-sm border-t border-border px-3 py-2.5 z-40">
+      {/* Input bar - fixed at very bottom */}
+      <div className="fixed bottom-0 left-0 right-0 bg-card/95 backdrop-blur-sm border-t border-border px-3 py-2.5 z-40 safe-bottom">
         <div className="max-w-lg mx-auto flex items-center gap-2">
           <Button variant="ghost" size="icon" className="shrink-0 h-9 w-9">
             <Image className="w-5 h-5 text-muted-foreground" />
@@ -216,8 +215,6 @@ const ChannelDetail = () => {
           </Button>
         </div>
       </div>
-
-      <Navigation />
     </div>
   );
 };
