@@ -6,10 +6,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { Settings, Award, MapPin, Calendar, LogOut, ChevronRight, Trophy, Route, Crown } from "lucide-react";
-import MyBookingsSection from "@/components/MyBookingsSection";
+import { Award, MapPin, Calendar, LogOut, ChevronRight, Trophy, Route, Crown } from "lucide-react";
 import EditProfileDialog from "@/components/EditProfileDialog";
-import SettingsDialog from "@/components/SettingsDialog";
 import RouteHistoryDialog from "@/components/RouteHistoryDialog";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
@@ -126,16 +124,9 @@ const Profile = () => {
         <div className="max-w-lg mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <h1 className="text-2xl font-bold text-foreground">Perfil</h1>
-            <div className="flex items-center gap-2">
-              <SettingsDialog>
-                <Button variant="ghost" size="icon">
-                  <Settings className="w-5 h-5" />
-                </Button>
-              </SettingsDialog>
-              <Button variant="ghost" size="icon" onClick={handleLogout}>
-                <LogOut className="w-5 h-5" />
-              </Button>
-            </div>
+            <Button variant="ghost" size="icon" onClick={handleLogout}>
+              <LogOut className="w-5 h-5" />
+            </Button>
           </div>
         </div>
       </ScrollHeader>
@@ -192,10 +183,6 @@ const Profile = () => {
             </Card>
           </Link>
         </div>
-        <div className="mb-6">
-          <MyBookingsSection />
-        </div>
-
         <Link to="/achievements" className="block group">
           <Card className="shadow-soft hover:shadow-md transition-shadow">
             <CardContent className="p-4">
