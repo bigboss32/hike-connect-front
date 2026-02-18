@@ -3,7 +3,6 @@ import ScrollHeader from "@/components/ScrollHeader";
 import { useParams, Link } from "react-router-dom";
 import Navigation from "@/components/Navigation";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -11,13 +10,16 @@ import { ArrowLeft, Hash, Send, MoreVertical, Image, Wifi, WifiOff } from "lucid
 import { usePosts, useCreatePost } from "@/hooks/usePosts";
 import { useChannels } from "@/hooks/useChannels";
 import { useChannelWebSocket } from "@/hooks/useChannelWebSocket";
+import { useAuth } from "@/contexts/AuthContext";
 import { formatDistanceToNow } from "date-fns";
 import { es } from "date-fns/locale";
+import { cn } from "@/lib/utils";
 
 const ChannelDetail = () => {
   const { communityId, channelId } = useParams();
   const [newPost, setNewPost] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const { user } = useAuth();
   
   const { data: channels } = useChannels(communityId);
   const { data: postsData, isLoading: postsLoading } = usePosts({ canalId: channelId });
@@ -30,18 +32,13 @@ const ChannelDetail = () => {
   
   const currentChannel = channels?.find(c => c.id === channelId);
 
-  // Auto-scroll to bottom when new posts arrive
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [postsData?.results?.length]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setNewPost(e.target.value);
-    if (e.target.value.trim()) {
-      sendTyping(true);
-    } else {
-      sendTyping(false);
-    }
+    sendTyping(!!e.target.value.trim());
   };
 
   const handleSubmitPost = () => {
@@ -71,8 +68,14 @@ const ChannelDetail = () => {
     }
   };
 
+  const isOwnMessage = (authorName: string) => {
+    if (!user) return false;
+    return user.name === authorName || 
+           `${user.first_name} ${user.last_name}`.trim() === authorName;
+  };
+
   return (
-    <div className="min-h-screen bg-background pb-44">
+    <div className="min-h-screen bg-background flex flex-col">
       {/* Header */}
       <ScrollHeader className="bg-card border-b border-border">
         <div className="max-w-lg mx-auto px-4 py-3 flex items-center gap-3">
@@ -109,69 +112,90 @@ const ChannelDetail = () => {
         </div>
       </ScrollHeader>
 
-      {/* Posts */}
-      <main className="max-w-lg mx-auto px-4 py-4">
-        {postsLoading ? (
-          <div className="space-y-4">
-            {[1, 2, 3].map((i) => (
-              <Card key={i} className="shadow-soft">
-                <CardContent className="p-4">
-                  <div className="flex items-center gap-3 mb-3">
-                    <Skeleton className="w-10 h-10 rounded-full" />
-                    <div className="flex-1">
-                      <Skeleton className="h-4 w-24 mb-1" />
-                      <Skeleton className="h-3 w-16" />
+      {/* Messages area - flex-1 to fill space between header and input */}
+      <main className="flex-1 overflow-y-auto pb-32">
+        <div className="max-w-lg mx-auto px-4 py-4">
+          {postsLoading ? (
+            <div className="space-y-4">
+              {[1, 2, 3].map((i) => (
+                <div key={i} className="flex gap-2">
+                  <Skeleton className="w-8 h-8 rounded-full shrink-0" />
+                  <div className="space-y-1">
+                    <Skeleton className="h-3 w-20" />
+                    <Skeleton className="h-12 w-48 rounded-2xl" />
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : postsData?.results && postsData.results.length > 0 ? (
+            <div className="space-y-3">
+              {postsData.results.map((post) => {
+                const own = isOwnMessage(post.author_name);
+                return (
+                  <div
+                    key={post.id}
+                    className={cn(
+                      "flex gap-2 max-w-[85%]",
+                      own ? "ml-auto flex-row-reverse" : "mr-auto"
+                    )}
+                  >
+                    {/* Avatar - only for others */}
+                    {!own && (
+                      <Avatar className="w-8 h-8 shrink-0 mt-1">
+                        <AvatarImage src={post.author_image || undefined} />
+                        <AvatarFallback className="bg-primary/10 text-primary text-xs">
+                          {post.author_name.split(' ').map(n => n[0]).join('').slice(0, 2)}
+                        </AvatarFallback>
+                      </Avatar>
+                    )}
+                    <div className={cn("min-w-0", own ? "items-end" : "items-start")}>
+                      {/* Name + time */}
+                      <div className={cn(
+                        "flex items-center gap-2 mb-0.5 px-1",
+                        own ? "justify-end" : "justify-start"
+                      )}>
+                        {!own && (
+                          <span className="text-xs font-semibold text-foreground truncate max-w-[150px]">
+                            {post.author_name}
+                          </span>
+                        )}
+                        <span className="text-[10px] text-muted-foreground shrink-0">
+                          {formatDate(post.created_at)}
+                        </span>
+                      </div>
+                      {/* Bubble */}
+                      <div
+                        className={cn(
+                          "px-3 py-2 rounded-2xl text-sm leading-relaxed break-words",
+                          own
+                            ? "bg-primary text-primary-foreground rounded-tr-md"
+                            : "bg-muted text-foreground rounded-tl-md"
+                        )}
+                      >
+                        {post.content}
+                      </div>
                     </div>
                   </div>
-                  <Skeleton className="h-16 w-full" />
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        ) : postsData?.results && postsData.results.length > 0 ? (
-          <div className="space-y-4">
-            {postsData.results.map((post) => (
-              <Card key={post.id} className="shadow-soft">
-                <CardContent className="p-4">
-                  {/* Author */}
-                  <div className="flex items-center gap-3 mb-3">
-                    <Avatar className="w-10 h-10">
-                      <AvatarImage src={post.author_image || undefined} />
-                      <AvatarFallback className="bg-primary/10 text-primary text-sm">
-                        {post.author_name.split(' ').map(n => n[0]).join('')}
-                      </AvatarFallback>
-                    </Avatar>
-                    <div className="flex-1">
-                      <h3 className="font-medium text-foreground text-sm">{post.author_name}</h3>
-                      <p className="text-xs text-muted-foreground">{formatDate(post.created_at)}</p>
-                    </div>
-                    <Button variant="ghost" size="icon" className="h-8 w-8">
-                      <MoreVertical className="w-4 h-4" />
-                    </Button>
-                  </div>
-
-                  {/* Content */}
-                  <p className="text-foreground text-sm">{post.content}</p>
-                </CardContent>
-              </Card>
-            ))}
-            <div ref={messagesEndRef} />
-          </div>
-        ) : (
-          <Card>
-            <CardContent className="p-8 text-center">
-              <Hash className="w-12 h-12 text-muted-foreground mx-auto mb-2" />
-              <p className="text-muted-foreground">No hay mensajes aún</p>
+                );
+              })}
+              <div ref={messagesEndRef} />
+            </div>
+          ) : (
+            <div className="flex flex-col items-center justify-center py-20 text-center">
+              <div className="w-14 h-14 rounded-full bg-muted flex items-center justify-center mb-3">
+                <Hash className="w-7 h-7 text-muted-foreground" />
+              </div>
+              <p className="font-medium text-foreground">No hay mensajes aún</p>
               <p className="text-sm text-muted-foreground mt-1">¡Sé el primero en publicar!</p>
-            </CardContent>
-          </Card>
-        )}
+            </div>
+          )}
+        </div>
       </main>
 
-      {/* Create post input */}
-      <div className="fixed bottom-[4.5rem] left-0 right-0 bg-card border-t border-border p-3 z-40">
+      {/* Input bar */}
+      <div className="fixed bottom-[4rem] left-0 right-0 bg-card/95 backdrop-blur-sm border-t border-border px-3 py-2.5 z-40">
         <div className="max-w-lg mx-auto flex items-center gap-2">
-          <Button variant="ghost" size="icon" className="shrink-0">
+          <Button variant="ghost" size="icon" className="shrink-0 h-9 w-9">
             <Image className="w-5 h-5 text-muted-foreground" />
           </Button>
           <Input
@@ -179,11 +203,12 @@ const ChannelDetail = () => {
             value={newPost}
             onChange={handleInputChange}
             onKeyDown={handleKeyDown}
-            className="flex-1"
+            className="flex-1 rounded-full bg-muted border-0 h-9 text-sm"
             disabled={!canWrite}
           />
           <Button 
             size="icon" 
+            className="shrink-0 h-9 w-9 rounded-full"
             onClick={handleSubmitPost}
             disabled={!newPost.trim() || createPost.isPending || !canWrite}
           >

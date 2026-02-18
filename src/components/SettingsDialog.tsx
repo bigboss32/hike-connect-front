@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
@@ -162,19 +163,36 @@ const SettingsDialog = ({ children }: SettingsDialogProps) => {
           <Separator />
 
           {/* Cerrar sesión */}
-          <Button
-            variant="destructive"
-            className="w-full"
-            onClick={() => {
-              logout();
-              toast({ title: "Sesión cerrada", description: "Has cerrado sesión correctamente" });
-              setOpen(false);
-              navigate("/auth", { replace: true });
-            }}
-          >
-            <LogOut className="w-4 h-4 mr-2" />
-            Cerrar sesión
-          </Button>
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button variant="destructive" className="w-full">
+                <LogOut className="w-4 h-4 mr-2" />
+                Cerrar sesión
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>¿Cerrar sesión?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  Tendrás que volver a iniciar sesión para acceder a tu cuenta.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                <AlertDialogAction
+                  className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                  onClick={() => {
+                    logout();
+                    toast({ title: "Sesión cerrada", description: "Has cerrado sesión correctamente" });
+                    setOpen(false);
+                    navigate("/auth", { replace: true });
+                  }}
+                >
+                  Cerrar sesión
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
 
           {/* Info de la app */}
           <div className="flex items-center gap-3 px-3">
