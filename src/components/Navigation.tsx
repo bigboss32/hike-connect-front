@@ -1,17 +1,19 @@
-import { Home, Map, Users, Calendar, User, LogIn } from "lucide-react";
+import { useState } from "react";
+import { Home, Map, Users, User, LogIn, Settings } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/contexts/AuthContext";
+import SettingsDialog from "@/components/SettingsDialog";
 
 const Navigation = () => {
   const location = useLocation();
   const { user } = useAuth();
+  const [settingsOpen, setSettingsOpen] = useState(false);
 
   const navItems = [
     { icon: Home, label: "Inicio", path: "/" },
     { icon: Map, label: "Rutas", path: "/routes" },
     { icon: Users, label: "Comunidad", path: "/communities" },
-    { icon: Calendar, label: "Eventos", path: "/events" },
     { icon: user ? User : LogIn, label: user ? "Perfil" : "Entrar", path: user ? "/profile" : "/auth" },
   ];
 
@@ -38,6 +40,14 @@ const Navigation = () => {
             </Link>
           );
         })}
+        <SettingsDialog>
+          <button
+            className="flex flex-col items-center justify-center gap-1 px-3 py-2 rounded-lg transition-all text-muted-foreground hover:text-foreground"
+          >
+            <Settings className="w-5 h-5" />
+            <span className="text-xs font-medium">Ajustes</span>
+          </button>
+        </SettingsDialog>
       </div>
     </nav>
   );

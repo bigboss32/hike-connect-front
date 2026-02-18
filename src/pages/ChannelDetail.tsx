@@ -72,7 +72,7 @@ const ChannelDetail = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background pb-36">
+    <div className="min-h-screen bg-background pb-44">
       {/* Header */}
       <ScrollHeader className="bg-card border-b border-border">
         <div className="max-w-lg mx-auto px-4 py-3 flex items-center gap-3">
@@ -169,7 +169,7 @@ const ChannelDetail = () => {
       </main>
 
       {/* Create post input */}
-      <div className="fixed bottom-16 left-0 right-0 bg-card border-t border-border p-4 safe-bottom">
+      <div className="fixed bottom-[4.5rem] left-0 right-0 bg-card border-t border-border p-3 z-40">
         <div className="max-w-lg mx-auto flex items-center gap-2">
           <Button variant="ghost" size="icon" className="shrink-0">
             <Image className="w-5 h-5 text-muted-foreground" />

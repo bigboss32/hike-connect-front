@@ -2,6 +2,7 @@ import Navigation from "@/components/Navigation";
 import FeaturedRoutesCarousel from "@/components/FeaturedRoutesCarousel";
 import UserStatsCards from "@/components/UserStatsCards";
 import NearbyRoutesMap from "@/components/NearbyRoutesMap";
+import MyBookingsSection from "@/components/MyBookingsSection";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 
@@ -24,6 +25,11 @@ const Index = () => {
             </Link>
           </div>
           <FeaturedRoutesCarousel />
+        </section>
+
+        {/* Mis Reservas */}
+        <section>
+          <MyBookingsSection />
         </section>
 
         {/* Nearby Routes Map */}
