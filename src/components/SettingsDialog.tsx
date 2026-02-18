@@ -6,7 +6,9 @@ import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
 import { toast } from "@/hooks/use-toast";
 import { useTheme } from "@/components/ThemeProvider";
-import { Moon, Sun, HelpCircle, MessageCircle, FileText, Shield, ChevronRight, Info } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
+import { useNavigate } from "react-router-dom";
+import { Moon, Sun, HelpCircle, MessageCircle, FileText, Shield, ChevronRight, Info, LogOut } from "lucide-react";
 
 interface SettingsDialogProps {
   children: React.ReactNode;
@@ -15,6 +17,8 @@ interface SettingsDialogProps {
 const SettingsDialog = ({ children }: SettingsDialogProps) => {
   const [open, setOpen] = useState(false);
   const { theme, setTheme } = useTheme();
+  const { logout } = useAuth();
+  const navigate = useNavigate();
   const [settings, setSettings] = useState({
     notifications: true,
     emailUpdates: false,
@@ -156,6 +160,21 @@ const SettingsDialog = ({ children }: SettingsDialogProps) => {
           </div>
 
           <Separator />
+
+          {/* Cerrar sesión */}
+          <Button
+            variant="destructive"
+            className="w-full"
+            onClick={() => {
+              logout();
+              toast({ title: "Sesión cerrada", description: "Has cerrado sesión correctamente" });
+              setOpen(false);
+              navigate("/auth", { replace: true });
+            }}
+          >
+            <LogOut className="w-4 h-4 mr-2" />
+            Cerrar sesión
+          </Button>
 
           {/* Info de la app */}
           <div className="flex items-center gap-3 px-3">
