@@ -28,6 +28,7 @@ import {
 import { toast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import PSEPaymentDialog, { type PaymentParticipant } from "@/components/PSEPaymentDialog";
+import CardPaymentDialog from "@/components/CardPaymentDialog";
 
 interface Participant {
   id: number;
@@ -61,6 +62,7 @@ const RouteReservationSection = ({ routeId, routeTitle, price }: RouteReservatio
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [step, setStep] = useState<ReservationStep>("form");
   const [showPaymentDialog, setShowPaymentDialog] = useState(false);
+  const [showCardPaymentDialog, setShowCardPaymentDialog] = useState(false);
 
   const addParticipant = () => {
     const newId = Math.max(...participants.map(p => p.id)) + 1;
@@ -235,24 +237,46 @@ const RouteReservationSection = ({ routeId, routeTitle, price }: RouteReservatio
             </div>
           )}
 
-          {/* Pay button */}
-          <Button
-            className="w-full h-14 rounded-xl text-base font-semibold shadow-lg shadow-primary/25"
-            onClick={() => setShowPaymentDialog(true)}
-          >
-            <CreditCard className="w-5 h-5 mr-2" />
-            Pagar con PSE
-            {totalAmount > 0 && (
-              <span className="ml-2 opacity-80">
-                • ${totalAmount.toLocaleString("es-CO")}
-              </span>
-            )}
-          </Button>
+          {/* Payment buttons */}
+          <div className="space-y-3">
+            <Button
+              className="w-full h-14 rounded-xl text-base font-semibold shadow-lg shadow-primary/25"
+              onClick={() => setShowPaymentDialog(true)}
+            >
+              <CreditCard className="w-5 h-5 mr-2" />
+              Pagar con PSE
+              {totalAmount > 0 && (
+                <span className="ml-2 opacity-80">
+                  • ${totalAmount.toLocaleString("es-CO")}
+                </span>
+              )}
+            </Button>
+            <Button
+              variant="outline"
+              className="w-full h-14 rounded-xl text-base font-semibold"
+              onClick={() => setShowCardPaymentDialog(true)}
+            >
+              <CreditCard className="w-5 h-5 mr-2" />
+              Pagar con Tarjeta Crédito/Débito
+            </Button>
+          </div>
 
           {/* PSE Payment Dialog */}
           <PSEPaymentDialog
             open={showPaymentDialog}
             onOpenChange={setShowPaymentDialog}
+            routeId={routeId}
+            routeTitle={routeTitle}
+            bookingDate={selectedDate}
+            participants={buildPaymentParticipants()}
+            pricePerPerson={price}
+            onPaymentComplete={handlePaymentComplete}
+          />
+
+          {/* Card Payment Dialog */}
+          <CardPaymentDialog
+            open={showCardPaymentDialog}
+            onOpenChange={setShowCardPaymentDialog}
             routeId={routeId}
             routeTitle={routeTitle}
             bookingDate={selectedDate}
