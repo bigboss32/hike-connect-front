@@ -29,6 +29,46 @@ import { toast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import type { PaymentParticipant } from "@/components/PSEPaymentDialog";
 
+const BrandIcon = ({ brand }: { brand: string }) => {
+  const b = brand?.toLowerCase() || "";
+  if (b.includes("visa")) {
+    return (
+      <svg viewBox="0 0 48 32" className="w-8 h-5" fill="none">
+        <rect width="48" height="32" rx="4" fill="#1A1F71" />
+        <text x="24" y="20" textAnchor="middle" fill="white" fontSize="12" fontWeight="bold" fontFamily="sans-serif">VISA</text>
+      </svg>
+    );
+  }
+  if (b.includes("master")) {
+    return (
+      <svg viewBox="0 0 48 32" className="w-8 h-5" fill="none">
+        <rect width="48" height="32" rx="4" fill="#252525" />
+        <circle cx="19" cy="16" r="9" fill="#EB001B" />
+        <circle cx="29" cy="16" r="9" fill="#F79E1B" />
+        <path d="M24 9.5a9 9 0 0 1 0 13" fill="#FF5F00" />
+        <path d="M24 22.5a9 9 0 0 1 0-13" fill="#FF5F00" />
+      </svg>
+    );
+  }
+  if (b.includes("amex") || b.includes("american")) {
+    return (
+      <svg viewBox="0 0 48 32" className="w-8 h-5" fill="none">
+        <rect width="48" height="32" rx="4" fill="#006FCF" />
+        <text x="24" y="20" textAnchor="middle" fill="white" fontSize="8" fontWeight="bold" fontFamily="sans-serif">AMEX</text>
+      </svg>
+    );
+  }
+  if (b.includes("diners")) {
+    return (
+      <svg viewBox="0 0 48 32" className="w-8 h-5" fill="none">
+        <rect width="48" height="32" rx="4" fill="#0079BE" />
+        <text x="24" y="20" textAnchor="middle" fill="white" fontSize="7" fontWeight="bold" fontFamily="sans-serif">DINERS</text>
+      </svg>
+    );
+  }
+  return <CreditCard className="w-5 h-5 text-primary" />;
+};
+
 const API_BASE_URL = "https://hike-connect-back.onrender.com/api/v1";
 
 interface SavedCard {
@@ -286,7 +326,7 @@ const CardPaymentDialog = ({
               )}
             >
               <div className="w-10 h-10 rounded-lg bg-background flex items-center justify-center shadow-sm">
-                <CreditCard className="w-5 h-5 text-primary" />
+                <BrandIcon brand={card.brand} />
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium">{card.brand} •••• {card.last_four}</p>
@@ -300,22 +340,24 @@ const CardPaymentDialog = ({
         </div>
       ) : null}
 
-      {/* Installments */}
-      <div className="space-y-2">
-        <Label className="text-xs uppercase tracking-wide text-muted-foreground">Cuotas</Label>
-        <Select value={installments} onValueChange={setInstallments}>
-          <SelectTrigger className="rounded-xl">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            {[1, 2, 3, 6, 12, 24, 36].map((n) => (
-              <SelectItem key={n} value={String(n)}>
-                {n === 1 ? "1 cuota (sin intereses)" : `${n} cuotas`}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
+      {/* Installments - only show if there are saved cards */}
+      {savedCards.length > 0 && (
+        <div className="space-y-2">
+          <Label className="text-xs uppercase tracking-wide text-muted-foreground">Cuotas</Label>
+          <Select value={installments} onValueChange={setInstallments}>
+            <SelectTrigger className="rounded-xl">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {[1, 2, 3, 6, 12, 24, 36].map((n) => (
+                <SelectItem key={n} value={String(n)}>
+                  {n === 1 ? "1 cuota (sin intereses)" : `${n} cuotas`}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+      )}
 
       {/* Actions */}
       <div className="space-y-2 pt-2">
