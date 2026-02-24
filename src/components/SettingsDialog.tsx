@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
@@ -9,24 +9,78 @@ import { toast } from "@/hooks/use-toast";
 import { useTheme } from "@/components/ThemeProvider";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
-import { Moon, Sun, HelpCircle, MessageCircle, FileText, Shield, ChevronRight, Info, LogOut } from "lucide-react";
+import { Moon, Sun, HelpCircle, MessageCircle, FileText, Shield, ChevronRight, Info, LogOut, CreditCard, Trash2, Loader2 } from "lucide-react";
 
 interface SettingsDialogProps {
   children: React.ReactNode;
 }
 
+const API_BASE_URL = "https://hike-connect-back.onrender.com/api/v1";
+
+interface SavedCard {
+  token_id: string;
+  last_four: string;
+  card_holder: string;
+  exp_month: string;
+  exp_year: string;
+  brand: string;
+  is_active: boolean;
+}
+
 const SettingsDialog = ({ children }: SettingsDialogProps) => {
   const [open, setOpen] = useState(false);
   const { theme, setTheme } = useTheme();
-  const { logout } = useAuth();
+  const { logout, authFetch, user } = useAuth();
   const navigate = useNavigate();
   const [settings, setSettings] = useState({
     notifications: true,
     emailUpdates: false,
     publicProfile: true,
   });
+  const [savedCards, setSavedCards] = useState<SavedCard[]>([]);
+  const [cardsLoading, setCardsLoading] = useState(false);
+  const [deletingCardId, setDeletingCardId] = useState<string | null>(null);
 
   const isDark = theme === "dark";
+
+  const fetchCards = useCallback(async () => {
+    if (!user) return;
+    setCardsLoading(true);
+    try {
+      const res = await authFetch(`${API_BASE_URL}/payments/cards/`);
+      if (res.ok) {
+        const data = await res.json();
+        setSavedCards((data.cards || []).filter((c: SavedCard) => c.is_active));
+      }
+    } catch {
+      // silent
+    } finally {
+      setCardsLoading(false);
+    }
+  }, [authFetch, user]);
+
+  useEffect(() => {
+    if (open && user) fetchCards();
+  }, [open, user, fetchCards]);
+
+  const deleteCard = async (tokenId: string) => {
+    setDeletingCardId(tokenId);
+    try {
+      const res = await authFetch(`${API_BASE_URL}/payments/cards/?token_id=${tokenId}`, {
+        method: "DELETE",
+      });
+      if (res.ok) {
+        setSavedCards((prev) => prev.filter((c) => c.token_id !== tokenId));
+        toast({ title: "Tarjeta eliminada", description: "La tarjeta ha sido desactivada correctamente." });
+      } else {
+        toast({ title: "Error", description: "No se pudo eliminar la tarjeta.", variant: "destructive" });
+      }
+    } catch {
+      toast({ title: "Error", description: "Error de conexión.", variant: "destructive" });
+    } finally {
+      setDeletingCardId(null);
+    }
+  };
 
   const handleThemeToggle = (checked: boolean) => {
     setTheme(checked ? "dark" : "light");
@@ -128,6 +182,67 @@ const SettingsDialog = ({ children }: SettingsDialogProps) => {
           </div>
 
           <Separator />
+
+          {/* Tarjetas guardadas */}
+          {user && (
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3">Métodos de pago</p>
+              {cardsLoading ? (
+                <div className="flex items-center justify-center py-4">
+                  <Loader2 className="w-4 h-4 animate-spin text-muted-foreground" />
+                </div>
+              ) : savedCards.length > 0 ? (
+                <div className="space-y-2">
+                  {savedCards.map((card) => (
+                    <div key={card.token_id} className="flex items-center gap-3 p-3 rounded-lg bg-muted/30">
+                      <div className="w-9 h-9 rounded-full bg-muted flex items-center justify-center shrink-0">
+                        <CreditCard className="w-4 h-4 text-muted-foreground" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium">{card.brand} •••• {card.last_four}</p>
+                        <p className="text-xs text-muted-foreground">{card.card_holder} • {card.exp_month}/{card.exp_year}</p>
+                      </div>
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+                            disabled={deletingCardId === card.token_id}
+                          >
+                            {deletingCardId === card.token_id ? (
+                              <Loader2 className="w-4 h-4 animate-spin" />
+                            ) : (
+                              <Trash2 className="w-4 h-4" />
+                            )}
+                          </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>¿Eliminar tarjeta?</AlertDialogTitle>
+                            <AlertDialogDescription>
+                              Se desactivará la tarjeta {card.brand} terminada en {card.last_four}. Para usarla nuevamente deberás registrarla de nuevo.
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                            <AlertDialogAction
+                              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                              onClick={() => deleteCard(card.token_id)}
+                            >
+                              Eliminar
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-sm text-muted-foreground py-2">No tienes tarjetas guardadas.</p>
+              )}
+            </div>
+          )}
 
           {/* Ayuda y soporte */}
           <div>
