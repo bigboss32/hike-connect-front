@@ -124,7 +124,7 @@ const CardPaymentDialog = ({
         throw new Error(err.detail || "Error al tokenizar la tarjeta");
       }
       const data = await res.json();
-      return data.token_id;
+      return data.wompi_token;
     } catch (err: any) {
       toast({ title: "Error", description: err.message, variant: "destructive" });
       return null;
