@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import {
   Dialog,
   DialogContent,
@@ -22,6 +22,7 @@ import {
   CreditCard,
   Plus,
   ChevronLeft,
+  Clock,
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "@/hooks/use-toast";
@@ -40,7 +41,7 @@ interface SavedCard {
   is_active: boolean;
 }
 
-type CardStep = "select" | "new" | "processing" | "result";
+type CardStep = "select" | "new" | "processing" | "polling" | "result";
 type PaymentResult = "approved" | "declined" | "error" | null;
 
 interface CardPaymentDialogProps {
@@ -73,6 +74,8 @@ const CardPaymentDialog = ({
   const [paymentResult, setPaymentResult] = useState<PaymentResult>(null);
   const [resultMessage, setResultMessage] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
+  const pollingRef = useRef<NodeJS.Timeout | null>(null);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // New card form
   const [cardForm, setCardForm] = useState({
@@ -85,6 +88,50 @@ const CardPaymentDialog = ({
 
   const estimatedTotal = pricePerPerson ? pricePerPerson * participants.length : null;
   const formatAmount = (amount: number) => `$${amount.toLocaleString("es-CO")} COP`;
+
+  const stopPolling = useCallback(() => {
+    if (pollingRef.current) { clearInterval(pollingRef.current); pollingRef.current = null; }
+    if (timeoutRef.current) { clearTimeout(timeoutRef.current); timeoutRef.current = null; }
+  }, []);
+
+  const startPolling = useCallback((paymentId: string) => {
+    pollingRef.current = setInterval(async () => {
+      try {
+        const res = await authFetch(`${API_BASE_URL}/payments/${paymentId}/status/`);
+        if (!res.ok) return;
+        const data = await res.json();
+        const s = (data.status || "").toUpperCase();
+        if (s === "APPROVED") {
+          stopPolling();
+          setPaymentResult("approved");
+          setResultMessage(data.amount ? formatAmount(parseFloat(data.amount)) : "");
+          setStep("result");
+          onPaymentComplete("approved");
+        } else if (s === "DECLINED") {
+          stopPolling();
+          setPaymentResult("declined");
+          setResultMessage("La transacción fue rechazada por el banco.");
+          setStep("result");
+          onPaymentComplete("declined");
+        } else if (s === "ERROR") {
+          stopPolling();
+          setPaymentResult("error");
+          setResultMessage("Ocurrió un error procesando el pago.");
+          setStep("result");
+          onPaymentComplete("error");
+        }
+      } catch { /* keep polling */ }
+    }, 4000);
+
+    timeoutRef.current = setTimeout(() => {
+      stopPolling();
+      setPaymentResult("error");
+      setResultMessage("Tiempo de espera agotado. Verifica el estado en tu historial.");
+      setStep("result");
+    }, 5 * 60 * 1000);
+  }, [authFetch, stopPolling, onPaymentComplete]);
+
+  useEffect(() => () => stopPolling(), [stopPolling]);
 
   const fetchSavedCards = useCallback(async () => {
     setCardsLoading(true);
@@ -109,8 +156,10 @@ const CardPaymentDialog = ({
       setPaymentResult(null);
       setInstallments("1");
       setCardForm({ card_number: "", cvc: "", exp_month: "", exp_year: "", card_holder: "" });
+    } else {
+      stopPolling();
     }
-  }, [open, fetchSavedCards]);
+  }, [open, fetchSavedCards, stopPolling]);
 
   const tokenizeCard = async (): Promise<string | null> => {
     try {
@@ -162,17 +211,22 @@ const CardPaymentDialog = ({
       if (status === "APPROVED") {
         setPaymentResult("approved");
         setResultMessage(data.amount ? formatAmount(parseFloat(data.amount)) : "");
+        setStep("result");
         onPaymentComplete("approved");
       } else if (status === "DECLINED") {
         setPaymentResult("declined");
         setResultMessage("La transacción fue rechazada por el banco.");
+        setStep("result");
         onPaymentComplete("declined");
+      } else if (status === "PENDING") {
+        setStep("polling");
+        startPolling(data.payment_id);
       } else {
         setPaymentResult("error");
         setResultMessage("Ocurrió un error procesando el pago.");
+        setStep("result");
         onPaymentComplete("error");
       }
-      setStep("result");
     } catch (err: any) {
       setPaymentResult("error");
       setResultMessage(err.message || "Error al procesar el pago");
@@ -383,6 +437,19 @@ const CardPaymentDialog = ({
     </div>
   );
 
+  const renderPolling = () => (
+    <div className="flex flex-col items-center gap-4 py-8">
+      <div className="relative">
+        <Clock className="w-12 h-12 text-primary" />
+        <div className="absolute -top-1 -right-1 w-4 h-4 bg-amber-500 rounded-full animate-pulse" />
+      </div>
+      <p className="text-lg font-semibold">Esperando confirmación...</p>
+      <p className="text-sm text-muted-foreground text-center">
+        Tu pago está siendo procesado por el banco. Verificamos automáticamente.
+      </p>
+    </div>
+  );
+
   const renderResult = () => (
     <div className="flex flex-col items-center gap-4 py-8">
       {paymentResult === "approved" ? (
@@ -414,7 +481,7 @@ const CardPaymentDialog = ({
   );
 
   return (
-    <Dialog open={open} onOpenChange={(v) => { if (!isProcessing) onOpenChange(v); }}>
+    <Dialog open={open} onOpenChange={(v) => { if (!isProcessing && step !== "polling") onOpenChange(v); }}>
       <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
@@ -425,6 +492,7 @@ const CardPaymentDialog = ({
         {step === "select" && renderSelect()}
         {step === "new" && renderNewCard()}
         {step === "processing" && renderProcessing()}
+        {step === "polling" && renderPolling()}
         {step === "result" && renderResult()}
       </DialogContent>
     </Dialog>
