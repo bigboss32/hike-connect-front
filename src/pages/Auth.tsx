@@ -12,6 +12,7 @@ import maroaIcon from "@/assets/maroa-icon.svg";
 import EmailVerificationForm from "@/components/EmailVerificationForm";
 import PasswordResetFlow from "@/components/PasswordResetFlow";
 import WalkingLoader from "@/components/WalkingLoader";
+import LoginScenery from "@/components/LoginScenery";
 
 type AuthView = "main" | "verify-email" | "password-reset";
 
@@ -240,11 +241,12 @@ const Auth = () => {
   return (
     <div className="min-h-screen bg-background flex flex-col items-center justify-center p-4">
       <div className="w-full max-w-md">
-        <div className="text-center mb-6">
+        <LoginScenery />
+        <div className="text-center mb-4">
           <img 
             src={maroaIcon} 
             alt="MAROÁ" 
-            className="w-56 h-56 mx-auto animate-logo-entrance"
+            className="w-40 h-40 mx-auto animate-logo-entrance"
           />
         </div>
 
