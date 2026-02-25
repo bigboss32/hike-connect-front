@@ -57,7 +57,7 @@ const UserStatsCards = ({ hideGreeting = false }: UserStatsCardsProps) => {
         </div>
       )}
       
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-2 gap-3 stagger-fade-up">
         <RouteHistoryDialog>
           <StatCard
             icon={<Route className="w-5 h-5 text-white" />}
