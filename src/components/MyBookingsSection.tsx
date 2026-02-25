@@ -109,18 +109,51 @@ const WalkingHiker = () => (
       </svg>
     </div>
 
-    {/* Ground - (z-[5]) */}
-    <div className="absolute bottom-0 left-0 right-0 h-[3px] bg-gradient-to-r from-primary/20 via-primary/30 to-primary/20 z-[5]" />
+    {/* Rain - occasional, z-[4.5] above mountains */}
+    <div className="absolute inset-0 z-[5] animate-rainAppear pointer-events-none">
+      {[...Array(18)].map((_, i) => (
+        <div
+          key={i}
+          className="absolute w-[1px] bg-primary/30 animate-rainDrop"
+          style={{
+            left: `${5 + (i * 5.2) % 90}%`,
+            height: `${6 + (i % 3) * 3}px`,
+            animationDelay: `${(i * 0.15) % 1.2}s`,
+            animationDuration: `${0.5 + (i % 3) * 0.15}s`,
+          }}
+        />
+      ))}
+    </div>
 
-    {/* Footprints trail - (z-[6]) */}
-    <div className="absolute bottom-[2px] left-0 right-0 flex gap-3 animate-walk opacity-20 z-[6]">
+    {/* Campfire at the right end - z-[6] */}
+    <div className="absolute bottom-[2px] right-[5%] z-[6]">
+      <svg width="16" height="20" viewBox="0 0 16 20" fill="none">
+        {/* Logs */}
+        <rect x="2" y="16" width="12" height="2" rx="1" fill="currentColor" className="text-primary" opacity="0.4"/>
+        <rect x="4" y="14.5" width="8" height="2" rx="1" fill="currentColor" className="text-primary" opacity="0.3" transform="rotate(-15 8 15.5)"/>
+        {/* Fire */}
+        <path d="M8 4 Q10 8 9 11 Q8.5 13 8 14 Q7.5 13 7 11 Q6 8 8 4Z" className="animate-fireFlicker" fill="#F59E0B" opacity="0.85"/>
+        <path d="M8 6 Q9.2 9 8.5 12 Q8.2 13 8 13.5 Q7.8 13 7.5 12 Q6.8 9 8 6Z" className="animate-fireFlicker" fill="#EF4444" opacity="0.6" style={{ animationDelay: '0.15s' }}/>
+        <path d="M8 8 Q8.8 10 8.3 12 Q8.1 12.5 8 12.8 Q7.9 12.5 7.7 12 Q7.2 10 8 8Z" fill="#FCD34D" opacity="0.9" className="animate-fireFlicker" style={{ animationDelay: '0.3s' }}/>
+        {/* Smoke particles */}
+        <circle cx="7.5" cy="3" r="1" fill="currentColor" className="text-muted-foreground animate-smokeRise" opacity="0.15"/>
+        <circle cx="8.5" cy="1.5" r="0.8" fill="currentColor" className="text-muted-foreground animate-smokeRise" opacity="0.1" style={{ animationDelay: '0.5s' }}/>
+        <circle cx="8" cy="0.5" r="1.2" fill="currentColor" className="text-muted-foreground animate-smokeRise" opacity="0.08" style={{ animationDelay: '1s' }}/>
+      </svg>
+    </div>
+
+    {/* Ground - (z-[7]) */}
+    <div className="absolute bottom-0 left-0 right-0 h-[3px] bg-gradient-to-r from-primary/20 via-primary/30 to-primary/20 z-[7]" />
+
+    {/* Footprints trail - (z-[8]) */}
+    <div className="absolute bottom-[2px] left-0 right-0 flex gap-3 animate-walk opacity-20 z-[8]">
       {[...Array(12)].map((_, i) => (
         <div key={i} className="w-1.5 h-0.5 rounded-full bg-primary shrink-0" style={{ opacity: 1 - i * 0.07 }} />
       ))}
     </div>
 
-    {/* Animated hiker - FIRST PLANE (z-[7]) */}
-    <div className="absolute bottom-[3px] animate-walk z-[7]">
+    {/* Animated hiker - FIRST PLANE (z-[9]) */}
+    <div className="absolute bottom-[3px] animate-walk z-[9]">
       <svg width="20" height="28" viewBox="0 0 20 28" fill="none" className="text-primary">
         <circle cx="10" cy="4.5" r="3" fill="currentColor" opacity="0.9"/>
         <ellipse cx="10" cy="2.8" rx="4.5" ry="1" fill="currentColor" opacity="0.7"/>
