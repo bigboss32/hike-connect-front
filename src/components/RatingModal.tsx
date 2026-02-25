@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { Star, Loader2 } from "lucide-react";
+import { Star } from "lucide-react";
+import WalkingLoader from "@/components/WalkingLoader";
 import {
   Dialog,
   DialogContent,
@@ -122,8 +123,8 @@ const RatingModal = ({ open, onOpenChange, rating, routeId, routeTitle, isLoadin
               >
                 {isPending ? (
                   <>
-                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                    Calificando...
+                    <WalkingLoader />
+                    <span>Calificando...</span>
                   </>
                 ) : (
                   userScore > 0 ? "Actualizar calificación" : "Calificar"

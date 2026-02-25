@@ -1,5 +1,6 @@
 import { useParams, useNavigate } from "react-router-dom";
-import { ArrowLeft, MapPin, Calendar, Users, User, Loader2 } from "lucide-react";
+import { ArrowLeft, MapPin, Calendar, Users, User } from "lucide-react";
+import WalkingLoader from "@/components/WalkingLoader";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
@@ -141,8 +142,8 @@ const EventDetail = () => {
         >
           {isJoining ? (
             <>
-              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-              Inscribiendo...
+              <WalkingLoader />
+              <span>Inscribiendo...</span>
             </>
           ) : isFull ? "Evento lleno" : "Unirse al evento"}
         </Button>

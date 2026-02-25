@@ -6,6 +6,7 @@ import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import { ArrowLeft, KeyRound, Mail, RefreshCw, Eye, EyeOff, CheckCircle2, ShieldCheck } from "lucide-react";
+import WalkingLoader from "@/components/WalkingLoader";
 
 interface PasswordResetFlowProps {
   onBack: () => void;
@@ -126,7 +127,7 @@ const PasswordResetFlow = ({ onBack, onComplete }: PasswordResetFlowProps) => {
             </div>
             <Button type="submit" className="w-full" disabled={isLoading}>
               {isLoading ? (
-                <><RefreshCw className="h-4 w-4 mr-2 animate-spin" />Enviando...</>
+                <><WalkingLoader /><span>Enviando...</span></>
               ) : (
                 <><Mail className="h-4 w-4 mr-2" />Enviar código</>
               )}
@@ -165,7 +166,7 @@ const PasswordResetFlow = ({ onBack, onComplete }: PasswordResetFlowProps) => {
 
           <Button className="w-full" onClick={handleVerifyCode} disabled={isLoading || code.length !== 6}>
             {isLoading ? (
-              <><RefreshCw className="h-4 w-4 mr-2 animate-spin" />Verificando...</>
+              <><WalkingLoader /><span>Verificando...</span></>
             ) : (
               <><CheckCircle2 className="h-4 w-4 mr-2" />Verificar código</>
             )}
@@ -232,7 +233,7 @@ const PasswordResetFlow = ({ onBack, onComplete }: PasswordResetFlowProps) => {
 
             <Button type="submit" className="w-full" disabled={isLoading}>
               {isLoading ? (
-                <><RefreshCw className="h-4 w-4 mr-2 animate-spin" />Actualizando...</>
+                <><WalkingLoader /><span>Actualizando...</span></>
               ) : (
                 "Actualizar contraseña"
               )}
