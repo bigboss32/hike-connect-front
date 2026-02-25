@@ -8,7 +8,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Eye, EyeOff, Fingerprint } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import maroaIcon from "@/assets/maroa-icon.svg";
 import EmailVerificationForm from "@/components/EmailVerificationForm";
 import PasswordResetFlow from "@/components/PasswordResetFlow";
 import WalkingLoader from "@/components/WalkingLoader";
@@ -239,18 +238,13 @@ const Auth = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background flex flex-col items-center justify-center p-4">
-      <div className="w-full max-w-md">
-        <LoginScenery />
-        <div className="text-center mb-4">
-          <img 
-            src={maroaIcon} 
-            alt="MAROÁ" 
-            className="w-40 h-40 mx-auto animate-logo-entrance"
-          />
-        </div>
+    <div className="min-h-screen bg-background flex flex-col items-center justify-end p-4 relative overflow-hidden">
+      {/* Full-page animated scenery background */}
+      <LoginScenery />
 
-        <Card className="animate-slide-up" style={{ animationDelay: '0.3s' }}>
+      <div className="w-full max-w-md relative z-10 pb-4">
+
+        <Card className="animate-slide-up backdrop-blur-md bg-card/90 dark:bg-card/80 border-border/50" style={{ animationDelay: '0.3s' }}>
           <CardHeader className="pb-4">
             {view === "verify-email" && (
               <CardContent className="pt-2 px-0">
