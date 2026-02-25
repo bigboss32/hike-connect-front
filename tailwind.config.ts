@@ -129,6 +129,27 @@ export default {
           "65%, 95%": { opacity: "0" },
           "100%": { opacity: "1" },
         },
+        rainDrop: {
+          "0%": { transform: "translateY(-8px)", opacity: "0" },
+          "20%": { opacity: "0.6" },
+          "100%": { transform: "translateY(56px)", opacity: "0" },
+        },
+        rainAppear: {
+          "0%, 30%": { opacity: "0" },
+          "35%, 48%": { opacity: "1" },
+          "52%, 100%": { opacity: "0" },
+        },
+        fireFlicker: {
+          "0%, 100%": { transform: "scaleY(1) scaleX(1)", opacity: "0.85" },
+          "25%": { transform: "scaleY(1.1) scaleX(0.9)", opacity: "0.9" },
+          "50%": { transform: "scaleY(0.9) scaleX(1.05)", opacity: "0.75" },
+          "75%": { transform: "scaleY(1.05) scaleX(0.95)", opacity: "0.9" },
+        },
+        smokeRise: {
+          "0%": { transform: "translateY(0) scale(1)", opacity: "0.15" },
+          "50%": { transform: "translateY(-6px) scale(1.5)", opacity: "0.08" },
+          "100%": { transform: "translateY(-14px) scale(2)", opacity: "0" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -144,6 +165,10 @@ export default {
         cloudDrift2: "cloudDrift2 20s linear infinite",
         cloudDrift3: "cloudDrift3 25s linear infinite",
         cloudsHide: "cloudsHide 10s ease-in-out infinite",
+        rainDrop: "rainDrop 0.6s linear infinite",
+        rainAppear: "rainAppear 10s ease-in-out infinite",
+        fireFlicker: "fireFlicker 0.4s ease-in-out infinite",
+        smokeRise: "smokeRise 2s ease-out infinite",
       },
     },
   },
