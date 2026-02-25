@@ -243,11 +243,11 @@ const Auth = () => {
           <img 
             src={maroaIcon} 
             alt="MAROÁ" 
-            className="w-56 h-56 mx-auto"
+            className="w-56 h-56 mx-auto animate-logo-entrance"
           />
         </div>
 
-        <Card>
+        <Card className="animate-slide-up" style={{ animationDelay: '0.3s' }}>
           <CardHeader className="pb-4">
             {view === "verify-email" && (
               <CardContent className="pt-2 px-0">
@@ -281,7 +281,7 @@ const Auth = () => {
                     Ingresa tus credenciales para continuar
                   </CardDescription>
                   
-                  <form onSubmit={handleLogin} className="space-y-4 mt-4">
+                  <form onSubmit={handleLogin} className="space-y-4 mt-4 stagger-fade-up">
                     <div className="space-y-2">
                       <Label htmlFor="login-email">Correo electrónico</Label>
                       <Input
@@ -377,7 +377,7 @@ const Auth = () => {
                     Únete a la comunidad de senderistas
                   </CardDescription>
                   
-                  <form onSubmit={handleRegister} className="space-y-4 mt-4">
+                  <form onSubmit={handleRegister} className="space-y-4 mt-4 stagger-fade-up">
                     <div className="grid grid-cols-2 gap-3">
                       <div className="space-y-2">
                         <Label htmlFor="register-firstname">Nombre</Label>

@@ -222,9 +222,9 @@ const Routes = () => {
           </div>
         ) : (
           <div className="grid gap-4">
-            {allRoutes.map((route) => (
+            {allRoutes.map((route, index) => (
+              <div key={route.id} className="route-card-stagger" style={{ animationDelay: `${index * 100}ms` }}>
               <RouteCard
-                key={route.id}
                 id={route.id}
                 title={route.title}
                 location={route.location}
@@ -241,6 +241,7 @@ const Routes = () => {
                 requires_payment={route.requires_payment}
                 max_capacity={route.max_capacity}
               />
+              </div>
             ))}
           </div>
         )}

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Home, Map, Users, User, LogIn, Settings } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
@@ -9,6 +9,12 @@ const Navigation = () => {
   const location = useLocation();
   const { user } = useAuth();
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [bouncingPath, setBouncingPath] = useState<string | null>(null);
+
+  const handleNavClick = (path: string) => {
+    setBouncingPath(path);
+    setTimeout(() => setBouncingPath(null), 400);
+  };
 
   const navItems = [
     { icon: Home, label: "Inicio", path: "/" },
@@ -28,15 +34,23 @@ const Navigation = () => {
             <Link
               key={item.path}
               to={item.path}
+              onClick={() => handleNavClick(item.path)}
               className={cn(
-                "flex flex-col items-center justify-center gap-1 px-3 py-2 rounded-lg transition-all",
+                "flex flex-col items-center justify-center gap-1 px-3 py-2 rounded-lg transition-all relative",
                 isActive
                   ? "text-primary"
                   : "text-muted-foreground hover:text-foreground"
               )}
             >
-              <Icon className={cn("w-5 h-5", isActive && "scale-110")} />
+              <Icon className={cn(
+                "w-5 h-5 transition-transform",
+                isActive && "scale-110",
+                bouncingPath === item.path && "nav-bounce"
+              )} />
               <span className="text-xs font-medium">{item.label}</span>
+              {isActive && (
+                <span className="absolute -bottom-1 w-1 h-1 rounded-full bg-primary nav-active-dot" />
+              )}
             </Link>
           );
         })}

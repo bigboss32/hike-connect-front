@@ -118,11 +118,11 @@ const Profile = () => {
         </div>
       </ScrollHeader>
 
-      <main className="max-w-lg mx-auto px-4 py-6">
+      <main className="max-w-lg mx-auto px-4 py-6 stagger-fade-up">
         <Card className="mb-6 shadow-soft">
           <CardContent className="p-6">
             <div className="flex items-start gap-4 mb-4">
-              <Avatar className="w-20 h-20">
+              <Avatar className="w-20 h-20 animate-avatar-entrance">
                 <AvatarImage src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${user.email}`} />
                 <AvatarFallback>{getInitials(user.name)}</AvatarFallback>
               </Avatar>
