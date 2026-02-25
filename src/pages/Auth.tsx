@@ -8,6 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Eye, EyeOff, Fingerprint } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import maroaIcon from "@/assets/maroa-icon.svg";
 import EmailVerificationForm from "@/components/EmailVerificationForm";
 import PasswordResetFlow from "@/components/PasswordResetFlow";
 import WalkingLoader from "@/components/WalkingLoader";
@@ -238,11 +239,18 @@ const Auth = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background flex flex-col items-center justify-end p-4 relative overflow-hidden">
+    <div className="min-h-screen bg-background flex flex-col items-center justify-center p-4 relative overflow-hidden">
       {/* Full-page animated scenery background */}
       <LoginScenery />
 
-      <div className="w-full max-w-md relative z-10 pb-4">
+      <div className="w-full max-w-md relative z-10">
+        <div className="text-center mb-6">
+          <img 
+            src={maroaIcon} 
+            alt="MAROÁ" 
+            className="w-56 h-56 mx-auto animate-logo-entrance drop-shadow-[0_4px_24px_rgba(45,80,36,0.3)]"
+          />
+        </div>
 
         <Card className="animate-slide-up backdrop-blur-md bg-card/90 dark:bg-card/80 border-border/50" style={{ animationDelay: '0.3s' }}>
           <CardHeader className="pb-4">
