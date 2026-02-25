@@ -34,13 +34,20 @@ const formatCOP = (amount: string) => {
 const WalkingHiker = () => (
   <div className="relative w-full h-14 overflow-hidden my-2 rounded-xl bg-gradient-to-r from-accent/5 via-primary/5 to-accent/5">
     {/* Sky gradient that shifts with day/night cycle */}
-    <div className="absolute inset-0 animate-dayNight rounded-xl" />
+    <div className="absolute inset-0 animate-dayNight rounded-xl z-0" />
 
-    {/* Sun - rises and sets */}
-    <div className="absolute animate-celestial" style={{ animationDelay: '0s' }}>
+    {/* Stars - appear at night (behind everything) */}
+    <div className="absolute inset-0 animate-starsAppear z-[1]">
+      <div className="absolute top-1 left-[15%] w-1 h-1 bg-foreground/30 rounded-full" />
+      <div className="absolute top-2 left-[35%] w-0.5 h-0.5 bg-foreground/20 rounded-full" />
+      <div className="absolute top-1.5 right-[25%] w-1 h-1 bg-foreground/25 rounded-full" />
+      <div className="absolute top-3 right-[40%] w-0.5 h-0.5 bg-foreground/20 rounded-full" />
+    </div>
+
+    {/* Sun - BEHIND mountains (z-[2]) */}
+    <div className="absolute animate-celestial z-[2]">
       <svg width="16" height="16" viewBox="0 0 16 16">
         <circle cx="8" cy="8" r="5" fill="#F59E0B" opacity="0.9"/>
-        {/* Sun rays */}
         <g opacity="0.5" stroke="#F59E0B" strokeWidth="1.5" strokeLinecap="round">
           <line x1="8" y1="0" x2="8" y2="2"/>
           <line x1="8" y1="14" x2="8" y2="16"/>
@@ -54,8 +61,8 @@ const WalkingHiker = () => (
       </svg>
     </div>
 
-    {/* Moon - rises when sun sets */}
-    <div className="absolute animate-celestialMoon">
+    {/* Moon - BEHIND mountains (z-[2]) */}
+    <div className="absolute animate-celestialMoon z-[2]">
       <svg width="14" height="14" viewBox="0 0 14 14">
         <path d="M10 1a6 6 0 1 0 0 12 5 5 0 0 1 0-12z" fill="#CBD5E1" opacity="0.9"/>
         <circle cx="6" cy="4" r="0.6" fill="#94A3B8" opacity="0.5"/>
@@ -64,36 +71,29 @@ const WalkingHiker = () => (
       </svg>
     </div>
 
-    {/* Stars - appear at night */}
-    <div className="absolute inset-0 animate-starsAppear">
-      <div className="absolute top-1 left-[15%] w-1 h-1 bg-foreground/30 rounded-full" />
-      <div className="absolute top-2 left-[35%] w-0.5 h-0.5 bg-foreground/20 rounded-full" />
-      <div className="absolute top-1.5 right-[25%] w-1 h-1 bg-foreground/25 rounded-full" />
-      <div className="absolute top-3 right-[40%] w-0.5 h-0.5 bg-foreground/20 rounded-full" />
-    </div>
-
-    {/* Mountains background */}
-    <svg className="absolute bottom-0 left-0 right-0 opacity-15" viewBox="0 0 320 30" preserveAspectRatio="none">
-      <polygon points="0,30 20,10 45,20 70,5 100,18 130,8 160,22 190,6 220,15 250,3 280,18 310,8 320,30" fill="currentColor" className="text-primary"/>
-      <polygon points="0,30 30,15 60,25 90,12 120,20 150,10 180,24 210,14 240,22 270,8 300,20 320,30" fill="currentColor" className="text-accent" opacity="0.6"/>
+    {/* Mountains - IN FRONT of sun/moon (z-[3]) */}
+    <svg className="absolute bottom-0 left-0 right-0 z-[3]" viewBox="0 0 320 30" preserveAspectRatio="none" style={{ height: '60%' }}>
+      <polygon points="0,30 20,10 45,20 70,5 100,18 130,8 160,22 190,6 220,15 250,3 280,18 310,8 320,30" className="fill-card"/>
+      <polygon points="0,30 20,10 45,20 70,5 100,18 130,8 160,22 190,6 220,15 250,3 280,18 310,8 320,30" fill="currentColor" className="text-primary" opacity="0.15"/>
+      <polygon points="0,30 30,15 60,25 90,12 120,20 150,10 180,24 210,14 240,22 270,8 300,20 320,30" fill="currentColor" className="text-accent" opacity="0.1"/>
     </svg>
 
-    {/* Trees */}
-    <svg className="absolute bottom-0 left-[10%] opacity-20" width="12" height="18" viewBox="0 0 12 18">
+    {/* Trees - IN FRONT of mountains (z-[4]) */}
+    <svg className="absolute bottom-0 left-[10%] opacity-20 z-[4]" width="12" height="18" viewBox="0 0 12 18">
       <polygon points="6,0 12,14 0,14" fill="currentColor" className="text-primary"/>
       <rect x="5" y="14" width="2" height="4" fill="currentColor" className="text-primary" opacity="0.7"/>
     </svg>
-    <svg className="absolute bottom-0 left-[50%] opacity-15" width="10" height="14" viewBox="0 0 10 14">
+    <svg className="absolute bottom-0 left-[50%] opacity-15 z-[4]" width="10" height="14" viewBox="0 0 10 14">
       <polygon points="5,0 10,11 0,11" fill="currentColor" className="text-primary"/>
       <rect x="4" y="11" width="2" height="3" fill="currentColor" className="text-primary" opacity="0.7"/>
     </svg>
-    <svg className="absolute bottom-0 right-[15%] opacity-20" width="14" height="20" viewBox="0 0 14 20">
+    <svg className="absolute bottom-0 right-[15%] opacity-20 z-[4]" width="14" height="20" viewBox="0 0 14 20">
       <polygon points="7,0 14,16 0,16" fill="currentColor" className="text-primary"/>
       <rect x="6" y="16" width="2" height="4" fill="currentColor" className="text-primary" opacity="0.7"/>
     </svg>
 
-    {/* Ground */}
-    <div className="absolute bottom-0 left-0 right-0 h-[3px] bg-gradient-to-r from-primary/20 via-primary/30 to-primary/20" />
+    {/* Ground - topmost layer (z-[5]) */}
+    <div className="absolute bottom-0 left-0 right-0 h-[3px] bg-gradient-to-r from-primary/20 via-primary/30 to-primary/20 z-[5]" />
 
     {/* Footprints trail */}
     <div className="absolute bottom-[2px] left-0 right-0 flex gap-3 animate-walk opacity-20">
