@@ -11,6 +11,7 @@ import { useToast } from "@/hooks/use-toast";
 import maroaIcon from "@/assets/maroa-icon.svg";
 import EmailVerificationForm from "@/components/EmailVerificationForm";
 import PasswordResetFlow from "@/components/PasswordResetFlow";
+import WalkingLoader from "@/components/WalkingLoader";
 
 type AuthView = "main" | "verify-email" | "password-reset";
 
@@ -326,7 +327,7 @@ const Auth = () => {
                       className="w-full h-12" 
                       disabled={isLoading}
                     >
-                      {isLoading ? "Iniciando sesión..." : "Iniciar Sesión"}
+                      {isLoading ? <><WalkingLoader /><span>Iniciando sesión...</span></> : "Iniciar Sesión"}
                     </Button>
 
                     {/* Divider con "O" - Armonizado con colores de la app */}
@@ -466,7 +467,7 @@ const Auth = () => {
                     </div>
                     
                     <Button type="submit" className="w-full h-12" disabled={isLoading}>
-                      {isLoading ? "Creando cuenta..." : "Crear Cuenta"}
+                      {isLoading ? <><WalkingLoader /><span>Creando cuenta...</span></> : "Crear Cuenta"}
                     </Button>
                   </form>
                 </TabsContent>

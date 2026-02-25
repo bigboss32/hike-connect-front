@@ -4,6 +4,7 @@ import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import { Mail, RefreshCw, CheckCircle2 } from "lucide-react";
+import WalkingLoader from "@/components/WalkingLoader";
 
 interface EmailVerificationFormProps {
   email: string;
@@ -123,8 +124,8 @@ const EmailVerificationForm = ({ email, onVerified, onBack }: EmailVerificationF
       >
         {isLoading ? (
           <>
-            <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
-            Verificando...
+            <WalkingLoader />
+            <span>Verificando...</span>
           </>
         ) : (
           <>
@@ -147,8 +148,8 @@ const EmailVerificationForm = ({ email, onVerified, onBack }: EmailVerificationF
           >
             {isResending ? (
               <>
-                <RefreshCw className="h-3 w-3 mr-2 animate-spin" />
-                Reenviando...
+                <WalkingLoader />
+                <span>Reenviando...</span>
               </>
             ) : (
               "Reenviar código"
