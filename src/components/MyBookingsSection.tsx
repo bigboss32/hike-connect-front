@@ -32,43 +32,106 @@ const formatCOP = (amount: string) => {
 };
 
 const WalkingHiker = () => (
-  <div className="relative w-full h-10 overflow-hidden my-1">
-    {/* Ground line */}
-    <div className="absolute bottom-1 left-0 right-0 h-px bg-border" />
-    {/* Dotted trail */}
-    <div className="absolute bottom-[5px] left-0 right-0 h-px border-b border-dashed border-primary/20" />
-    {/* Animated hiker */}
-    <div className="absolute bottom-1 animate-walk">
-      <svg width="24" height="32" viewBox="0 0 24 32" fill="none" className="text-primary">
-        {/* Head */}
-        <circle cx="12" cy="5" r="3.5" fill="currentColor" opacity="0.9"/>
-        {/* Hat brim */}
-        <ellipse cx="12" cy="3" rx="5" ry="1.2" fill="currentColor" opacity="0.7"/>
-        {/* Hat top */}
-        <rect x="9" y="0" width="6" height="3.5" rx="2" fill="currentColor" opacity="0.8"/>
-        {/* Body */}
-        <rect x="10.5" y="8" width="3" height="9" rx="1.5" fill="currentColor" opacity="0.85"/>
-        {/* Backpack */}
-        <rect x="13" y="8" width="4" height="7" rx="1.5" fill="currentColor" opacity="0.5"/>
-        {/* Left leg */}
-        <g className="animate-legSwing origin-center" style={{ transformOrigin: '11px 17px' }}>
-          <rect x="9.5" y="17" width="2.5" height="8" rx="1.2" fill="currentColor" opacity="0.8"/>
-          <rect x="8.5" y="24" width="4" height="2" rx="1" fill="currentColor" opacity="0.7"/>
+  <div className="relative w-full h-14 overflow-hidden my-2 rounded-xl bg-gradient-to-r from-accent/5 via-primary/5 to-accent/5">
+    {/* Sky gradient that shifts with day/night cycle */}
+    <div className="absolute inset-0 animate-dayNight rounded-xl" />
+
+    {/* Sun - rises and sets */}
+    <div className="absolute animate-celestial" style={{ animationDelay: '0s' }}>
+      <svg width="16" height="16" viewBox="0 0 16 16">
+        <circle cx="8" cy="8" r="5" fill="#F59E0B" opacity="0.9"/>
+        {/* Sun rays */}
+        <g opacity="0.5" stroke="#F59E0B" strokeWidth="1.5" strokeLinecap="round">
+          <line x1="8" y1="0" x2="8" y2="2"/>
+          <line x1="8" y1="14" x2="8" y2="16"/>
+          <line x1="0" y1="8" x2="2" y2="8"/>
+          <line x1="14" y1="8" x2="16" y2="8"/>
+          <line x1="2.3" y1="2.3" x2="3.7" y2="3.7"/>
+          <line x1="12.3" y1="12.3" x2="13.7" y2="13.7"/>
+          <line x1="2.3" y1="13.7" x2="3.7" y2="12.3"/>
+          <line x1="12.3" y1="3.7" x2="13.7" y2="2.3"/>
         </g>
-        {/* Right leg */}
-        <g className="animate-legSwing origin-center" style={{ transformOrigin: '13px 17px', animationDelay: '0.3s' }}>
-          <rect x="12" y="17" width="2.5" height="8" rx="1.2" fill="currentColor" opacity="0.8"/>
-          <rect x="11.5" y="24" width="4" height="2" rx="1" fill="currentColor" opacity="0.7"/>
-        </g>
-        {/* Walking stick */}
-        <line x1="7" y1="10" x2="5" y2="26" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" opacity="0.6" className="animate-stickSwing" style={{ transformOrigin: '7px 10px' }}/>
       </svg>
     </div>
-    {/* Small mountains in background */}
-    <svg className="absolute bottom-1 right-2 opacity-10" width="60" height="20" viewBox="0 0 60 20">
-      <polygon points="0,20 15,4 30,20" fill="currentColor" className="text-primary"/>
-      <polygon points="20,20 40,2 60,20" fill="currentColor" className="text-primary"/>
+
+    {/* Moon - rises when sun sets */}
+    <div className="absolute animate-celestialMoon">
+      <svg width="14" height="14" viewBox="0 0 14 14">
+        <path d="M10 1a6 6 0 1 0 0 12 5 5 0 0 1 0-12z" fill="#CBD5E1" opacity="0.9"/>
+        <circle cx="6" cy="4" r="0.6" fill="#94A3B8" opacity="0.5"/>
+        <circle cx="8.5" cy="7" r="0.8" fill="#94A3B8" opacity="0.4"/>
+        <circle cx="5" cy="8" r="0.5" fill="#94A3B8" opacity="0.3"/>
+      </svg>
+    </div>
+
+    {/* Stars - appear at night */}
+    <div className="absolute inset-0 animate-starsAppear">
+      <div className="absolute top-1 left-[15%] w-1 h-1 bg-foreground/30 rounded-full" />
+      <div className="absolute top-2 left-[35%] w-0.5 h-0.5 bg-foreground/20 rounded-full" />
+      <div className="absolute top-1.5 right-[25%] w-1 h-1 bg-foreground/25 rounded-full" />
+      <div className="absolute top-3 right-[40%] w-0.5 h-0.5 bg-foreground/20 rounded-full" />
+    </div>
+
+    {/* Mountains background */}
+    <svg className="absolute bottom-0 left-0 right-0 opacity-15" viewBox="0 0 320 30" preserveAspectRatio="none">
+      <polygon points="0,30 20,10 45,20 70,5 100,18 130,8 160,22 190,6 220,15 250,3 280,18 310,8 320,30" fill="currentColor" className="text-primary"/>
+      <polygon points="0,30 30,15 60,25 90,12 120,20 150,10 180,24 210,14 240,22 270,8 300,20 320,30" fill="currentColor" className="text-accent" opacity="0.6"/>
     </svg>
+
+    {/* Trees */}
+    <svg className="absolute bottom-0 left-[10%] opacity-20" width="12" height="18" viewBox="0 0 12 18">
+      <polygon points="6,0 12,14 0,14" fill="currentColor" className="text-primary"/>
+      <rect x="5" y="14" width="2" height="4" fill="currentColor" className="text-primary" opacity="0.7"/>
+    </svg>
+    <svg className="absolute bottom-0 left-[50%] opacity-15" width="10" height="14" viewBox="0 0 10 14">
+      <polygon points="5,0 10,11 0,11" fill="currentColor" className="text-primary"/>
+      <rect x="4" y="11" width="2" height="3" fill="currentColor" className="text-primary" opacity="0.7"/>
+    </svg>
+    <svg className="absolute bottom-0 right-[15%] opacity-20" width="14" height="20" viewBox="0 0 14 20">
+      <polygon points="7,0 14,16 0,16" fill="currentColor" className="text-primary"/>
+      <rect x="6" y="16" width="2" height="4" fill="currentColor" className="text-primary" opacity="0.7"/>
+    </svg>
+
+    {/* Ground */}
+    <div className="absolute bottom-0 left-0 right-0 h-[3px] bg-gradient-to-r from-primary/20 via-primary/30 to-primary/20" />
+
+    {/* Footprints trail */}
+    <div className="absolute bottom-[2px] left-0 right-0 flex gap-3 animate-walk opacity-20">
+      {[...Array(12)].map((_, i) => (
+        <div key={i} className="w-1.5 h-0.5 rounded-full bg-primary shrink-0" style={{ opacity: 1 - i * 0.07 }} />
+      ))}
+    </div>
+
+    {/* Animated hiker - facing RIGHT */}
+    <div className="absolute bottom-[3px] animate-walk">
+      <svg width="20" height="28" viewBox="0 0 20 28" fill="none" className="text-primary">
+        {/* Head */}
+        <circle cx="10" cy="4.5" r="3" fill="currentColor" opacity="0.9"/>
+        {/* Hat */}
+        <ellipse cx="10" cy="2.8" rx="4.5" ry="1" fill="currentColor" opacity="0.7"/>
+        <path d="M7 2.8 Q10 -0.5 13 2.8" fill="currentColor" opacity="0.8"/>
+        {/* Body */}
+        <rect x="8.5" y="7.5" width="3" height="8" rx="1.5" fill="currentColor" opacity="0.85"/>
+        {/* Backpack - on the back (left side since facing right) */}
+        <rect x="5.5" y="7.5" width="3.5" height="6" rx="1.5" fill="currentColor" opacity="0.45"/>
+        <rect x="6" y="6.5" width="2.5" height="1.5" rx="0.75" fill="currentColor" opacity="0.35"/>
+        {/* Left arm with stick */}
+        <g className="animate-stickSwing" style={{ transformOrigin: '13px 8px' }}>
+          <line x1="13" y1="8" x2="17" y2="22" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" opacity="0.5"/>
+          <line x1="11.5" y1="8" x2="14" y2="14" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" opacity="0.7"/>
+        </g>
+        {/* Left leg */}
+        <g className="animate-legSwing" style={{ transformOrigin: '9.5px 15px' }}>
+          <rect x="8" y="15" width="2.2" height="7" rx="1.1" fill="currentColor" opacity="0.8"/>
+          <ellipse cx="9.5" cy="22.5" rx="2.2" ry="1" fill="currentColor" opacity="0.7"/>
+        </g>
+        {/* Right leg */}
+        <g className="animate-legSwing" style={{ transformOrigin: '11px 15px', animationDelay: '0.3s' }}>
+          <rect x="10" y="15" width="2.2" height="7" rx="1.1" fill="currentColor" opacity="0.8"/>
+          <ellipse cx="11.5" cy="22.5" rx="2.2" ry="1" fill="currentColor" opacity="0.7"/>
+        </g>
+      </svg>
+    </div>
   </div>
 );
 
