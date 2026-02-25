@@ -4,6 +4,7 @@ import { useUserCommunityStats } from "@/hooks/useCommunityMembers";
 import { Link } from "react-router-dom";
 import RouteHistoryDialog from "@/components/RouteHistoryDialog";
 import MyCommunityDialog from "@/components/MyCommunityDialog";
+import { useBookingHistory } from "@/hooks/useBookingHistory";
 
 interface StatCardProps {
   icon: React.ReactNode;
@@ -36,9 +37,10 @@ interface UserStatsCardsProps {
 const UserStatsCards = ({ hideGreeting = false }: UserStatsCardsProps) => {
   const { user } = useAuth();
   const { data: communityStats } = useUserCommunityStats();
+  const { data: bookingHistory } = useBookingHistory(1, 1);
   
   const stats = {
-    routesCompleted: 12,
+    routesCompleted: bookingHistory?.count || 0,
     kmTraveled: 87.5,
     communitiesJoined: communityStats?.total_communities || 0,
     achievements: 8,
