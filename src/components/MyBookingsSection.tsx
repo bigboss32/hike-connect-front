@@ -92,40 +92,50 @@ const WalkingHiker = () => (
       <rect x="6" y="16" width="2" height="4" fill="currentColor" className="text-primary" opacity="0.7"/>
     </svg>
 
-    {/* Ground - topmost layer (z-[5]) */}
+    {/* Clouds - move slowly right to left, behind mountains (z-[2]) */}
+    <div className="absolute inset-0 z-[2] animate-cloudsHide">
+      <svg className="absolute animate-cloudDrift1" style={{ top: '8%', left: '0' }} width="36" height="12" viewBox="0 0 36 12" opacity="0.25">
+        <ellipse cx="18" cy="8" rx="18" ry="5" fill="currentColor" className="text-foreground"/>
+        <ellipse cx="12" cy="6" rx="10" ry="5" fill="currentColor" className="text-foreground"/>
+        <ellipse cx="24" cy="5" rx="8" ry="4" fill="currentColor" className="text-foreground"/>
+      </svg>
+      <svg className="absolute animate-cloudDrift2" style={{ top: '15%', left: '0' }} width="28" height="10" viewBox="0 0 28 10" opacity="0.18">
+        <ellipse cx="14" cy="6" rx="14" ry="4.5" fill="currentColor" className="text-foreground"/>
+        <ellipse cx="9" cy="5" rx="8" ry="4" fill="currentColor" className="text-foreground"/>
+      </svg>
+      <svg className="absolute animate-cloudDrift3" style={{ top: '5%', left: '0' }} width="24" height="9" viewBox="0 0 24 9" opacity="0.15">
+        <ellipse cx="12" cy="5" rx="12" ry="4" fill="currentColor" className="text-foreground"/>
+        <ellipse cx="17" cy="4" rx="7" ry="3.5" fill="currentColor" className="text-foreground"/>
+      </svg>
+    </div>
+
+    {/* Ground - (z-[5]) */}
     <div className="absolute bottom-0 left-0 right-0 h-[3px] bg-gradient-to-r from-primary/20 via-primary/30 to-primary/20 z-[5]" />
 
-    {/* Footprints trail */}
-    <div className="absolute bottom-[2px] left-0 right-0 flex gap-3 animate-walk opacity-20">
+    {/* Footprints trail - (z-[6]) */}
+    <div className="absolute bottom-[2px] left-0 right-0 flex gap-3 animate-walk opacity-20 z-[6]">
       {[...Array(12)].map((_, i) => (
         <div key={i} className="w-1.5 h-0.5 rounded-full bg-primary shrink-0" style={{ opacity: 1 - i * 0.07 }} />
       ))}
     </div>
 
-    {/* Animated hiker - facing RIGHT */}
-    <div className="absolute bottom-[3px] animate-walk">
+    {/* Animated hiker - FIRST PLANE (z-[7]) */}
+    <div className="absolute bottom-[3px] animate-walk z-[7]">
       <svg width="20" height="28" viewBox="0 0 20 28" fill="none" className="text-primary">
-        {/* Head */}
         <circle cx="10" cy="4.5" r="3" fill="currentColor" opacity="0.9"/>
-        {/* Hat */}
         <ellipse cx="10" cy="2.8" rx="4.5" ry="1" fill="currentColor" opacity="0.7"/>
         <path d="M7 2.8 Q10 -0.5 13 2.8" fill="currentColor" opacity="0.8"/>
-        {/* Body */}
         <rect x="8.5" y="7.5" width="3" height="8" rx="1.5" fill="currentColor" opacity="0.85"/>
-        {/* Backpack - on the back (left side since facing right) */}
         <rect x="5.5" y="7.5" width="3.5" height="6" rx="1.5" fill="currentColor" opacity="0.45"/>
         <rect x="6" y="6.5" width="2.5" height="1.5" rx="0.75" fill="currentColor" opacity="0.35"/>
-        {/* Left arm with stick */}
         <g className="animate-stickSwing" style={{ transformOrigin: '13px 8px' }}>
           <line x1="13" y1="8" x2="17" y2="22" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" opacity="0.5"/>
           <line x1="11.5" y1="8" x2="14" y2="14" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" opacity="0.7"/>
         </g>
-        {/* Left leg */}
         <g className="animate-legSwing" style={{ transformOrigin: '9.5px 15px' }}>
           <rect x="8" y="15" width="2.2" height="7" rx="1.1" fill="currentColor" opacity="0.8"/>
           <ellipse cx="9.5" cy="22.5" rx="2.2" ry="1" fill="currentColor" opacity="0.7"/>
         </g>
-        {/* Right leg */}
         <g className="animate-legSwing" style={{ transformOrigin: '11px 15px', animationDelay: '0.3s' }}>
           <rect x="10" y="15" width="2.2" height="7" rx="1.1" fill="currentColor" opacity="0.8"/>
           <ellipse cx="11.5" cy="22.5" rx="2.2" ry="1" fill="currentColor" opacity="0.7"/>
