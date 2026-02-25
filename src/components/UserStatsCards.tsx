@@ -17,19 +17,23 @@ interface StatCardProps {
 
 const StatCard = ({ icon, value, label, color, delay, onClick, className = "" }: StatCardProps) => (
   <div 
-    className={`bg-card rounded-xl p-4 shadow-elevated text-center animate-fade-in ${onClick ? "cursor-pointer hover:shadow-md transition-shadow" : ""} ${className}`}
+    className={`bg-card rounded-2xl p-4 shadow-soft border border-border/50 text-center transition-all duration-200 ${onClick ? "cursor-pointer hover:shadow-elevated hover:-translate-y-0.5" : ""} ${className}`}
     style={{ animationDelay: `${delay}ms` }}
     onClick={onClick}
   >
-    <div className={`w-10 h-10 rounded-full ${color} mx-auto mb-2 flex items-center justify-center`}>
+    <div className={`w-10 h-10 rounded-xl ${color} mx-auto mb-2 flex items-center justify-center`}>
       {icon}
     </div>
     <p className="text-xl font-bold text-foreground">{value}</p>
-    <p className="text-xs text-muted-foreground">{label}</p>
+    <p className="text-[11px] text-muted-foreground mt-0.5">{label}</p>
   </div>
 );
 
-const UserStatsCards = () => {
+interface UserStatsCardsProps {
+  hideGreeting?: boolean;
+}
+
+const UserStatsCards = ({ hideGreeting = false }: UserStatsCardsProps) => {
   const { user } = useAuth();
   const { data: communityStats } = useUserCommunityStats();
   
@@ -42,12 +46,14 @@ const UserStatsCards = () => {
 
   return (
     <div className="space-y-3">
-      <div className="flex items-center justify-between">
-        <h2 className="text-lg font-bold text-foreground">
-          ¡Hola, {user?.name?.split(' ')[0] || 'Aventurero'}!
-        </h2>
-        <span className="text-xs text-muted-foreground">Tu progreso</span>
-      </div>
+      {!hideGreeting && (
+        <div className="flex items-center justify-between">
+          <h2 className="text-lg font-bold text-foreground">
+            ¡Hola, {user?.name?.split(' ')[0] || 'Aventurero'}!
+          </h2>
+          <span className="text-xs text-muted-foreground">Tu progreso</span>
+        </div>
+      )}
       
       <div className="grid grid-cols-2 gap-3">
         <RouteHistoryDialog>
