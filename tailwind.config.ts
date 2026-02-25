@@ -65,25 +65,32 @@ export default {
       },
       keyframes: {
         "accordion-down": {
-          from: {
-            height: "0",
-          },
-          to: {
-            height: "var(--radix-accordion-content-height)",
-          },
+          from: { height: "0" },
+          to: { height: "var(--radix-accordion-content-height)" },
         },
         "accordion-up": {
-          from: {
-            height: "var(--radix-accordion-content-height)",
-          },
-          to: {
-            height: "0",
-          },
+          from: { height: "var(--radix-accordion-content-height)" },
+          to: { height: "0" },
+        },
+        walk: {
+          "0%": { transform: "translateX(-24px)" },
+          "100%": { transform: "translateX(calc(100vw - 48px))" },
+        },
+        legSwing: {
+          "0%, 100%": { transform: "rotate(-15deg)" },
+          "50%": { transform: "rotate(15deg)" },
+        },
+        stickSwing: {
+          "0%, 100%": { transform: "rotate(10deg)" },
+          "50%": { transform: "rotate(-10deg)" },
         },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
+        walk: "walk 8s linear infinite",
+        legSwing: "legSwing 0.6s ease-in-out infinite",
+        stickSwing: "stickSwing 0.6s ease-in-out infinite",
       },
     },
   },
