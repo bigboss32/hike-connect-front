@@ -112,6 +112,23 @@ export default {
           "72%, 92%": { opacity: "1" },
           "100%": { opacity: "0" },
         },
+        cloudDrift1: {
+          "0%": { transform: "translateX(100cqw)" },
+          "100%": { transform: "translateX(-40px)" },
+        },
+        cloudDrift2: {
+          "0%": { transform: "translateX(110cqw)" },
+          "100%": { transform: "translateX(-30px)" },
+        },
+        cloudDrift3: {
+          "0%": { transform: "translateX(105cqw)" },
+          "100%": { transform: "translateX(-25px)" },
+        },
+        cloudsHide: {
+          "0%, 55%": { opacity: "1" },
+          "65%, 95%": { opacity: "0" },
+          "100%": { opacity: "1" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -123,6 +140,10 @@ export default {
         celestialMoon: "celestialMoon 10s ease-in-out infinite",
         dayNight: "dayNight 10s ease-in-out infinite",
         starsAppear: "starsAppear 10s ease-in-out infinite",
+        cloudDrift1: "cloudDrift1 15s linear infinite",
+        cloudDrift2: "cloudDrift2 20s linear infinite",
+        cloudDrift3: "cloudDrift3 25s linear infinite",
+        cloudsHide: "cloudsHide 10s ease-in-out infinite",
       },
     },
   },
