@@ -25,6 +25,7 @@ import Navigation from "@/components/Navigation";
 import ScrollHeader from "@/components/ScrollHeader";
 import AchievementBadge from "@/components/AchievementBadge";
 import AchievementShowcase from "@/components/AchievementShowcase";
+import AchievementCelebration from "@/components/AchievementCelebration";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
 
@@ -114,6 +115,9 @@ const Achievements = () => {
       </ScrollHeader>
 
       <div className="px-4 py-4 space-y-6">
+        {/* Celebration animation */}
+        <AchievementCelebration />
+
         {/* Showcase */}
         <AchievementShowcase
           achievements={featuredAchievements}

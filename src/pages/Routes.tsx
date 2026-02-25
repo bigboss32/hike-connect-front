@@ -9,6 +9,7 @@ import { Search, SlidersHorizontal, Loader2, X } from "lucide-react";
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useRoutes } from "@/hooks/useRoutes";
 import { Skeleton } from "@/components/ui/skeleton";
+import EmptyRoutesScene from "@/components/EmptyRoutesScene";
 
 const Routes = () => {
   const [filters, setFilters] = useState<RouteFilters>({
@@ -217,9 +218,7 @@ const Routes = () => {
             <p className="text-muted-foreground text-sm">{(error as Error)?.message}</p>
           </div>
         ) : allRoutes.length === 0 ? (
-          <div className="text-center py-12">
-            <p className="text-muted-foreground">No se encontraron rutas</p>
-          </div>
+          <EmptyRoutesScene />
         ) : (
           <div className="grid gap-4">
             {allRoutes.map((route, index) => (
