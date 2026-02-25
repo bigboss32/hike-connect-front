@@ -31,6 +31,47 @@ const formatCOP = (amount: string) => {
   }).format(num);
 };
 
+const WalkingHiker = () => (
+  <div className="relative w-full h-10 overflow-hidden my-1">
+    {/* Ground line */}
+    <div className="absolute bottom-1 left-0 right-0 h-px bg-border" />
+    {/* Dotted trail */}
+    <div className="absolute bottom-[5px] left-0 right-0 h-px border-b border-dashed border-primary/20" />
+    {/* Animated hiker */}
+    <div className="absolute bottom-1 animate-walk">
+      <svg width="24" height="32" viewBox="0 0 24 32" fill="none" className="text-primary">
+        {/* Head */}
+        <circle cx="12" cy="5" r="3.5" fill="currentColor" opacity="0.9"/>
+        {/* Hat brim */}
+        <ellipse cx="12" cy="3" rx="5" ry="1.2" fill="currentColor" opacity="0.7"/>
+        {/* Hat top */}
+        <rect x="9" y="0" width="6" height="3.5" rx="2" fill="currentColor" opacity="0.8"/>
+        {/* Body */}
+        <rect x="10.5" y="8" width="3" height="9" rx="1.5" fill="currentColor" opacity="0.85"/>
+        {/* Backpack */}
+        <rect x="13" y="8" width="4" height="7" rx="1.5" fill="currentColor" opacity="0.5"/>
+        {/* Left leg */}
+        <g className="animate-legSwing origin-center" style={{ transformOrigin: '11px 17px' }}>
+          <rect x="9.5" y="17" width="2.5" height="8" rx="1.2" fill="currentColor" opacity="0.8"/>
+          <rect x="8.5" y="24" width="4" height="2" rx="1" fill="currentColor" opacity="0.7"/>
+        </g>
+        {/* Right leg */}
+        <g className="animate-legSwing origin-center" style={{ transformOrigin: '13px 17px', animationDelay: '0.3s' }}>
+          <rect x="12" y="17" width="2.5" height="8" rx="1.2" fill="currentColor" opacity="0.8"/>
+          <rect x="11.5" y="24" width="4" height="2" rx="1" fill="currentColor" opacity="0.7"/>
+        </g>
+        {/* Walking stick */}
+        <line x1="7" y1="10" x2="5" y2="26" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" opacity="0.6" className="animate-stickSwing" style={{ transformOrigin: '7px 10px' }}/>
+      </svg>
+    </div>
+    {/* Small mountains in background */}
+    <svg className="absolute bottom-1 right-2 opacity-10" width="60" height="20" viewBox="0 0 60 20">
+      <polygon points="0,20 15,4 30,20" fill="currentColor" className="text-primary"/>
+      <polygon points="20,20 40,2 60,20" fill="currentColor" className="text-primary"/>
+    </svg>
+  </div>
+);
+
 const MyBookingsSection = () => {
   const { authFetch } = useAuth();
   const [bookings, setBookings] = useState<Booking[]>([]);
@@ -71,15 +112,19 @@ const MyBookingsSection = () => {
   }
 
   return (
-    <Card className="shadow-soft">
+    <Card className="shadow-soft overflow-hidden">
       <CardContent className="p-4">
-        <div className="flex items-center justify-between mb-3">
+        <div className="flex items-center justify-between mb-1">
           <div className="flex items-center gap-2">
             <Ticket className="w-5 h-5 text-primary" />
             <h3 className="font-bold text-lg text-foreground">Próximas Reservas</h3>
           </div>
           <Badge variant="secondary">{bookings.length}</Badge>
         </div>
+        
+        {/* Walking hiker animation */}
+        <WalkingHiker />
+
         <div className="space-y-3">
           {bookings.slice(0, 3).map((b) => (
             <Link
