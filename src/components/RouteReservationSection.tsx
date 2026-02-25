@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useFormPersist } from "@/hooks/useFormPersist";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -56,8 +57,8 @@ type ReservationStep = "form" | "confirm" | "success";
 
 const RouteReservationSection = ({ routeId, routeTitle, price }: RouteReservationSectionProps) => {
   const [isExpanded, setIsExpanded] = useState(false);
-  const [participants, setParticipants] = useState<Participant[]>([createEmptyParticipant(1)]);
-  const [selectedDate, setSelectedDate] = useState("");
+  const [participants, setParticipants, clearParticipants] = useFormPersist<Participant[]>(`reservation_${routeId}_participants`, [createEmptyParticipant(1)]);
+  const [selectedDate, setSelectedDate, clearDate] = useFormPersist(`reservation_${routeId}_date`, "");
   const [expandedParticipant, setExpandedParticipant] = useState<number | null>(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [step, setStep] = useState<ReservationStep>("form");
@@ -164,8 +165,8 @@ const RouteReservationSection = ({ routeId, routeTitle, price }: RouteReservatio
             </div>
             <Button variant="outline" onClick={() => {
               setStep("form");
-              setParticipants([createEmptyParticipant(1)]);
-              setSelectedDate("");
+              clearParticipants();
+              clearDate();
               setExpandedParticipant(1);
             }}>
               Hacer otra reserva

@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
+import { useFormPersist } from "@/hooks/useFormPersist";
 
 interface EditProfileDialogProps {
   children: React.ReactNode;
@@ -17,7 +18,7 @@ interface EditProfileDialogProps {
 const EditProfileDialog = ({ children, initialData }: EditProfileDialogProps) => {
   const { user, updateProfile } = useAuth();
   const [open, setOpen] = useState(false);
-  const [formData, setFormData] = useState({
+  const [formData, setFormData, clearFormData] = useFormPersist("edit_profile", {
     firstName: "",
     lastName: "",
     bio: initialData?.bio || "",
@@ -66,6 +67,7 @@ const EditProfileDialog = ({ children, initialData }: EditProfileDialogProps) =>
         title: "¡Perfil actualizado!",
         description: "Tus cambios han sido guardados.",
       });
+      clearFormData();
       setOpen(false);
     } else {
       toast({
