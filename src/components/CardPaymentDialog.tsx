@@ -125,6 +125,26 @@ const CardPaymentDialog = ({
     exp_year: "",
     card_holder: "",
   });
+  const [touched, setTouched] = useState<Record<string, boolean>>({});
+
+  const markTouched = (field: string) => setTouched((t) => ({ ...t, [field]: true }));
+
+  const cardValidation = {
+    card_holder: cardForm.card_holder.trim().length >= 3,
+    card_number: /^\d{13,19}$/.test(cardForm.card_number),
+    exp_month: /^(0[1-9]|1[0-2])$/.test(cardForm.exp_month),
+    exp_year: /^\d{4}$/.test(cardForm.exp_year) && parseInt(cardForm.exp_year) >= new Date().getFullYear(),
+    cvc: /^\d{3,4}$/.test(cardForm.cvc),
+  };
+
+  const isCardFormValid = Object.values(cardValidation).every(Boolean);
+
+  const fieldClass = (field: keyof typeof cardValidation) => {
+    if (!touched[field]) return "h-11 rounded-xl";
+    return cardValidation[field]
+      ? "h-11 rounded-xl border-green-500/50 focus-visible:ring-green-500/30"
+      : "h-11 rounded-xl border-destructive focus-visible:ring-destructive/30";
+  };
 
   const estimatedTotal = pricePerPerson ? pricePerPerson * participants.length : null;
   const formatAmount = (amount: number) => `$${amount.toLocaleString("es-CO")} COP`;
@@ -196,6 +216,7 @@ const CardPaymentDialog = ({
       setPaymentResult(null);
       setInstallments("1");
       setCardForm({ card_number: "", cvc: "", exp_month: "", exp_year: "", card_holder: "" });
+      setTouched({});
     } else {
       stopPolling();
     }
@@ -396,19 +417,28 @@ const CardPaymentDialog = ({
           <Input
             placeholder="Juan Perez"
             value={cardForm.card_holder}
-            onChange={(e) => setCardForm({ ...cardForm, card_holder: e.target.value })}
-            className="h-11 rounded-xl"
+            onChange={(e) => setCardForm({ ...cardForm, card_holder: e.target.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, "") })}
+            onBlur={() => markTouched("card_holder")}
+            className={fieldClass("card_holder")}
           />
+          {touched.card_holder && !cardValidation.card_holder && (
+            <p className="text-xs text-destructive">Mínimo 3 caracteres</p>
+          )}
         </div>
         <div className="space-y-2">
           <Label>Número de tarjeta</Label>
           <Input
-            placeholder="4242 4242 4242 4242"
+            placeholder="4242424242424242"
             value={cardForm.card_number}
-            onChange={(e) => setCardForm({ ...cardForm, card_number: e.target.value.replace(/\s/g, "") })}
+            onChange={(e) => setCardForm({ ...cardForm, card_number: e.target.value.replace(/\D/g, "").slice(0, 19) })}
+            onBlur={() => markTouched("card_number")}
             maxLength={19}
-            className="h-11 rounded-xl"
+            inputMode="numeric"
+            className={fieldClass("card_number")}
           />
+          {touched.card_number && !cardValidation.card_number && (
+            <p className="text-xs text-destructive">Número inválido (13-19 dígitos)</p>
+          )}
         </div>
         <div className="grid grid-cols-3 gap-2">
           <div className="space-y-2">
@@ -416,20 +446,30 @@ const CardPaymentDialog = ({
             <Input
               placeholder="12"
               value={cardForm.exp_month}
-              onChange={(e) => setCardForm({ ...cardForm, exp_month: e.target.value })}
+              onChange={(e) => setCardForm({ ...cardForm, exp_month: e.target.value.replace(/\D/g, "").slice(0, 2) })}
+              onBlur={() => markTouched("exp_month")}
               maxLength={2}
-              className="h-11 rounded-xl"
+              inputMode="numeric"
+              className={fieldClass("exp_month")}
             />
+            {touched.exp_month && !cardValidation.exp_month && (
+              <p className="text-xs text-destructive">01-12</p>
+            )}
           </div>
           <div className="space-y-2">
             <Label>Año</Label>
             <Input
               placeholder="2029"
               value={cardForm.exp_year}
-              onChange={(e) => setCardForm({ ...cardForm, exp_year: e.target.value })}
+              onChange={(e) => setCardForm({ ...cardForm, exp_year: e.target.value.replace(/\D/g, "").slice(0, 4) })}
+              onBlur={() => markTouched("exp_year")}
               maxLength={4}
-              className="h-11 rounded-xl"
+              inputMode="numeric"
+              className={fieldClass("exp_year")}
             />
+            {touched.exp_year && !cardValidation.exp_year && (
+              <p className="text-xs text-destructive">Año inválido</p>
+            )}
           </div>
           <div className="space-y-2">
             <Label>CVC</Label>
@@ -437,10 +477,15 @@ const CardPaymentDialog = ({
               placeholder="123"
               type="password"
               value={cardForm.cvc}
-              onChange={(e) => setCardForm({ ...cardForm, cvc: e.target.value })}
+              onChange={(e) => setCardForm({ ...cardForm, cvc: e.target.value.replace(/\D/g, "").slice(0, 4) })}
+              onBlur={() => markTouched("cvc")}
               maxLength={4}
-              className="h-11 rounded-xl"
+              inputMode="numeric"
+              className={fieldClass("cvc")}
             />
+            {touched.cvc && !cardValidation.cvc && (
+              <p className="text-xs text-destructive">3-4 dígitos</p>
+            )}
           </div>
         </div>
       </div>
@@ -465,7 +510,7 @@ const CardPaymentDialog = ({
       <Button
         className="w-full h-12 rounded-xl font-semibold"
         onClick={handlePayWithNewCard}
-        disabled={isProcessing}
+        disabled={isProcessing || !isCardFormValid}
       >
         {isProcessing ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <CreditCard className="w-4 h-4 mr-2" />}
         {isProcessing ? "Procesando..." : `Pagar ${estimatedTotal ? formatAmount(estimatedTotal) : ""}`}
