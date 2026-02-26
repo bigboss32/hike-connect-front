@@ -14,7 +14,6 @@ const Communities = () => {
         <div className="max-w-lg mx-auto px-4 py-4">
           <div className="flex items-center justify-between mb-4">
             <h1 className="text-2xl font-bold text-foreground">Comunidades</h1>
-            <CreateCommunityDialog />
           </div>
           <p className="text-muted-foreground text-sm">
             Únete a grupos de senderismo en tu zona
