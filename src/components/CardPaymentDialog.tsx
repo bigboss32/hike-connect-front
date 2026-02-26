@@ -362,15 +362,16 @@ const CardPaymentDialog = ({
       {/* Actions */}
       <div className="space-y-2 pt-2">
         {selectedCardId && (
-          <Button className="w-full h-12 rounded-xl font-semibold" onClick={handlePayWithSavedCard}>
-            <CreditCard className="w-4 h-4 mr-2" />
-            Pagar con tarjeta seleccionada
+          <Button className="w-full h-12 rounded-xl font-semibold" onClick={handlePayWithSavedCard} disabled={isProcessing}>
+            {isProcessing ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <CreditCard className="w-4 h-4 mr-2" />}
+            {isProcessing ? "Procesando..." : "Pagar con tarjeta seleccionada"}
           </Button>
         )}
         <Button
           variant={selectedCardId ? "outline" : "default"}
           className="w-full h-12 rounded-xl font-semibold"
           onClick={() => setStep("new")}
+          disabled={isProcessing}
         >
           <Plus className="w-4 h-4 mr-2" />
           Usar nueva tarjeta
@@ -464,9 +465,10 @@ const CardPaymentDialog = ({
       <Button
         className="w-full h-12 rounded-xl font-semibold"
         onClick={handlePayWithNewCard}
+        disabled={isProcessing}
       >
-        <CreditCard className="w-4 h-4 mr-2" />
-        Pagar {estimatedTotal ? formatAmount(estimatedTotal) : ""}
+        {isProcessing ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <CreditCard className="w-4 h-4 mr-2" />}
+        {isProcessing ? "Procesando..." : `Pagar ${estimatedTotal ? formatAmount(estimatedTotal) : ""}`}
       </Button>
     </div>
   );
