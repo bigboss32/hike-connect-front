@@ -116,6 +116,7 @@ const CardPaymentDialog = ({
   const [isProcessing, setIsProcessing] = useState(false);
   const pollingRef = useRef<NodeJS.Timeout | null>(null);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const isSubmittingRef = useRef(false);
 
   // New card form
   const [cardForm, setCardForm] = useState({
@@ -227,8 +228,12 @@ const CardPaymentDialog = ({
       setInstallments("1");
       setCardForm({ card_number: "", cvc: "", exp_month: "", exp_year: "", card_holder: "" });
       setTouched({});
+      setIsProcessing(false);
+      isSubmittingRef.current = false;
     } else {
       stopPolling();
+      setIsProcessing(false);
+      isSubmittingRef.current = false;
     }
   }, [open, fetchSavedCards, stopPolling]);
 
@@ -308,18 +313,42 @@ const CardPaymentDialog = ({
   };
 
   const handlePayWithSavedCard = async () => {
-    if (!selectedCardId) return;
-    await processPayment(undefined, selectedCardId);
+    if (!selectedCardId || isSubmittingRef.current) return;
+
+    isSubmittingRef.current = true;
+    setIsProcessing(true);
+    try {
+      await processPayment(undefined, selectedCardId);
+    } finally {
+      isSubmittingRef.current = false;
+      setIsProcessing(false);
+    }
   };
 
   const handlePayWithNewCard = async () => {
-    if (!cardForm.card_number || !cardForm.cvc || !cardForm.exp_month || !cardForm.exp_year || !cardForm.card_holder) {
-      toast({ title: "Campos requeridos", description: "Completa todos los datos de la tarjeta.", variant: "destructive" });
+    if (isSubmittingRef.current) return;
+
+    if (!isCardFormValid) {
+      setTouched({
+        card_holder: true,
+        card_number: true,
+        exp_month: true,
+        exp_year: true,
+        cvc: true,
+      });
+      toast({ title: "Campos inválidos", description: "Corrige los datos de la tarjeta.", variant: "destructive" });
       return;
     }
-    const token = await tokenizeCard();
-    if (token) {
+
+    isSubmittingRef.current = true;
+    setIsProcessing(true);
+    try {
+      const token = await tokenizeCard();
+      if (!token) return;
       await processPayment(token);
+    } finally {
+      isSubmittingRef.current = false;
+      setIsProcessing(false);
     }
   };
 
