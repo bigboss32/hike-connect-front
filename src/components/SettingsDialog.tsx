@@ -309,18 +309,18 @@ const SettingsDialog = ({ children }: SettingsDialogProps) => {
             </AlertDialogContent>
           </AlertDialog>
 
-          {/* Info de la app */}
-          <div className="flex items-center gap-3 px-3">
-            <Info className="w-4 h-4 text-muted-foreground shrink-0" />
-            <div>
-              <p className="text-xs text-muted-foreground">Maroá v1.0.0</p>
-              <p className="text-xs text-muted-foreground">© 2026 Maroá. Todos los derechos reservados.</p>
-            </div>
-          </div>
         </div>
         <Button onClick={handleSave} className="w-full">
           Guardar
         </Button>
+        {/* Info de la app */}
+        <div className="flex items-center gap-3 px-3 pt-2">
+          <Info className="w-4 h-4 text-muted-foreground shrink-0" />
+          <div>
+            <p className="text-xs text-muted-foreground">Maroá v1.0.0</p>
+            <p className="text-xs text-muted-foreground">© 2026 Maroá. Todos los derechos reservados.</p>
+          </div>
+        </div>
       </DialogContent>
     </Dialog>
   );
