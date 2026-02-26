@@ -24,6 +24,23 @@ export interface CommunitiesResponse {
   results: ApiCommunity[];
 }
 
+export interface MyCommunity {
+  community_id: string;
+  name: string;
+  description: string;
+  image: string | null;
+  location: string;
+  is_public: boolean;
+  role: "owner" | "admin" | "member";
+  joined_at: string;
+  member_count: number;
+}
+
+export interface MyCommunityResponse {
+  count: number;
+  results: MyCommunity[];
+}
+
 export interface FetchCommunitiesParams {
   page?: number;
   is_public?: boolean;
@@ -51,6 +68,23 @@ export const useCommunities = (params: FetchCommunitiesParams = {}) => {
 
       if (!response.ok) {
         throw new Error("Error al cargar comunidades");
+      }
+
+      return response.json();
+    },
+  });
+};
+
+export const useMyCommunities = () => {
+  const { authFetch } = useAuth();
+
+  return useQuery({
+    queryKey: ["my-communities"],
+    queryFn: async (): Promise<MyCommunityResponse> => {
+      const response = await authFetch(`${API_BASE_URL}/communities/my/`);
+
+      if (!response.ok) {
+        throw new Error("Error al cargar mis comunidades");
       }
 
       return response.json();
