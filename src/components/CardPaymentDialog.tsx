@@ -139,6 +139,16 @@ const CardPaymentDialog = ({
 
   const isCardFormValid = Object.values(cardValidation).every(Boolean);
 
+  const detectBrand = (num: string): string | null => {
+    if (/^4/.test(num)) return "visa";
+    if (/^5[1-5]/.test(num) || /^2[2-7]/.test(num)) return "mastercard";
+    if (/^3[47]/.test(num)) return "amex";
+    if (/^3(0[0-5]|[68])/.test(num)) return "diners";
+    return null;
+  };
+
+  const detectedBrand = detectBrand(cardForm.card_number);
+
   const fieldClass = (field: keyof typeof cardValidation) => {
     if (!touched[field]) return "h-11 rounded-xl";
     return cardValidation[field]
@@ -427,15 +437,22 @@ const CardPaymentDialog = ({
         </div>
         <div className="space-y-2">
           <Label>Número de tarjeta</Label>
-          <Input
-            placeholder="4242424242424242"
-            value={cardForm.card_number}
-            onChange={(e) => setCardForm({ ...cardForm, card_number: e.target.value.replace(/\D/g, "").slice(0, 19) })}
-            onBlur={() => markTouched("card_number")}
-            maxLength={19}
-            inputMode="numeric"
-            className={fieldClass("card_number")}
-          />
+          <div className="relative">
+            <Input
+              placeholder="4242424242424242"
+              value={cardForm.card_number}
+              onChange={(e) => setCardForm({ ...cardForm, card_number: e.target.value.replace(/\D/g, "").slice(0, 19) })}
+              onBlur={() => markTouched("card_number")}
+              maxLength={19}
+              inputMode="numeric"
+              className={cn(fieldClass("card_number"), "pr-12")}
+            />
+            {detectedBrand && (
+              <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                <BrandIcon brand={detectedBrand} />
+              </div>
+            )}
+          </div>
           {touched.card_number && !cardValidation.card_number && (
             <p className="text-xs text-destructive">Número inválido (13-19 dígitos)</p>
           )}
