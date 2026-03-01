@@ -64,7 +64,7 @@ const Index = () => {
         </div>
       </div>
 
-      <main className="max-w-lg mx-auto px-4 -mt-2 space-y-5">
+      <main className="max-w-lg mx-auto px-4 mt-2 space-y-5 relative z-10">
 
         {/* Próximas Reservas — ahora primero, más visible */}
         <section className="animate-fade-in" style={{ animationDelay: '150ms' }}>
