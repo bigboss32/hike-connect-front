@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Ticket, CalendarDays, Users, ChevronRight } from "lucide-react";
+import { Ticket, CalendarDays, Users, ChevronRight, MessageCircle } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { Link } from "react-router-dom";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -233,45 +233,55 @@ const MyBookingsSection = () => {
 
         <div className="space-y-3">
           {bookings.slice(0, 3).map((b) => (
-            <Link
+            <div
               key={b.payment_id}
-              to={`/routes/${b.ruta_id}`}
               className="flex items-center gap-3 p-3 rounded-lg bg-muted/50 hover:bg-muted transition-colors"
             >
-              <div className="w-12 h-12 rounded-xl overflow-hidden shrink-0">
-                {b.ruta_image ? (
-                  <img
-                    src={b.ruta_image.startsWith("http") ? b.ruta_image : `https://hike-connect-back.onrender.com${b.ruta_image}`}
-                    alt={b.ruta_title}
-                    className="w-full h-full object-cover"
-                  />
-                ) : (
-                  <div className="w-full h-full bg-primary/10 flex items-center justify-center">
-                    <CalendarDays className="w-5 h-5 text-primary" />
-                  </div>
-                )}
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="font-medium text-sm text-foreground truncate">
-                  {b.ruta_title || "Ruta"}
-                </p>
-                <div className="flex items-center gap-3 text-xs text-muted-foreground mt-0.5">
-                  <span className="flex items-center gap-1">
-                    <CalendarDays className="w-3 h-3" />
-                    {new Date(b.booking_date).toLocaleDateString("es-CO", {
-                      day: "numeric",
-                      month: "short",
-                    })}
-                  </span>
-                  <span className="flex items-center gap-1">
-                    <Users className="w-3 h-3" />
-                    {b.total_participants}
-                  </span>
-                  <span>{formatCOP(b.amount)}</span>
+              <Link to={`/routes/${b.ruta_id}`} className="flex items-center gap-3 flex-1 min-w-0">
+                <div className="w-12 h-12 rounded-xl overflow-hidden shrink-0">
+                  {b.ruta_image ? (
+                    <img
+                      src={b.ruta_image.startsWith("http") ? b.ruta_image : `https://hike-connect-back.onrender.com${b.ruta_image}`}
+                      alt={b.ruta_title}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div className="w-full h-full bg-primary/10 flex items-center justify-center">
+                      <CalendarDays className="w-5 h-5 text-primary" />
+                    </div>
+                  )}
                 </div>
-              </div>
-              <ChevronRight className="w-4 h-4 text-muted-foreground shrink-0" />
-            </Link>
+                <div className="flex-1 min-w-0">
+                  <p className="font-medium text-sm text-foreground truncate">
+                    {b.ruta_title || "Ruta"}
+                  </p>
+                  <div className="flex items-center gap-3 text-xs text-muted-foreground mt-0.5">
+                    <span className="flex items-center gap-1">
+                      <CalendarDays className="w-3 h-3" />
+                      {new Date(b.booking_date).toLocaleDateString("es-CO", {
+                        day: "numeric",
+                        month: "short",
+                      })}
+                    </span>
+                    <span className="flex items-center gap-1">
+                      <Users className="w-3 h-3" />
+                      {b.total_participants}
+                    </span>
+                    <span>{formatCOP(b.amount)}</span>
+                  </div>
+                </div>
+              </Link>
+              <Link
+                to={`/booking-chat/${b.payment_id}`}
+                className="shrink-0 p-2 rounded-full bg-primary/10 hover:bg-primary/20 transition-colors"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <MessageCircle className="w-4 h-4 text-primary" />
+              </Link>
+              <Link to={`/routes/${b.ruta_id}`} className="shrink-0">
+                <ChevronRight className="w-4 h-4 text-muted-foreground" />
+              </Link>
+            </div>
           ))}
         </div>
         {bookings.length > 3 && (
