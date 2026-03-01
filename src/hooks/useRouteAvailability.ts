@@ -61,6 +61,7 @@ export const useRouteAvailability = (routeId: string, month: number, year: numbe
     queryKey: ["routeAvailability", routeId, month, year],
     queryFn: () => fetchMonthAvailability(routeId, month, year, token),
     enabled: !!routeId && month >= 1 && month <= 12 && year > 0,
-    staleTime: 5 * 60 * 1000,
+    staleTime: 0,
+    refetchOnMount: "always",
   });
 };
