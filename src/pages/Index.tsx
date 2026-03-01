@@ -1,5 +1,6 @@
 import { useState, useCallback } from "react";
 import Navigation from "@/components/Navigation";
+import HeroScenery from "@/components/HeroScenery";
 import FeaturedRoutesCarousel from "@/components/FeaturedRoutesCarousel";
 import UserStatsCards from "@/components/UserStatsCards";
 import NearbyRoutesMap from "@/components/NearbyRoutesMap";
@@ -47,7 +48,8 @@ const Index = () => {
       )}
 
       {/* Hero greeting */}
-      <div className="bg-gradient-to-br from-primary/15 via-background to-accent/10 pt-8 pb-6 px-4">
+      <div className="relative bg-gradient-to-br from-primary/15 via-background to-accent/10 pt-8 pb-6 px-4 overflow-hidden">
+        <HeroScenery />
         <div className="max-w-lg mx-auto">
           <p className="text-sm text-muted-foreground mb-1 animate-fade-in flex items-center gap-1.5">
             <span>{greeting.emoji}</span>
