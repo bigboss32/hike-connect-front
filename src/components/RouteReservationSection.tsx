@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { useFormPersist } from "@/hooks/useFormPersist";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -57,6 +58,7 @@ const createEmptyParticipant = (id: number): Participant => ({
 type ReservationStep = "form" | "confirm" | "success";
 
 const RouteReservationSection = ({ routeId, routeTitle, price }: RouteReservationSectionProps) => {
+  const queryClient = useQueryClient();
   const [isExpanded, setIsExpanded] = useState(false);
   const [participants, setParticipants, clearParticipants] = useFormPersist<Participant[]>(`reservation_${routeId}_participants`, [createEmptyParticipant(1)]);
   const [selectedDate, setSelectedDate, clearDate] = useFormPersist(`reservation_${routeId}_date`, "");
@@ -129,6 +131,8 @@ const RouteReservationSection = ({ routeId, routeTitle, price }: RouteReservatio
 
   const handlePaymentComplete = (status: "approved" | "declined" | "error") => {
     if (status === "approved") {
+      // Invalidate availability cache so calendar refreshes with updated slots
+      queryClient.invalidateQueries({ queryKey: ["routeAvailability", routeId] });
       setStep("success");
       setShowPaymentDialog(false);
       toast({
