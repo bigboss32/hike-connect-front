@@ -30,6 +30,7 @@ import { toast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import PSEPaymentDialog, { type PaymentParticipant } from "@/components/PSEPaymentDialog";
 import CardPaymentDialog from "@/components/CardPaymentDialog";
+import AvailabilityCalendar from "@/components/AvailabilityCalendar";
 
 interface Participant {
   id: number;
@@ -325,19 +326,17 @@ const RouteReservationSection = ({ routeId, routeTitle, price }: RouteReservatio
 
         <CollapsibleContent>
           <CardContent className="pt-0 space-y-6">
-            {/* Fecha */}
+            {/* Fecha con calendario de disponibilidad */}
             <div className="space-y-3">
               <Label className="flex items-center gap-2 text-sm font-medium">
                 <Calendar className="w-4 h-4 text-primary" />
                 Fecha de la Excursión
               </Label>
-              <div className="relative">
-                <Input
-                  type="date"
-                  value={selectedDate}
-                  onChange={(e) => setSelectedDate(e.target.value)}
-                  min={new Date().toISOString().split('T')[0]}
-                  className="h-12 text-base pl-4 pr-4 rounded-xl border-2 focus:border-primary transition-colors"
+              <div className="rounded-2xl border-2 border-muted p-3">
+                <AvailabilityCalendar
+                  routeId={routeId}
+                  selectedDate={selectedDate}
+                  onSelectDate={(date) => setSelectedDate(date)}
                 />
               </div>
             </div>
