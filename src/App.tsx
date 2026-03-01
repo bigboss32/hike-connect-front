@@ -18,6 +18,7 @@ import Profile from "./pages/Profile";
 import Achievements from "./pages/Achievements";
 import Auth from "./pages/Auth";
 import Legends from "./pages/Legends";
+import BookingChat from "./pages/BookingChat";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -43,6 +44,7 @@ const App = () => (
               <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
               <Route path="/achievements" element={<ProtectedRoute><Achievements /></ProtectedRoute>} />
               <Route path="/legends" element={<Legends />} />
+              <Route path="/booking-chat/:bookingId" element={<ProtectedRoute><BookingChat /></ProtectedRoute>} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </BrowserRouter>
