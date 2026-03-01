@@ -235,18 +235,18 @@ const RouteReservationSection = ({ routeId, routeTitle, price }: RouteReservatio
         <CollapsibleContent>
           <CardContent className="pt-0 space-y-5">
             {/* ── Step indicator ── */}
-            <div className="flex items-center gap-2">
+            <div className="flex items-center justify-center gap-0">
               {STEP_ORDER.map((s, i) => {
                 const isActive = i === stepIndex;
                 const isDone = i < stepIndex;
                 return (
-                  <div key={s} className="flex items-center gap-2 flex-1">
+                  <div key={s} className="flex items-center">
                     <button
                       onClick={() => {
                         if (isDone) goToStep(s);
                       }}
                       className={cn(
-                        "w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all duration-300 shrink-0",
+                        "w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold transition-all duration-300 shrink-0",
                         isActive && "bg-primary text-primary-foreground scale-110 shadow-lg shadow-primary/30",
                         isDone && "bg-primary/20 text-primary cursor-pointer hover:bg-primary/30",
                         !isActive && !isDone && "bg-muted text-muted-foreground"
@@ -257,7 +257,7 @@ const RouteReservationSection = ({ routeId, routeTitle, price }: RouteReservatio
                     {i < STEP_ORDER.length - 1 && (
                       <div
                         className={cn(
-                          "h-0.5 flex-1 rounded-full transition-all duration-500",
+                          "h-0.5 w-16 rounded-full transition-all duration-500 mx-2",
                           isDone ? "bg-primary/40" : "bg-muted"
                         )}
                       />
