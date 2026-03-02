@@ -45,6 +45,7 @@ export interface ApiRoute {
   included_services?: string;
   requirements?: string;
   what_to_bring?: string;
+  images?: { id: string; image_url: string; caption: string; order: number }[];
 }
 
 interface RoutesResponse {
