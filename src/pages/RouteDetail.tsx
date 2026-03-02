@@ -21,15 +21,11 @@ const RouteDetail = () => {
   const { data: route, isLoading, error } = useRouteById(id);
   const { data: rating, isLoading: isRatingLoading } = useRouteRating(id);
 
-  // Mock data for photos and comments
-  const mockPhotos = [
-    "https://images.unsplash.com/photo-1551632811-561732d1e306?w=300&h=300&fit=crop",
-    "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=300&h=300&fit=crop",
-    "https://images.unsplash.com/photo-1454496522488-7a8e488e8606?w=300&h=300&fit=crop",
-    "https://images.unsplash.com/photo-1486870591958-9b9d0d1dda99?w=300&h=300&fit=crop",
-    "https://images.unsplash.com/photo-1483728642387-6c3bdd6c93e5?w=300&h=300&fit=crop",
-    "https://images.unsplash.com/photo-1519681393784-d120267933ba?w=300&h=300&fit=crop",
-  ];
+  const routeImages = route?.images?.length
+    ? [...route.images].sort((a, b) => a.order - b.order).map((img) => img.image_url)
+    : route?.image
+      ? [route.image]
+      : [];
 
   const mockComments = [
     {
@@ -98,7 +94,7 @@ const RouteDetail = () => {
       {/* Header Image */}
       <div className="relative h-56">
         <img
-          src={route.image}
+          src={routeImages[0] || route.image}
           alt={route.title}
           className="w-full h-full object-cover"
         />
@@ -403,23 +399,32 @@ const RouteDetail = () => {
 
           {/* Tab Fotos */}
           <TabsContent value="fotos" className="mt-4">
-            <div className="grid grid-cols-3 gap-2">
-              {mockPhotos.map((photo, index) => (
-                <div 
-                  key={index} 
-                  className="aspect-square rounded-lg overflow-hidden cursor-pointer hover:opacity-90 transition-opacity"
-                >
-                  <img
-                    src={photo}
-                    alt={`Foto ${index + 1}`}
-                    className="w-full h-full object-cover"
-                  />
+            {routeImages.length > 0 ? (
+              <>
+                <div className="grid grid-cols-3 gap-2">
+                  {routeImages.map((photo, index) => (
+                    <div 
+                      key={index} 
+                      className="aspect-square rounded-lg overflow-hidden cursor-pointer hover:opacity-90 transition-opacity"
+                    >
+                      <img
+                        src={photo}
+                        alt={`Foto ${index + 1} de ${route?.title}`}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
-            <p className="text-center text-sm text-muted-foreground mt-4">
-              6 fotos de la comunidad
-            </p>
+                <p className="text-center text-sm text-muted-foreground mt-4">
+                  {routeImages.length} {routeImages.length === 1 ? "foto" : "fotos"} de la ruta
+                </p>
+              </>
+            ) : (
+              <div className="text-center py-10 text-muted-foreground">
+                <Image className="w-10 h-10 mx-auto mb-2 opacity-40" />
+                <p className="text-sm">Aún no hay fotos para esta ruta</p>
+              </div>
+            )}
           </TabsContent>
 
           {/* Tab Comentarios */}
