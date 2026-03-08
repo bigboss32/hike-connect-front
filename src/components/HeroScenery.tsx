@@ -11,7 +11,7 @@ const getTimeSlot = (): TimeSlot => {
   if (hour >= 5 && hour < 7) return "dawn";
   if (hour >= 7 && hour < 12) return "morning";
   if (hour >= 12 && hour < 17) return "afternoon";
-  if (hour >= 17 && hour < 20) return "sunset";
+  if (hour >= 17 && hour < 18) return "sunset";
   return "night";
 };
 
