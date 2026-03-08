@@ -33,8 +33,17 @@ const formatCOP = (amount: string) => {
 type BannerScene = "forest" | "desert" | "snowy" | "beach" | "classic";
 const BANNER_SCENES: BannerScene[] = ["forest", "desert", "snowy", "beach", "classic"];
 
+const getSceneByTime = (): BannerScene => {
+  const hour = new Date().getHours();
+  if (hour >= 5 && hour < 7) return "forest";     // dawn → forest
+  if (hour >= 7 && hour < 12) return "classic";    // morning → classic
+  if (hour >= 12 && hour < 17) return "beach";     // afternoon → beach
+  if (hour >= 17 && hour < 20) return "desert";    // sunset → desert
+  return "snowy";                                    // night → snowy
+};
+
 const WalkingHiker = () => {
-  const [scene] = useState<BannerScene>(() => BANNER_SCENES[Math.floor(Math.random() * BANNER_SCENES.length)]);
+  const [scene] = useState<BannerScene>(getSceneByTime);
 
   const bgGradient: Record<BannerScene, string> = {
     classic: "from-accent/5 via-primary/5 to-accent/5",
