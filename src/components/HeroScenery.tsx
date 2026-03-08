@@ -238,10 +238,7 @@ const HeroScenery = ({ scrollY = 0 }: HeroSceneryProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [mouse, setMouse] = useState({ x: 0.5, y: 0.5 });
 
-  const weather = useMemo(() => {
-    const opts = ["clear", "cloudy", "windy", "rainy"] as const;
-    return opts[Math.floor(Math.random() * opts.length)];
-  }, []);
+  const weather = useMemo(() => getWeatherForTime(time), [time]);
 
   const handleMove = useCallback((clientX: number, clientY: number) => {
     if (!containerRef.current) return;
