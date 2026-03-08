@@ -65,7 +65,7 @@ const RoutesHeroScene = () => {
   const isSunset = time === "sunset";
 
   return (
-    <div ref={containerRef} className="relative w-full h-52 overflow-hidden pointer-events-auto">
+    <div ref={containerRef} className="absolute inset-0 overflow-hidden pointer-events-auto z-0">
       {/* Sky gradient */}
       <div className={`absolute inset-0 bg-gradient-to-br ${sky[time]} transition-colors duration-500`} />
 
