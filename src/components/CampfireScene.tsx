@@ -1,7 +1,18 @@
 /**
  * CampfireScene — Animated SVG banner for Communities page.
- * Campfire with gathered hiker silhouettes under a warm sky.
+ * Campfire with gathered hiker silhouettes — dynamic time-of-day.
  */
+
+type TimeSlot = "dawn" | "morning" | "afternoon" | "sunset" | "night";
+
+const getTimeSlot = (): TimeSlot => {
+  const h = new Date().getHours();
+  if (h >= 5 && h < 7) return "dawn";
+  if (h >= 7 && h < 12) return "morning";
+  if (h >= 12 && h < 17) return "afternoon";
+  if (h >= 17 && h < 18) return "sunset";
+  return "night";
+};
 
 interface Props {
   scrollY?: number;
@@ -9,12 +20,26 @@ interface Props {
 
 const CampfireScene = ({ scrollY = 0 }: Props) => {
   const s = Math.min(scrollY, 300);
+  const time = getTimeSlot();
+  const isNight = time === "night";
+  const isSunset = time === "sunset";
+  const isDawn = time === "dawn";
+  const showStars = isNight;
+  const showSun = !isNight;
+
+  const sky: Record<TimeSlot, string> = {
+    dawn: "from-rose-300/40 via-amber-200/30 to-emerald-800/20",
+    morning: "from-amber-200/40 via-sky-300/25 to-emerald-800/20",
+    afternoon: "from-amber-300/50 via-orange-200/40 to-emerald-800/30",
+    sunset: "from-orange-400/50 via-rose-300/40 to-purple-800/30",
+    night: "from-indigo-950/80 via-slate-900/60 to-emerald-950/40",
+  };
 
   return (
     <div className="relative w-full overflow-hidden rounded-b-2xl" style={{ height: 220 }}>
-      {/* Sky gradient */}
+      {/* Sky gradient — dynamic */}
       <div
-        className="absolute inset-0 bg-gradient-to-b from-amber-300/50 via-orange-200/40 to-emerald-800/30 dark:from-indigo-950/80 dark:via-slate-900/60 dark:to-emerald-950/40"
+        className={`absolute inset-0 bg-gradient-to-b ${sky[time]} transition-colors duration-700`}
         style={{ transform: `translateY(${s * 0.05}px)` }}
       />
 
@@ -32,8 +57,9 @@ const CampfireScene = ({ scrollY = 0 }: Props) => {
           </radialGradient>
         </defs>
 
-        {/* ── Stars (dark mode) ── */}
-        <g style={{ transform: `translateY(${s * -0.12}px)` }} className="cf2-stars">
+        {/* ── Stars (night only) ── */}
+        {showStars && (
+        <g style={{ transform: `translateY(${s * -0.12}px)` }}>
           {[
             {x:18,y:12},{x:52,y:22},{x:95,y:8},{x:135,y:28},{x:178,y:14},
             {x:225,y:24},{x:268,y:10},{x:310,y:20},{x:348,y:16},{x:380,y:28},
@@ -47,27 +73,32 @@ const CampfireScene = ({ scrollY = 0 }: Props) => {
           <circle cx="340" cy="24" r="7" fill="#F1F5F9" opacity="0.8" />
           <circle cx="337" cy="22" r="1.2" fill="#CBD5E1" opacity="0.3" />
         </g>
+        )}
 
-        {/* ── Sun (light mode) ── */}
-        <g className="cf2-sun" style={{ transform: `translateY(${s * -0.1}px)` }}>
-          <circle cx="345" cy="20" r="22" fill="#FBBF24" opacity="0.2" />
-          <circle cx="345" cy="20" r="10" fill="#F59E0B" opacity="0.45" />
-          <circle cx="345" cy="20" r="5" fill="#FDE68A" opacity="0.7" />
+        {/* ── Sun (daytime) ── */}
+        {showSun && (
+        <g style={{ transform: `translateY(${s * -0.1}px)` }}>
+          <circle cx="345" cy={isDawn ? 36 : isSunset ? 32 : 20} r="22" fill={isSunset ? "#FB923C" : "#FBBF24"} opacity="0.2" />
+          <circle cx="345" cy={isDawn ? 36 : isSunset ? 32 : 20} r="10" fill={isSunset ? "#F97316" : "#F59E0B"} opacity="0.45" />
+          <circle cx="345" cy={isDawn ? 36 : isSunset ? 32 : 20} r="5" fill="#FDE68A" opacity="0.7" />
         </g>
+        )}
 
-        {/* ── Birds (light mode) ── */}
-        <g className="cf2-birds">
+        {/* ── Birds (daytime only) ── */}
+        {showSun && (
+        <g opacity="0.35">
           {[{x:60,y:22},{x:150,y:15},{x:280,y:28}].map((b,i) => (
             <path key={i} d={`M${b.x},${b.y} Q${b.x+4},${b.y-3} ${b.x+8},${b.y} Q${b.x+12},${b.y-3} ${b.x+16},${b.y}`}
               fill="none" stroke="hsl(20,30%,25%)" strokeWidth="1.4" strokeLinecap="round"
               className="cf2-bird" style={{ animationDelay: `${i * 3}s` }} />
           ))}
         </g>
+        )}
 
         {/* ── Far mountains — VIVID green ── */}
-        <g style={{ transform: `translateY(${s * -0.06}px)` }}>
+        <g style={{ transform: `translateY(${s * -0.06}px)` }} opacity={isNight ? 0.55 : 0.9}>
           <path d="M0,95 L35,62 L75,78 L120,46 L165,70 L210,42 L260,65 L305,50 L345,68 L400,52 L400,95Z"
-            fill="hsl(150,40%,38%)" className="cf2-mtn-far" />
+            fill="hsl(150,40%,38%)" />
           {/* Snow caps */}
           <path d="M210,42 L203,54 L217,54Z" fill="white" opacity="0.35" />
           <path d="M120,46 L114,56 L126,56Z" fill="white" opacity="0.3" />
@@ -75,9 +106,9 @@ const CampfireScene = ({ scrollY = 0 }: Props) => {
         </g>
 
         {/* ── Near mountains ── */}
-        <g style={{ transform: `translateY(${s * -0.03}px)` }}>
+        <g style={{ transform: `translateY(${s * -0.03}px)` }} opacity={isNight ? 0.6 : 0.95}>
           <path d="M0,105 L30,74 L70,90 L115,64 L160,85 L200,60 L245,78 L290,68 L335,84 L380,72 L400,80 L400,105Z"
-            fill="hsl(150,38%,28%)" className="cf2-mtn-near" />
+            fill="hsl(150,38%,28%)" />
         </g>
 
         {/* ── Tree line ── */}
@@ -194,26 +225,6 @@ const CampfireScene = ({ scrollY = 0 }: Props) => {
       <div className="absolute bottom-0 left-0 right-0 h-20 bg-gradient-to-t from-background via-background/80 to-transparent" />
 
       <style>{`
-        /* ── Light mode defaults ── */
-        .cf2-stars { opacity: 0; }
-        .cf2-sun { opacity: 1; }
-        .cf2-birds { opacity: 0.35; }
-        .cf2-mtn-far { opacity: 0.9; }
-        .cf2-mtn-near { opacity: 0.95; }
-        .cf2-foliage { opacity: 0.9; }
-        .cf2-ground { opacity: 1; }
-        .cf2-ground-deep { opacity: 0.9; }
-
-        /* ── Dark mode ── */
-        .dark .cf2-stars { opacity: 1; }
-        .dark .cf2-sun { opacity: 0; }
-        .dark .cf2-birds { opacity: 0; }
-        .dark .cf2-mtn-far { opacity: 0.55; }
-        .dark .cf2-mtn-near { opacity: 0.6; }
-        .dark .cf2-foliage { opacity: 0.55; }
-        .dark .cf2-ground { opacity: 0.8; }
-        .dark .cf2-ground-deep { opacity: 0.7; }
-
         /* ── Animations ── */
         .cf2-twinkle { animation: cf2-twinkle 3s ease-in-out infinite; }
         .cf2-flame1 { animation: cf2-flicker 0.9s ease-in-out infinite; transform-origin: 200px 130px; }
