@@ -122,7 +122,7 @@ const NearbyRoutesMap = () => {
 
       {/* Location info */}
       {latitude && longitude && (
-        <div className="px-4 py-2 border-b border-border bg-muted/50">
+        <div className="px-4 py-2 border-b border-foreground/[0.08] bg-foreground/[0.03]">
           <p className="text-xs text-muted-foreground flex items-center gap-1.5">
             <span className="w-2 h-2 rounded-full bg-blue-500 inline-block animate-pulse" />
             GPS activo — {latitude.toFixed(4)}, {longitude.toFixed(4)}
