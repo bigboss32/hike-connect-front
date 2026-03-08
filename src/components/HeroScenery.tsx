@@ -207,9 +207,8 @@ const TrailScene = ({ rainy = false }: { rainy?: boolean }) => (
   </svg>
 );
 
-/* Campfire, tent, sign components no longer needed as separate — all inline in TrailScene */
 
-      {/* === DAWN === */}
+
       {time === "dawn" && (
         <div className="absolute inset-0 transition-transform duration-300 ease-out" style={{ transform: `translate(${px(0.15)}px, ${py(0.1) + sc * -0.08}px)` }}>
           <div className="absolute bottom-[55%] right-[20%]" style={{ animation: "dawnRise 4s ease-out forwards" }}>
