@@ -1,5 +1,5 @@
 import Navigation from "@/components/Navigation";
-import ScrollHeader from "@/components/ScrollHeader";
+import CampfireScene from "@/components/CampfireScene";
 import CommunityCard from "@/components/CommunityCard";
 import CreateCommunityDialog from "@/components/CreateCommunityDialog";
 import { useCommunities } from "@/hooks/useCommunities";
@@ -10,16 +10,18 @@ const Communities = () => {
 
   return (
     <div className="min-h-screen bg-background pb-20">
-      <ScrollHeader className="bg-card border-b border-border">
-        <div className="max-w-lg mx-auto px-4 py-4">
-          <div className="flex items-center justify-between mb-4">
+      {/* Campfire hero banner */}
+      <div className="relative">
+        <CampfireScene />
+        <div className="absolute bottom-6 left-0 right-0 z-10 px-4">
+          <div className="max-w-lg mx-auto">
             <h1 className="text-2xl font-bold text-foreground">Comunidades</h1>
+            <p className="text-muted-foreground text-sm mt-0.5">
+              Únete a grupos de senderismo en tu zona
+            </p>
           </div>
-          <p className="text-muted-foreground text-sm">
-            Únete a grupos de senderismo en tu zona
-          </p>
         </div>
-      </ScrollHeader>
+      </div>
 
       <main className="max-w-lg mx-auto px-4 py-6">
         {isLoading ? (
