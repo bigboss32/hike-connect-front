@@ -626,7 +626,10 @@ const HeroScenery = ({ scrollY = 0 }: HeroSceneryProps) => {
         @keyframes sunsetSink { 0% { transform: translateY(0); } 100% { transform: translateY(8px); opacity: 0.7; } }
         @keyframes windStreak { 0% { left: -10%; opacity: 0; } 20% { opacity: 0.4; } 80% { opacity: 0.4; } 100% { left: 110%; opacity: 0; } }
         @keyframes particleDrift { 0% { top: 15%; opacity: 0; } 15% { opacity: 0.6; } 85% { opacity: 0.4; } 100% { top: 95%; opacity: 0; } }
-        @keyframes hikerWalk { 0% { left: -5%; } 100% { left: 88%; } }
+        @keyframes hikerWalk { 0% { left: -5%; } 100% { left: 82%; } }
+        @keyframes dogWalk { 0% { left: 0%; } 100% { left: 87%; } }
+        @keyframes tailWag { 0%, 100% { transform: rotate(-15deg); } 50% { transform: rotate(15deg); } }
+        @keyframes flagWave { 0%, 100% { transform: rotate(0deg); } 50% { transform: rotate(5deg); } }
         @keyframes legSwing { 0%, 100% { transform: rotate(-8deg); } 50% { transform: rotate(8deg); } }
         @keyframes stickSwing { 0%, 100% { transform: rotate(-5deg); } 50% { transform: rotate(5deg); } }
         @keyframes fireFlicker { 0% { transform: scaleY(1) scaleX(1); } 100% { transform: scaleY(1.15) scaleX(0.9); } }
