@@ -218,16 +218,9 @@ const HeroScenery = () => {
         </div>
       )}
 
-      {/* === Hills — pushed down so they don't overlap text === */}
-      <svg
-        className="absolute bottom-0 left-0 right-0 w-full transition-transform duration-500 ease-out"
-        viewBox="0 0 400 40"
-        preserveAspectRatio="none"
-        style={{ height: "25%", transform: `translate(${px(0.05)}px, ${py(0.03)}px)` }}
-      >
-        <path d="M0,40 L0,25 Q50,10 100,22 Q150,6 200,18 Q250,4 300,20 Q350,8 400,22 L400,40 Z" className={hillColors[time][0]} />
-        <path d="M0,40 L0,30 Q60,18 120,28 Q180,14 240,25 Q300,12 360,24 L400,28 L400,40 Z" className={hillColors[time][1]} />
-      </svg>
+
+      {/* Soft bottom fade — blends into content below */}
+      <div className="absolute bottom-0 left-0 right-0 h-8 bg-gradient-to-t from-background/80 to-transparent" />
 
       {/* Keyframes */}
       <style>{`
