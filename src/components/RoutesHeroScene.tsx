@@ -17,14 +17,16 @@ const getTimeSlot = (): TimeSlot => {
 
 interface Props {
   mode?: "rutas" | "hospedajes";
+  scrollY?: number;
 }
 
-const RoutesHeroScene = ({ mode = "rutas" }: Props) => {
+const RoutesHeroScene = ({ mode = "rutas", scrollY = 0 }: Props) => {
   const time = getTimeSlot();
   const isNight = time === "night";
   const isSunset = time === "sunset";
   const isDawn = time === "dawn";
   const isHospedaje = mode === "hospedajes";
+  const s = Math.min(scrollY, 300);
 
   const sky: Record<TimeSlot, string> = {
     dawn: "from-rose-300/30 via-amber-200/20 to-sky-200/15",
