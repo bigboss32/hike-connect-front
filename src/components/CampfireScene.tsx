@@ -1,7 +1,18 @@
 /**
  * CampfireScene — Animated SVG banner for Communities page.
- * Campfire with gathered hiker silhouettes under a warm sky.
+ * Campfire with gathered hiker silhouettes — dynamic time-of-day.
  */
+
+type TimeSlot = "dawn" | "morning" | "afternoon" | "sunset" | "night";
+
+const getTimeSlot = (): TimeSlot => {
+  const h = new Date().getHours();
+  if (h >= 5 && h < 7) return "dawn";
+  if (h >= 7 && h < 12) return "morning";
+  if (h >= 12 && h < 17) return "afternoon";
+  if (h >= 17 && h < 18) return "sunset";
+  return "night";
+};
 
 interface Props {
   scrollY?: number;
@@ -9,12 +20,26 @@ interface Props {
 
 const CampfireScene = ({ scrollY = 0 }: Props) => {
   const s = Math.min(scrollY, 300);
+  const time = getTimeSlot();
+  const isNight = time === "night";
+  const isSunset = time === "sunset";
+  const isDawn = time === "dawn";
+  const showStars = isNight;
+  const showSun = !isNight;
+
+  const sky: Record<TimeSlot, string> = {
+    dawn: "from-rose-300/40 via-amber-200/30 to-emerald-800/20",
+    morning: "from-amber-200/40 via-sky-300/25 to-emerald-800/20",
+    afternoon: "from-amber-300/50 via-orange-200/40 to-emerald-800/30",
+    sunset: "from-orange-400/50 via-rose-300/40 to-purple-800/30",
+    night: "from-indigo-950/80 via-slate-900/60 to-emerald-950/40",
+  };
 
   return (
     <div className="relative w-full overflow-hidden rounded-b-2xl" style={{ height: 220 }}>
-      {/* Sky gradient */}
+      {/* Sky gradient — dynamic */}
       <div
-        className="absolute inset-0 bg-gradient-to-b from-amber-300/50 via-orange-200/40 to-emerald-800/30 dark:from-indigo-950/80 dark:via-slate-900/60 dark:to-emerald-950/40"
+        className={`absolute inset-0 bg-gradient-to-b ${sky[time]} transition-colors duration-700`}
         style={{ transform: `translateY(${s * 0.05}px)` }}
       />
 
