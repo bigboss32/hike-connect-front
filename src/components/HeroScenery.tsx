@@ -187,7 +187,7 @@ const HeroScenery = ({ scrollY = 0 }: HeroSceneryProps) => {
 
       {/* === DAWN === */}
       {time === "dawn" && (
-        <div className="absolute inset-0 transition-transform duration-300 ease-out" style={{ transform: `translate(${px(0.15)}px, ${py(0.1)}px)` }}>
+        <div className="absolute inset-0 transition-transform duration-300 ease-out" style={{ transform: `translate(${px(0.15)}px, ${py(0.1) + sc * -0.08}px)` }}>
           <div className="absolute bottom-[55%] right-[20%]" style={{ animation: "dawnRise 4s ease-out forwards" }}>
             <svg width="34" height="34" viewBox="0 0 30 30">
               <defs><radialGradient id="dawnSun"><stop offset="0%" stopColor="#FDE68A" stopOpacity="0.9" /><stop offset="100%" stopColor="#F59E0B" stopOpacity="0" /></radialGradient></defs>
