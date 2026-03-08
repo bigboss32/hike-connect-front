@@ -171,10 +171,10 @@ const Routes = () => {
             <div className="animate-fade-in" style={{ animationDelay: '150ms' }}>
               <div className="flex gap-2">
                 <div className="relative flex-1">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/70" />
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                   <Input
                     placeholder={activeTab === "rutas" ? "Buscar rutas..." : "Buscar hospedajes..."}
-                    className="pl-10 backdrop-blur-md bg-foreground/[0.06] border-foreground/[0.08] text-foreground placeholder:text-muted-foreground/60"
+                    className="pl-10 backdrop-blur-md bg-card/80 border-border text-foreground placeholder:text-muted-foreground/70 shadow-sm dark:bg-foreground/[0.06] dark:border-foreground/[0.08]"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                   />
@@ -183,7 +183,7 @@ const Routes = () => {
                   variant={hasActiveFilters ? "default" : "outline"} 
                   size="icon"
                   onClick={() => setShowFiltersModal(true)}
-                  className={hasActiveFilters ? "relative" : "relative backdrop-blur-md bg-foreground/[0.06] border-foreground/[0.08] hover:bg-foreground/[0.1]"}
+                  className={hasActiveFilters ? "relative" : "relative backdrop-blur-md bg-card/80 border-border hover:bg-card shadow-sm dark:bg-foreground/[0.06] dark:border-foreground/[0.08] dark:hover:bg-foreground/[0.1]"}
                 >
                   <SlidersHorizontal className="w-4 h-4" />
                   {hasActiveFilters && (
@@ -201,14 +201,14 @@ const Routes = () => {
                     <Badge 
                       key={index} 
                       variant="secondary"
-                      className="text-xs capitalize bg-foreground/[0.06] backdrop-blur-sm border-foreground/[0.08]"
+                      className="text-xs capitalize bg-card/80 backdrop-blur-sm border border-border dark:bg-foreground/[0.06] dark:border-foreground/[0.08]"
                     >
                       {label}
                     </Badge>
                   ))}
                   <Badge 
                     variant="outline" 
-                    className="text-xs cursor-pointer bg-foreground/[0.06] backdrop-blur-sm border-foreground/[0.08] hover:bg-destructive/10 hover:text-destructive hover:border-destructive"
+                    className="text-xs cursor-pointer bg-card/80 backdrop-blur-sm border border-border hover:bg-destructive/10 hover:text-destructive hover:border-destructive dark:bg-foreground/[0.06] dark:border-foreground/[0.08]"
                     onClick={() => setFilters({
                       category: "todas",
                       type: "todas",
