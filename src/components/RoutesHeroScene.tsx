@@ -259,6 +259,7 @@ const RoutesHeroScene = ({ mode = "rutas" }: Props) => {
       {/* All animations in one style block — GPU optimized */}
       <style>{`
         .rs-scene { will-change: auto; }
+        .rs-mode-layer { transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out; }
         .rs-sun-group { animation: rs-sunFloat 6s ease-in-out infinite; }
         .rs-cloud1 { animation: rs-drift 22s linear infinite; }
         .rs-cloud2 { animation: rs-drift 28s linear 8s infinite; }
