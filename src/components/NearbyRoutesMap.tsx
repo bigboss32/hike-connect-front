@@ -86,7 +86,7 @@ const NearbyRoutesMap = () => {
   };
 
   return (
-    <div className="bg-card rounded-xl overflow-hidden shadow-elevated">
+    <div className="backdrop-blur-sm bg-foreground/[0.06] border border-foreground/[0.08] rounded-xl overflow-hidden">
       <div className="flex items-center justify-between p-4 border-b border-border">
         <div className="flex items-center gap-2">
           <MapPin className="w-5 h-5 text-primary" />

@@ -80,7 +80,7 @@ const Index = () => {
         <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-background via-background/70 to-transparent z-[5]" />
       </div>
 
-      <main className="max-w-lg mx-auto px-4 -mt-10 relative z-10 space-y-5">
+      <main className="max-w-lg mx-auto px-4 -mt-14 relative z-10 space-y-5">
 
         {/* User Stats — overlaps the hero fade for seamless blend */}
         <section className="animate-fade-in" style={{ animationDelay: '200ms' }}>
