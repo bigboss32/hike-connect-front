@@ -225,26 +225,6 @@ const CampfireScene = ({ scrollY = 0 }: Props) => {
       <div className="absolute bottom-0 left-0 right-0 h-20 bg-gradient-to-t from-background via-background/80 to-transparent" />
 
       <style>{`
-        /* ── Light mode defaults ── */
-        .cf2-stars { opacity: 0; }
-        .cf2-sun { opacity: 1; }
-        .cf2-birds { opacity: 0.35; }
-        .cf2-mtn-far { opacity: 0.9; }
-        .cf2-mtn-near { opacity: 0.95; }
-        .cf2-foliage { opacity: 0.9; }
-        .cf2-ground { opacity: 1; }
-        .cf2-ground-deep { opacity: 0.9; }
-
-        /* ── Dark mode ── */
-        .dark .cf2-stars { opacity: 1; }
-        .dark .cf2-sun { opacity: 0; }
-        .dark .cf2-birds { opacity: 0; }
-        .dark .cf2-mtn-far { opacity: 0.55; }
-        .dark .cf2-mtn-near { opacity: 0.6; }
-        .dark .cf2-foliage { opacity: 0.55; }
-        .dark .cf2-ground { opacity: 0.8; }
-        .dark .cf2-ground-deep { opacity: 0.7; }
-
         /* ── Animations ── */
         .cf2-twinkle { animation: cf2-twinkle 3s ease-in-out infinite; }
         .cf2-flame1 { animation: cf2-flicker 0.9s ease-in-out infinite; transform-origin: 200px 130px; }
