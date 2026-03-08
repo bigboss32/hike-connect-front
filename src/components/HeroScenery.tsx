@@ -15,268 +15,199 @@ const getTimeSlot = (): TimeSlot => {
   return "night";
 };
 
-/* ── Walking Hiker SVG — with backpack ── */
-const WalkingHiker = ({ rainy = false }: { rainy?: boolean }) => (
-  <svg width="20" height={rainy ? "32" : "28"} viewBox={rainy ? "0 -8 24 40" : "0 0 24 32"} fill="none" className="text-primary">
-    {rainy && (
-      <g>
-        <path d="M5,-6 Q12,-14 19,-6" fill="#60A5FA" opacity="0.7" />
-        <line x1="12" y1="-6" x2="12" y2="5" stroke="currentColor" strokeWidth="1" opacity="0.6" />
-      </g>
-    )}
-    <circle cx="12" cy="4.5" r="3.2" fill="currentColor" opacity="0.9" />
-    {!rainy && <ellipse cx="12" cy="2.8" rx="5" ry="1.2" fill="currentColor" opacity="0.7" />}
-    {!rainy && <path d="M9 2.8 Q12 -0.5 15 2.8" fill="currentColor" opacity="0.8" />}
-    <rect x="10" y="7.5" width="4" height="9" rx="1.5" fill="currentColor" opacity="0.85" />
-    <rect x="14" y="8" width="4" height="7" rx="1.5" fill="currentColor" opacity="0.5" />
-    <ellipse cx="16" cy="7.5" rx="2.2" ry="1" fill="currentColor" opacity="0.4" />
-    {!rainy && (
-      <g style={{ transformOrigin: "14px 9px", animation: "stickSwing 1.2s ease-in-out infinite" }}>
-        <line x1="14" y1="9" x2="19" y2="24" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" opacity="0.5" />
-        <line x1="13" y1="9" x2="16" y2="15" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" opacity="0.7" />
-      </g>
-    )}
-    <line x1="10" y1="10" x2="7" y2="15" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" opacity="0.6" />
-    <g style={{ transformOrigin: "11px 16px", animation: "legSwing 0.8s ease-in-out infinite" }}>
-      <rect x="9.5" y="16" width="2.5" height="8" rx="1.1" fill="currentColor" opacity="0.8" />
-      <ellipse cx="11" cy="24.5" rx="2.5" ry="1.2" fill="currentColor" opacity="0.7" />
-    </g>
-    <g style={{ transformOrigin: "13px 16px", animation: "legSwing 0.8s ease-in-out 0.4s infinite" }}>
-      <rect x="12" y="16" width="2.5" height="8" rx="1.1" fill="currentColor" opacity="0.8" />
-      <ellipse cx="13.5" cy="24.5" rx="2.5" ry="1.2" fill="currentColor" opacity="0.7" />
-    </g>
-  </svg>
-);
-
-/* ── Companion Dog ── */
-const CompanionDog = () => (
-  <svg width="14" height="10" viewBox="0 0 20 16" fill="none" className="text-primary">
-    <ellipse cx="10" cy="10" rx="7" ry="4" fill="currentColor" opacity="0.65" />
-    <circle cx="17" cy="7" r="3" fill="currentColor" opacity="0.7" />
-    <ellipse cx="18.5" cy="5" rx="1.5" ry="2" fill="currentColor" opacity="0.5" transform="rotate(15 18.5 5)" />
-    <path d="M3,8 Q1,4 3,3" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" opacity="0.55"
-      style={{ transformOrigin: "3px 8px", animation: "tailWag 0.4s ease-in-out infinite" }} />
-    <g style={{ animation: "legSwing 0.8s ease-in-out infinite" }}>
-      <rect x="6" y="13" width="1.5" height="3" rx="0.5" fill="currentColor" opacity="0.6" />
-      <rect x="12" y="13" width="1.5" height="3" rx="0.5" fill="currentColor" opacity="0.6" />
-    </g>
-    <g style={{ animation: "legSwing 0.8s ease-in-out 0.4s infinite" }}>
-      <rect x="8" y="13" width="1.5" height="3" rx="0.5" fill="currentColor" opacity="0.6" />
-      <rect x="14" y="13" width="1.5" height="3" rx="0.5" fill="currentColor" opacity="0.6" />
-    </g>
-    <circle cx="18" cy="6.5" r="0.6" fill="hsl(var(--background))" opacity="0.8" />
-  </svg>
-);
-
-/* ── Trail Sign ── */
-const TrailSign = () => (
-  <svg width="10" height="18" viewBox="0 0 14 24" fill="none" className="text-primary">
-    <rect x="6" y="6" width="2" height="18" rx="0.5" fill="currentColor" opacity="0.35" />
-    <rect x="7" y="7" width="7" height="4" rx="1" fill="currentColor" opacity="0.3" />
-    <polygon points="7,7 7,11 5,9" fill="currentColor" opacity="0.3" />
-    <rect x="0" y="12" width="7" height="3.5" rx="1" fill="currentColor" opacity="0.22" />
-    <polygon points="7,12 7,15.5 9,13.75" fill="currentColor" opacity="0.22" />
-  </svg>
-);
-
-/* ── Destination Tent ── */
-const DestinationTent = () => (
-  <svg width="18" height="16" viewBox="0 0 24 22" fill="none" className="text-primary">
-    <polygon points="12,2 2,20 22,20" fill="currentColor" opacity="0.3" />
-    <polygon points="12,2 8,20 16,20" fill="currentColor" opacity="0.2" />
-    <path d="M10,20 Q12,14 14,20" fill="hsl(var(--background))" opacity="0.5" />
-    <line x1="12" y1="2" x2="12" y2="-2" stroke="currentColor" strokeWidth="0.7" opacity="0.4" />
-    <polygon points="12,-2 12,1 16,0" fill="#F59E0B" opacity="0.5" style={{ animation: "flagWave 2s ease-in-out infinite" }} />
-  </svg>
-);
-
-/* ── Flower cluster ── */
-const FlowerCluster = ({ variant = 0 }: { variant?: number }) => {
-  const colors = [["#F472B6","#FB923C"], ["#A78BFA","#FBBF24"], ["#34D399","#F472B6"]];
-  const [c1, c2] = colors[variant % 3];
-  return (
-    <svg width="8" height="7" viewBox="0 0 14 12" fill="none" opacity="0.45">
-      <circle cx="4" cy="5" r="2.5" fill={c1} opacity="0.7" />
-      <circle cx="10" cy="4" r="2" fill={c2} opacity="0.6" />
-      <line x1="4" y1="7.5" x2="4" y2="12" stroke="#22C55E" strokeWidth="0.6" opacity="0.5" />
-      <line x1="10" y1="6" x2="10" y2="12" stroke="#22C55E" strokeWidth="0.6" opacity="0.5" />
-    </svg>
-  );
-};
-
-/* ── Campfire SVG — enhanced ── */
-const Campfire = () => (
-  <svg width="18" height="22" viewBox="0 0 20 26" fill="none">
-    {[{x:3,y:21},{x:7,y:22},{x:13,y:22},{x:17,y:21}].map((s,i) => (
-      <ellipse key={i} cx={s.x} cy={s.y} rx="2" ry="1.2" fill="currentColor" className="text-muted-foreground" opacity="0.2" />
-    ))}
-    <rect x="4" y="19" width="12" height="2.5" rx="1" fill="currentColor" className="text-primary" opacity="0.3" />
-    <rect x="6" y="17.5" width="8" height="2" rx="1" fill="currentColor" className="text-primary" opacity="0.25" transform="rotate(-8 10 18.5)" />
-    <path d="M10 5 Q13 9 11 14 Q10.5 16 10 17 Q9.5 16 9 14 Q7 9 10 5Z" fill="#F59E0B" opacity="0.85" style={{ animation: "fireFlicker 0.6s ease-in-out infinite alternate" }} />
-    <path d="M10 8 Q11.5 11 10.5 15 Q10.2 16 10 16.2 Q9.8 16 9.5 15 Q8.5 11 10 8Z" fill="#EF4444" opacity="0.55" style={{ animation: "fireFlicker 0.6s ease-in-out 0.15s infinite alternate" }} />
-    <ellipse cx="10" cy="12" rx="2" ry="4" fill="#FDE68A" opacity="0.4" style={{ animation: "fireFlicker 0.5s ease-in-out 0.3s infinite alternate" }} />
-    {[{x:8,y:3,d:0},{x:12,y:2,d:0.5},{x:10,y:1,d:1}].map((sp,i) => (
-      <circle key={i} cx={sp.x} cy={sp.y} r="0.7" fill="#FDE68A" opacity="0.6" style={{ animation: `smokeRise 1.5s ease-out ${sp.d}s infinite` }} />
-    ))}
-    <circle cx="9" cy="2" r="1.2" fill="currentColor" className="text-muted-foreground" opacity="0.12" style={{ animation: "smokeRise 2s ease-out infinite" }} />
-    <ellipse cx="10" cy="21" rx="8" ry="2" fill="#FBBF24" opacity="0.08" />
-  </svg>
-);
+/* ── All trail elements rendered in a single SVG for perfect alignment ── */
 
 interface HeroSceneryProps {
   scrollY?: number;
 }
 
-const HeroScenery = ({ scrollY = 0 }: HeroSceneryProps) => {
-  const time = getTimeSlot();
-  const sc = Math.min(scrollY, 400);
-  const containerRef = useRef<HTMLDivElement>(null);
-  const [mouse, setMouse] = useState({ x: 0.5, y: 0.5 });
+/* Trail scene — single SVG so everything shares the same coordinate system */
+const TrailScene = ({ rainy = false }: { rainy?: boolean }) => (
+  <svg viewBox="0 0 400 60" preserveAspectRatio="xMidYMax slice" className="w-full h-full" fill="none">
+    {/* Ground / trail path */}
+    <line x1="10" y1="52" x2="390" y2="52" stroke="currentColor" className="text-primary" strokeWidth="1" opacity="0.15" />
+    {/* Dashed trail */}
+    <line x1="20" y1="52" x2="380" y2="52" stroke="currentColor" className="text-primary" strokeWidth="0.5" opacity="0.1" strokeDasharray="4 3" />
 
-  const weather = useMemo(() => {
-    const opts = ["clear", "cloudy", "windy", "rainy"] as const;
-    return opts[Math.floor(Math.random() * opts.length)];
-  }, []);
+    {/* Trail sign at start */}
+    <g opacity="0.35">
+      <rect x="18" y="30" width="1.5" height="22" rx="0.5" fill="currentColor" className="text-primary" />
+      <rect x="19" y="32" width="8" height="4" rx="1" fill="currentColor" className="text-primary" />
+      <polygon points="19,32 19,36 17,34" fill="currentColor" className="text-primary" />
+      <rect x="11" y="38" width="8" height="3.5" rx="1" fill="currentColor" className="text-primary" opacity="0.7" />
+    </g>
 
-  const handleMove = useCallback((clientX: number, clientY: number) => {
-    if (!containerRef.current) return;
-    const rect = containerRef.current.getBoundingClientRect();
-    setMouse({
-      x: (clientX - rect.left) / rect.width,
-      y: (clientY - rect.top) / rect.height,
-    });
-  }, []);
+    {/* Small bushes / grass tufts along trail */}
+    {[45, 95, 150, 210, 270, 330].map((x, i) => (
+      <g key={`bush-${i}`} opacity={0.25 + (i % 2) * 0.1}>
+        <ellipse cx={x} cy="50" rx={3 + (i % 2)} ry={2 + (i % 2)} fill="#22C55E" />
+        <ellipse cx={x + 4} cy="49" rx={2} ry={1.5} fill="#16A34A" />
+      </g>
+    ))}
 
-  useEffect(() => {
-    const el = containerRef.current;
-    if (!el) return;
-    const onMouse = (e: MouseEvent) => handleMove(e.clientX, e.clientY);
-    const onTouch = (e: TouchEvent) => {
-      if (e.touches[0]) handleMove(e.touches[0].clientX, e.touches[0].clientY);
-    };
-    el.addEventListener("mousemove", onMouse);
-    el.addEventListener("touchmove", onTouch, { passive: true });
-    return () => {
-      el.removeEventListener("mousemove", onMouse);
-      el.removeEventListener("touchmove", onTouch);
-    };
-  }, [handleMove]);
+    {/* Flowers */}
+    {[{x:60,c:"#F472B6"},{x:130,c:"#A78BFA"},{x:200,c:"#FB923C"},{x:280,c:"#34D399"},{x:340,c:"#F472B6"}].map((f,i) => (
+      <g key={`flower-${i}`} opacity="0.5">
+        <line x1={f.x} y1="52" x2={f.x} y2="46" stroke="#22C55E" strokeWidth="0.5" />
+        <circle cx={f.x} cy="45" r="1.8" fill={f.c} opacity="0.7">
+          <animate attributeName="r" values="1.8;2.2;1.8" dur={`${3 + i * 0.5}s`} repeatCount="indefinite" />
+        </circle>
+        <circle cx={f.x + 3} cy="46" r="1.3" fill={f.c} opacity="0.5" />
+      </g>
+    ))}
 
-  const px = (depth: number) => (mouse.x - 0.5) * depth * 20;
-  const py = (depth: number) => (mouse.y - 0.5) * depth * 12;
+    {/* Small rocks */}
+    {[80, 165, 250, 310].map((x, i) => (
+      <ellipse key={`rock-${i}`} cx={x} cy="53" rx={2.5 + i % 2} ry={1.2} fill="currentColor" className="text-muted-foreground" opacity="0.12" />
+    ))}
 
-  const sky: Record<TimeSlot, string> = {
-    dawn: "from-rose-300/30 via-amber-200/25 to-sky-200/20 dark:from-rose-900/25 dark:via-amber-900/20 dark:to-sky-900/15",
-    morning: "from-amber-200/30 via-sky-300/20 to-emerald-200/20 dark:from-amber-900/20 dark:via-sky-900/15 dark:to-emerald-900/15",
-    afternoon: "from-orange-300/25 via-amber-200/20 to-sky-200/15 dark:from-orange-900/20 dark:via-amber-900/15 dark:to-sky-900/10",
-    sunset: "from-orange-400/35 via-rose-300/30 to-purple-300/25 dark:from-orange-950/30 dark:via-rose-950/25 dark:to-purple-950/20",
-    night: "from-indigo-900/30 via-slate-800/25 to-emerald-900/20 dark:from-indigo-950/40 dark:via-slate-900/30 dark:to-emerald-950/25",
-  };
+    {/* Footprints — animated with hiker */}
+    <g opacity="0.08">
+      <animateTransform attributeName="transform" type="translate" from="-20,0" to="320,0" dur="14s" repeatCount="indefinite" />
+      {[...Array(12)].map((_, i) => (
+        <ellipse key={i} cx={-i * 8} cy="53" rx="1.8" ry="0.8" fill="currentColor" className="text-primary" opacity={Math.max(0, 1 - i * 0.08)} />
+      ))}
+    </g>
 
-  const terrainColor: Record<TimeSlot, string> = {
-    dawn: "text-emerald-800/15 dark:text-emerald-400/10",
-    morning: "text-emerald-700/12 dark:text-emerald-400/8",
-    afternoon: "text-amber-800/10 dark:text-amber-400/8",
-    sunset: "text-orange-900/15 dark:text-orange-400/10",
-    night: "text-indigo-900/12 dark:text-indigo-400/8",
-  };
+    {/* ── Companion Dog — aligned to ground at y=52 ── */}
+    <g>
+      <animateTransform attributeName="transform" type="translate" from="5,0" to="345,0" dur="14s" repeatCount="indefinite" />
+      {/* Body */}
+      <ellipse cx="12" cy="44" rx="6" ry="3.5" fill="currentColor" className="text-primary" opacity="0.6" />
+      {/* Head */}
+      <circle cx="19" cy="41" r="2.8" fill="currentColor" className="text-primary" opacity="0.65" />
+      {/* Ear */}
+      <ellipse cx="20.5" cy="39" rx="1.2" ry="1.8" fill="currentColor" className="text-primary" opacity="0.45" />
+      {/* Eye */}
+      <circle cx="20" cy="40.5" r="0.5" fill="hsl(var(--background))" opacity="0.7" />
+      {/* Tail */}
+      <path d="M6,42 Q3,38 5,36" fill="none" stroke="currentColor" className="text-primary" strokeWidth="1.2" strokeLinecap="round" opacity="0.5">
+        <animate attributeName="d" values="M6,42 Q3,38 5,36;M6,42 Q3,38 4,39;M6,42 Q3,38 5,36" dur="0.4s" repeatCount="indefinite" />
+      </path>
+      {/* Legs — animated */}
+      <g>
+        <animate attributeName="opacity" values="1" dur="1s" repeatCount="indefinite" />
+        <rect x="8" y="47" width="1.2" height="5" rx="0.5" fill="currentColor" className="text-primary" opacity="0.55">
+          <animate attributeName="height" values="5;4;5" dur="0.4s" repeatCount="indefinite" />
+        </rect>
+        <rect x="11" y="47" width="1.2" height="5" rx="0.5" fill="currentColor" className="text-primary" opacity="0.55">
+          <animate attributeName="height" values="4;5;4" dur="0.4s" repeatCount="indefinite" />
+        </rect>
+        <rect x="14" y="47" width="1.2" height="5" rx="0.5" fill="currentColor" className="text-primary" opacity="0.55">
+          <animate attributeName="height" values="5;4;5" dur="0.4s" begin="0.2s" repeatCount="indefinite" />
+        </rect>
+        <rect x="17" y="47" width="1.2" height="5" rx="0.5" fill="currentColor" className="text-primary" opacity="0.55">
+          <animate attributeName="height" values="4;5;4" dur="0.4s" begin="0.2s" repeatCount="indefinite" />
+        </rect>
+      </g>
+    </g>
 
-  return (
-    <div ref={containerRef} className="absolute inset-0 overflow-hidden pointer-events-auto z-0">
-      {/* Sky */}
-      <div className={`absolute inset-0 bg-gradient-to-br ${sky[time]} transition-colors duration-500`} style={{ transform: `translateY(${sc * 0.04}px)` }} />
+    {/* ── Walking Hiker — aligned to ground at y=52 ── */}
+    <g>
+      <animateTransform attributeName="transform" type="translate" from="-10,0" to="330,0" dur="14s" repeatCount="indefinite" />
+      {/* Shadow on ground */}
+      <ellipse cx="8" cy="53" rx="6" ry="1.5" fill="currentColor" className="text-primary" opacity="0.08" />
+      {/* Head */}
+      <circle cx="8" cy="24" r="3.5" fill="currentColor" className="text-primary" opacity="0.85" />
+      {/* Hat */}
+      {!rainy && <>
+        <ellipse cx="8" cy="21.5" rx="5.5" ry="1.3" fill="currentColor" className="text-primary" opacity="0.65" />
+        <path d="M5,21.5 Q8,18 11,21.5" fill="currentColor" className="text-primary" opacity="0.7" />
+      </>}
+      {/* Umbrella when rainy */}
+      {rainy && <>
+        <path d="M1,16 Q8,8 15,16" fill="#60A5FA" opacity="0.6" />
+        <line x1="8" y1="16" x2="8" y2="24" stroke="currentColor" className="text-primary" strokeWidth="0.8" opacity="0.5" />
+      </>}
+      {/* Body */}
+      <rect x="6" y="27.5" width="4.5" height="10" rx="1.8" fill="currentColor" className="text-primary" opacity="0.8" />
+      {/* Backpack */}
+      <rect x="10.5" y="28" width="4" height="8" rx="1.5" fill="currentColor" className="text-primary" opacity="0.45" />
+      <ellipse cx="12.5" cy="27.5" rx="2.3" ry="1" fill="currentColor" className="text-primary" opacity="0.35" />
+      {/* Arm with hiking stick */}
+      {!rainy && <>
+        <line x1="10.5" y1="29" x2="16" y2="52" stroke="currentColor" className="text-primary" strokeWidth="1" strokeLinecap="round" opacity="0.4">
+          <animate attributeName="x2" values="16;15;16" dur="1.2s" repeatCount="indefinite" />
+        </line>
+        <line x1="10" y1="30" x2="13" y2="36" stroke="currentColor" className="text-primary" strokeWidth="1.5" strokeLinecap="round" opacity="0.6">
+          <animate attributeName="x2" values="13;12;13" dur="1.2s" repeatCount="indefinite" />
+        </line>
+      </>}
+      {/* Left arm */}
+      <line x1="6" y1="30" x2="3" y2="36" stroke="currentColor" className="text-primary" strokeWidth="1.3" strokeLinecap="round" opacity="0.55" />
+      {/* Left leg */}
+      <rect x="5.5" y="37" width="2.5" height="9" rx="1" fill="currentColor" className="text-primary" opacity="0.75">
+        <animate attributeName="x" values="5.5;4.5;5.5" dur="0.8s" repeatCount="indefinite" />
+      </rect>
+      <ellipse cx="7" cy="46.5" rx="2.5" ry="1" fill="currentColor" className="text-primary" opacity="0.6">
+        <animate attributeName="cx" values="7;6;7" dur="0.8s" repeatCount="indefinite" />
+      </ellipse>
+      {/* Right leg */}
+      <rect x="8" y="37" width="2.5" height="9" rx="1" fill="currentColor" className="text-primary" opacity="0.75">
+        <animate attributeName="x" values="8;9;8" dur="0.8s" repeatCount="indefinite" />
+      </rect>
+      <ellipse cx="9.5" cy="46.5" rx="2.5" ry="1" fill="currentColor" className="text-primary" opacity="0.6">
+        <animate attributeName="cx" values="9.5;10.5;9.5" dur="0.8s" repeatCount="indefinite" />
+      </ellipse>
+    </g>
 
-      {/* === Rolling hills / terrain at bottom === */}
-      <div className="absolute bottom-0 left-0 right-0 transition-transform duration-300 ease-out" style={{ transform: `translate(${px(0.08)}px, ${py(0.05) + sc * -0.01}px)` }}>
-        <svg viewBox="0 0 400 60" preserveAspectRatio="none" className={`w-full h-16 ${terrainColor[time]}`} fill="currentColor">
-          <path d="M0,40 Q50,15 100,35 Q150,50 200,30 Q250,10 300,35 Q350,50 400,25 L400,60 L0,60Z" opacity="0.6" />
-          <path d="M0,45 Q60,30 120,42 Q180,55 240,38 Q300,20 360,40 Q380,48 400,35 L400,60 L0,60Z" opacity="0.4" />
-        </svg>
-      </div>
+    {/* ── Destination: Tent + Campfire ── */}
+    {/* Tent */}
+    <g opacity="0.35">
+      <polygon points="365,52 385,52 375,34" fill="currentColor" className="text-primary" />
+      <polygon points="375,34 371,52 379,52" fill="currentColor" className="text-primary" opacity="0.7" />
+      <path d="M373,52 Q375,44 377,52" fill="hsl(var(--background))" opacity="0.4" />
+      <line x1="375" y1="34" x2="375" y2="30" stroke="currentColor" className="text-primary" strokeWidth="0.6" />
+      <polygon points="375,30 375,33 380,31.5" fill="#F59E0B" opacity="0.6">
+        <animate attributeName="points" values="375,30 375,33 380,31.5;375,30 375,33 379,32;375,30 375,33 380,31.5" dur="2s" repeatCount="indefinite" />
+      </polygon>
+    </g>
 
-      {/* === Distant mountain silhouettes === */}
-      <div className="absolute bottom-[8%] left-0 right-0 transition-transform duration-300 ease-out" style={{ transform: `translate(${px(0.05)}px, ${py(0.03) + sc * -0.04}px)` }}>
-        <svg viewBox="0 0 400 40" preserveAspectRatio="none" className={`w-full h-10 ${terrainColor[time]}`} fill="currentColor" opacity="0.3">
-          <path d="M0,40 L40,25 L80,32 L130,12 L170,28 L220,8 L260,22 L310,15 L350,30 L400,18 L400,40Z" />
-        </svg>
-      </div>
+    {/* Campfire */}
+    <g>
+      {/* Logs */}
+      <rect x="352" y="50" width="10" height="2" rx="1" fill="currentColor" className="text-primary" opacity="0.25" transform="rotate(-8 357 51)" />
+      <rect x="354" y="49" width="8" height="1.8" rx="0.8" fill="currentColor" className="text-primary" opacity="0.2" transform="rotate(5 358 50)" />
+      {/* Flames */}
+      <ellipse cx="357" cy="44" rx="3.5" ry="7" fill="#FBBF24" opacity="0.8">
+        <animate attributeName="ry" values="7;8;6.5;7" dur="0.6s" repeatCount="indefinite" />
+      </ellipse>
+      <ellipse cx="355" cy="43" rx="2.5" ry="5.5" fill="#F97316" opacity="0.6">
+        <animate attributeName="ry" values="5.5;6.2;5;5.5" dur="0.5s" repeatCount="indefinite" />
+      </ellipse>
+      <ellipse cx="359" cy="43.5" rx="2" ry="5" fill="#EF4444" opacity="0.45">
+        <animate attributeName="ry" values="5;5.8;4.5;5" dur="0.7s" repeatCount="indefinite" />
+      </ellipse>
+      <ellipse cx="357" cy="42" rx="1.5" ry="3.5" fill="#FDE68A" opacity="0.5">
+        <animate attributeName="ry" values="3.5;4;3;3.5" dur="0.4s" repeatCount="indefinite" />
+      </ellipse>
+      {/* Sparks */}
+      {[{x:355,y:35,d:"0s"},{x:359,y:33,d:"0.5s"},{x:357,y:31,d:"1s"}].map((sp,i) => (
+        <circle key={i} cx={sp.x} cy={sp.y} r="0.8" fill="#FDE68A" opacity="0.6">
+          <animate attributeName="cy" values={`${sp.y};${sp.y - 8}`} dur="1.5s" begin={sp.d} repeatCount="indefinite" />
+          <animate attributeName="opacity" values="0.7;0" dur="1.5s" begin={sp.d} repeatCount="indefinite" />
+        </circle>
+      ))}
+      {/* Smoke */}
+      <circle cx="356" cy="30" r="1.5" fill="currentColor" className="text-muted-foreground" opacity="0.1">
+        <animate attributeName="cy" values="30;22" dur="2.5s" repeatCount="indefinite" />
+        <animate attributeName="opacity" values="0.1;0" dur="2.5s" repeatCount="indefinite" />
+      </circle>
+      {/* Ground glow */}
+      <ellipse cx="357" cy="52" rx="12" ry="3" fill="#FBBF24" opacity="0.06" />
+    </g>
 
-      {/* === Scattered trees === */}
-      <div className="absolute bottom-[4%] left-0 right-0 transition-transform duration-200 ease-out" style={{ transform: `translate(${px(0.12)}px, ${py(0.08) + sc * -0.02}px)` }}>
-        {[
-          { x: "8%", h: 18, delay: "0s" },
-          { x: "22%", h: 14, delay: "0.5s" },
-          { x: "38%", h: 20, delay: "1s" },
-          { x: "68%", h: 16, delay: "0.3s" },
-          { x: "85%", h: 22, delay: "0.8s" },
-        ].map((tree, i) => (
-          <div key={i} className="absolute bottom-0" style={{ left: tree.x }}>
-            <svg width="10" height={tree.h} viewBox={`0 0 12 ${tree.h + 2}`} className="text-primary" opacity="0.2">
-              <rect x="5" y={tree.h * 0.5} width="2" height={tree.h * 0.5} fill="currentColor" rx="1" />
-              <path d={`M6,0 L0,${tree.h * 0.6} L12,${tree.h * 0.6}Z`} fill="currentColor" style={{ animation: `treeBreeze 4s ease-in-out ${tree.delay} infinite` }} />
-            </svg>
-          </div>
-        ))}
-      </div>
+    {/* Small trees near destination */}
+    {[{x:340,h:12},{x:395,h:10}].map((t,i) => (
+      <g key={`tree-${i}`} opacity="0.2">
+        <rect x={t.x - 0.5} y={52 - t.h * 0.4} width="1.2" height={t.h * 0.45} rx="0.4" fill="currentColor" className="text-primary" />
+        <polygon points={`${t.x},${52 - t.h} ${t.x - 4},${52 - t.h * 0.3} ${t.x + 4},${52 - t.h * 0.3}`} fill="#22C55E" opacity="0.7" />
+      </g>
+    ))}
+  </svg>
+);
 
-      {/* === Walking Hiker + Dog + Trail details + Campfire + Tent === */}
-      <div className="absolute bottom-[14%] left-0 right-0 h-14 z-[2]">
-        {/* Trail / ground line — dashed for path feel */}
-        <div className="absolute bottom-2 left-[5%] right-[5%] h-[2px] bg-gradient-to-r from-transparent via-primary/25 to-transparent" />
-        <div className="absolute bottom-[9px] left-[8%] right-[8%] flex gap-4 opacity-10">
-          {[...Array(20)].map((_, i) => (
-            <div key={i} className="w-2 h-[1px] bg-primary shrink-0 rounded-full" />
-          ))}
-        </div>
-
-        {/* Trail sign at start */}
-        <div className="absolute bottom-[2px] left-[4%]">
-          <TrailSign />
-        </div>
-
-        {/* Flowers along the trail */}
-        {[{ left: "15%", delay: "0s" }, { left: "32%", delay: "1s" }, { left: "52%", delay: "0.5s" }, { left: "72%", delay: "1.5s" }].map((f, i) => (
-          <div key={i} className="absolute bottom-[2px]" style={{ left: f.left, animation: `treeBreeze 3s ease-in-out ${f.delay} infinite` }}>
-            <FlowerCluster variant={i} />
-          </div>
-        ))}
-
-        {/* Small rocks along path */}
-        {["20%", "40%", "60%", "78%"].map((x, i) => (
-          <div key={i} className="absolute bottom-[4px]" style={{ left: x }}>
-            <svg width="6" height="4" viewBox="0 0 8 5" fill="none" className="text-primary" opacity="0.15">
-              <ellipse cx="4" cy="3" rx="3.5" ry="2" fill="currentColor" />
-            </svg>
-          </div>
-        ))}
-
-        {/* Footprints trailing behind hiker */}
-        <div className="absolute bottom-[8px] left-0 right-0 flex gap-3 opacity-10" style={{ animation: "hikerWalk 14s linear infinite" }}>
-          {[...Array(18)].map((_, i) => (
-            <div key={i} className="shrink-0" style={{ opacity: Math.max(0, 1 - i * 0.06) }}>
-              <svg width="4" height="3" viewBox="0 0 6 4" fill="none" className="text-primary">
-                <ellipse cx="3" cy="2" rx="2.5" ry="1.5" fill="currentColor" opacity={i % 2 === 0 ? "0.5" : "0.3"} />
-              </svg>
-            </div>
-          ))}
-        </div>
-
-        {/* Companion dog — slightly ahead of hiker */}
-        <div className="absolute bottom-[4px]" style={{ animation: "dogWalk 14s linear infinite" }}>
-          <CompanionDog />
-        </div>
-
-        {/* Hiker walking */}
-        <div className="absolute bottom-[2px]" style={{ animation: "hikerWalk 14s linear infinite" }}>
-          <WalkingHiker rainy={weather === "rainy"} />
-        </div>
-
-        {/* Destination area — tent + campfire */}
-        <div className="absolute bottom-[2px] right-[5%] flex items-end gap-1">
-          <DestinationTent />
-          <Campfire />
-        </div>
-      </div>
+/* Campfire, tent, sign components no longer needed as separate — all inline in TrailScene */
 
       {/* === DAWN === */}
       {time === "dawn" && (
