@@ -145,9 +145,8 @@ const RoutesHeroScene = ({ mode = "rutas" }: Props) => {
           ))}
         </g>
 
-        {/* ── MODE: RUTAS — Trail path + markers ── */}
-        {!isHospedaje && (
-          <g>
+        {/* ── MODE: RUTAS — Trail path + markers (always rendered, transitioned) ── */}
+        <g className="rs-mode-layer" style={{ opacity: isHospedaje ? 0 : 1, transform: isHospedaje ? 'translateY(6px) scale(0.97)' : 'translateY(0) scale(1)' }}>
             <path d="M-10,168 Q50,158 110,165 Q170,174 230,160 Q290,150 350,165 Q380,170 410,158"
               fill="none" stroke="url(#rs-trail)" strokeWidth="2.5" strokeDasharray="6 4" strokeLinecap="round" />
             {[70, 160, 250, 340].map((x, i) => (
@@ -163,12 +162,10 @@ const RoutesHeroScene = ({ mode = "rutas" }: Props) => {
               <rect x="193.5" y="153" width="3" height="6" rx="1" fill="hsl(25,30%,25%)" />
               <line x1="195" y1="153" x2="192" y2="148" stroke="hsl(30,30%,35%)" strokeWidth="0.8" strokeLinecap="round" />
             </g>
-          </g>
-        )}
+        </g>
 
-        {/* ── MODE: HOSPEDAJES — Cozy cabin ── */}
-        {isHospedaje && (
-          <g>
+        {/* ── MODE: HOSPEDAJES — Cozy cabin (always rendered, transitioned) ── */}
+        <g className="rs-mode-layer" style={{ opacity: isHospedaje ? 1 : 0, transform: isHospedaje ? 'translateY(0) scale(1)' : 'translateY(6px) scale(0.97)' }}>
             {/* Cabin body */}
             <rect x="168" y="132" width="64" height="38" rx="2" fill="hsl(25,38%,26%)" />
             {/* Wood planks */}
@@ -199,9 +196,11 @@ const RoutesHeroScene = ({ mode = "rutas" }: Props) => {
             {/* Chimney + smoke */}
             <rect x="218" y="114" width="7" height="16" rx="1" fill="hsl(25,26%,22%)" />
             <rect x="216" y="112" width="11" height="3" rx="1" fill="hsl(25,22%,18%)" />
-            <circle cx="221" cy="106" r="2.5" fill="currentColor" className="text-muted-foreground rs-smoke1" />
-            <circle cx="223" cy="99" r="2" fill="currentColor" className="text-muted-foreground rs-smoke2" />
-            <circle cx="220" cy="93" r="2.8" fill="currentColor" className="text-muted-foreground rs-smoke3" />
+            {isHospedaje && <>
+              <circle cx="221" cy="106" r="2.5" fill="currentColor" className="text-muted-foreground rs-smoke1" />
+              <circle cx="223" cy="99" r="2" fill="currentColor" className="text-muted-foreground rs-smoke2" />
+              <circle cx="220" cy="93" r="2.8" fill="currentColor" className="text-muted-foreground rs-smoke3" />
+            </>}
 
             {/* Night glow pools */}
             {isNight && (
@@ -229,8 +228,7 @@ const RoutesHeroScene = ({ mode = "rutas" }: Props) => {
             <rect x="148" y="167" width="18" height="1" fill="hsl(30,28%,35%)" opacity="0.25" />
             <rect x="236" y="163" width="18" height="1" fill="hsl(30,28%,35%)" opacity="0.25" />
             <rect x="236" y="167" width="18" height="1" fill="hsl(30,28%,35%)" opacity="0.25" />
-          </g>
-        )}
+        </g>
 
         {/* ── Birds ── */}
         <g>
@@ -261,6 +259,7 @@ const RoutesHeroScene = ({ mode = "rutas" }: Props) => {
       {/* All animations in one style block — GPU optimized */}
       <style>{`
         .rs-scene { will-change: auto; }
+        .rs-mode-layer { transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out; }
         .rs-sun-group { animation: rs-sunFloat 6s ease-in-out infinite; }
         .rs-cloud1 { animation: rs-drift 22s linear infinite; }
         .rs-cloud2 { animation: rs-drift 28s linear 8s infinite; }
