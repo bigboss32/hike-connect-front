@@ -147,7 +147,7 @@ const Routes = () => {
                   "flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium transition-all",
                   activeTab === "rutas"
                     ? "bg-primary text-primary-foreground shadow-lg shadow-primary/25"
-                    : "backdrop-blur-md bg-foreground/[0.06] border border-foreground/[0.08] text-muted-foreground hover:text-foreground"
+                    : "backdrop-blur-md bg-card/70 border border-border text-muted-foreground hover:text-foreground dark:bg-foreground/[0.06] dark:border-foreground/[0.08]"
                 )}
               >
                 <TreePine className="w-4 h-4" />
@@ -159,7 +159,7 @@ const Routes = () => {
                   "flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium transition-all",
                   activeTab === "hospedajes"
                     ? "bg-primary text-primary-foreground shadow-lg shadow-primary/25"
-                    : "backdrop-blur-md bg-foreground/[0.06] border border-foreground/[0.08] text-muted-foreground hover:text-foreground"
+                    : "backdrop-blur-md bg-card/70 border border-border text-muted-foreground hover:text-foreground dark:bg-foreground/[0.06] dark:border-foreground/[0.08]"
                 )}
               >
                 <HomeIcon className="w-4 h-4" />
