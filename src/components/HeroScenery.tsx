@@ -60,13 +60,7 @@ const HeroScenery = () => {
     night: "from-indigo-900/30 via-slate-800/25 to-emerald-900/20 dark:from-indigo-950/40 dark:via-slate-900/30 dark:to-emerald-950/25",
   };
 
-  const hillColors: Record<TimeSlot, [string, string]> = {
-    dawn: ["fill-emerald-700/20 dark:fill-emerald-900/30", "fill-emerald-600/15 dark:fill-emerald-800/25"],
-    morning: ["fill-emerald-700/15 dark:fill-emerald-900/25", "fill-emerald-600/10 dark:fill-emerald-800/20"],
-    afternoon: ["fill-emerald-700/18 dark:fill-emerald-900/28", "fill-emerald-600/12 dark:fill-emerald-800/22"],
-    sunset: ["fill-orange-800/20 dark:fill-orange-950/30", "fill-amber-700/15 dark:fill-amber-900/25"],
-    night: ["fill-emerald-900/30 dark:fill-emerald-950/40", "fill-emerald-800/25 dark:fill-emerald-900/35"],
-  };
+  // Removed hills — scenery is sky-only to not overlap text
 
   return (
     <div ref={containerRef} className="absolute inset-0 overflow-hidden pointer-events-auto z-0">
