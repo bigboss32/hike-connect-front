@@ -68,7 +68,7 @@ const Index = () => {
         </div>
 
         {/* Bookings inside the hero zone */}
-        <div className="relative z-10 px-4 pb-5">
+        <div className="relative z-10 px-4 pb-14">
           <div className="max-w-lg mx-auto">
             <section className="animate-fade-in" style={{ animationDelay: '150ms' }}>
               <MyBookingsSection key={refreshKey} />
