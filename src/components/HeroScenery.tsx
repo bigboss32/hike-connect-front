@@ -205,8 +205,104 @@ const TrailScene = ({ rainy = false }: { rainy?: boolean }) => (
       </g>
     ))}
   </svg>
-);
 
+
+const HeroScenery = ({ scrollY = 0 }: HeroSceneryProps) => {
+  const time = getTimeSlot();
+  const sc = Math.min(scrollY, 400);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [mouse, setMouse] = useState({ x: 0.5, y: 0.5 });
+
+  const weather = useMemo(() => {
+    const opts = ["clear", "cloudy", "windy", "rainy"] as const;
+    return opts[Math.floor(Math.random() * opts.length)];
+  }, []);
+
+  const handleMove = useCallback((clientX: number, clientY: number) => {
+    if (!containerRef.current) return;
+    const rect = containerRef.current.getBoundingClientRect();
+    setMouse({
+      x: (clientX - rect.left) / rect.width,
+      y: (clientY - rect.top) / rect.height,
+    });
+  }, []);
+
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    const onMouse = (e: MouseEvent) => handleMove(e.clientX, e.clientY);
+    const onTouch = (e: TouchEvent) => {
+      if (e.touches[0]) handleMove(e.touches[0].clientX, e.touches[0].clientY);
+    };
+    el.addEventListener("mousemove", onMouse);
+    el.addEventListener("touchmove", onTouch, { passive: true });
+    return () => {
+      el.removeEventListener("mousemove", onMouse);
+      el.removeEventListener("touchmove", onTouch);
+    };
+  }, [handleMove]);
+
+  const px = (depth: number) => (mouse.x - 0.5) * depth * 20;
+  const py = (depth: number) => (mouse.y - 0.5) * depth * 12;
+
+  const sky: Record<TimeSlot, string> = {
+    dawn: "from-rose-300/30 via-amber-200/25 to-sky-200/20 dark:from-rose-900/25 dark:via-amber-900/20 dark:to-sky-900/15",
+    morning: "from-amber-200/30 via-sky-300/20 to-emerald-200/20 dark:from-amber-900/20 dark:via-sky-900/15 dark:to-emerald-900/15",
+    afternoon: "from-orange-300/25 via-amber-200/20 to-sky-200/15 dark:from-orange-900/20 dark:via-amber-900/15 dark:to-sky-900/10",
+    sunset: "from-orange-400/35 via-rose-300/30 to-purple-300/25 dark:from-orange-950/30 dark:via-rose-950/25 dark:to-purple-950/20",
+    night: "from-indigo-900/30 via-slate-800/25 to-emerald-900/20 dark:from-indigo-950/40 dark:via-slate-900/30 dark:to-emerald-950/25",
+  };
+
+  const terrainColor: Record<TimeSlot, string> = {
+    dawn: "text-emerald-800/15 dark:text-emerald-400/10",
+    morning: "text-emerald-700/12 dark:text-emerald-400/8",
+    afternoon: "text-amber-800/10 dark:text-amber-400/8",
+    sunset: "text-orange-900/15 dark:text-orange-400/10",
+    night: "text-indigo-900/12 dark:text-indigo-400/8",
+  };
+
+  return (
+    <div ref={containerRef} className="absolute inset-0 overflow-hidden pointer-events-auto z-0">
+      {/* Sky */}
+      <div className={`absolute inset-0 bg-gradient-to-br ${sky[time]} transition-colors duration-500`} style={{ transform: `translateY(${sc * 0.04}px)` }} />
+
+      {/* === Rolling hills / terrain at bottom === */}
+      <div className="absolute bottom-0 left-0 right-0 transition-transform duration-300 ease-out" style={{ transform: `translate(${px(0.08)}px, ${py(0.05) + sc * -0.01}px)` }}>
+        <svg viewBox="0 0 400 60" preserveAspectRatio="none" className={`w-full h-16 ${terrainColor[time]}`} fill="currentColor">
+          <path d="M0,40 Q50,15 100,35 Q150,50 200,30 Q250,10 300,35 Q350,50 400,25 L400,60 L0,60Z" opacity="0.6" />
+          <path d="M0,45 Q60,30 120,42 Q180,55 240,38 Q300,20 360,40 Q380,48 400,35 L400,60 L0,60Z" opacity="0.4" />
+        </svg>
+      </div>
+
+      {/* === Distant mountain silhouettes === */}
+      <div className="absolute bottom-[8%] left-0 right-0 transition-transform duration-300 ease-out" style={{ transform: `translate(${px(0.05)}px, ${py(0.03) + sc * -0.04}px)` }}>
+        <svg viewBox="0 0 400 40" preserveAspectRatio="none" className={`w-full h-10 ${terrainColor[time]}`} fill="currentColor" opacity="0.3">
+          <path d="M0,40 L40,25 L80,32 L130,12 L170,28 L220,8 L260,22 L310,15 L350,30 L400,18 L400,40Z" />
+        </svg>
+      </div>
+
+      {/* === Scattered trees === */}
+      <div className="absolute bottom-[4%] left-0 right-0 transition-transform duration-200 ease-out" style={{ transform: `translate(${px(0.12)}px, ${py(0.08) + sc * -0.02}px)` }}>
+        {[
+          { x: "8%", h: 18, delay: "0s" },
+          { x: "22%", h: 14, delay: "0.5s" },
+          { x: "38%", h: 20, delay: "1s" },
+          { x: "68%", h: 16, delay: "0.3s" },
+          { x: "85%", h: 22, delay: "0.8s" },
+        ].map((tree, i) => (
+          <div key={i} className="absolute bottom-0" style={{ left: tree.x }}>
+            <svg width="10" height={tree.h} viewBox={`0 0 12 ${tree.h + 2}`} className="text-primary" opacity="0.2">
+              <rect x="5" y={tree.h * 0.5} width="2" height={tree.h * 0.5} fill="currentColor" rx="1" />
+              <path d={`M6,0 L0,${tree.h * 0.6} L12,${tree.h * 0.6}Z`} fill="currentColor" style={{ animation: `treeBreeze 4s ease-in-out ${tree.delay} infinite` }} />
+            </svg>
+          </div>
+        ))}
+      </div>
+
+      {/* === Trail Scene — hiker, dog, campfire, all aligned === */}
+      <div className="absolute bottom-[6%] left-0 right-0 h-16 z-[2]">
+        <TrailScene rainy={weather === "rainy"} />
+      </div>
 
 
       {time === "dawn" && (
