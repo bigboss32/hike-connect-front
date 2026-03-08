@@ -1,3 +1,4 @@
+import { useEffect, useState, useCallback } from "react";
 import Navigation from "@/components/Navigation";
 import CampfireScene from "@/components/CampfireScene";
 import CommunityCard from "@/components/CommunityCard";
@@ -7,16 +8,34 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 const Communities = () => {
   const { data, isLoading, error } = useCommunities();
+  const [scrollY, setScrollY] = useState(0);
+
+  const handleScroll = useCallback(() => {
+    setScrollY(window.scrollY);
+  }, []);
+
+  useEffect(() => {
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [handleScroll]);
 
   return (
     <div className="min-h-screen bg-background pb-20">
-      {/* Campfire hero banner */}
+      {/* Campfire hero banner with parallax */}
       <div className="relative">
-        <CampfireScene />
+        <CampfireScene scrollY={scrollY} />
         <div className="absolute bottom-6 left-0 right-0 z-10 px-4">
           <div className="max-w-lg mx-auto">
-            <h1 className="text-2xl font-bold text-foreground">Comunidades</h1>
-            <p className="text-muted-foreground text-sm mt-0.5">
+            <h1
+              className="text-2xl font-bold text-foreground"
+              style={{ transform: `translateY(${scrollY * 0.15}px)`, opacity: Math.max(0, 1 - scrollY / 200) }}
+            >
+              Comunidades
+            </h1>
+            <p
+              className="text-muted-foreground text-sm mt-0.5"
+              style={{ transform: `translateY(${scrollY * 0.1}px)`, opacity: Math.max(0, 1 - scrollY / 150) }}
+            >
               Únete a grupos de senderismo en tu zona
             </p>
           </div>
