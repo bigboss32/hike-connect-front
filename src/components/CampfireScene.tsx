@@ -96,9 +96,9 @@ const CampfireScene = ({ scrollY = 0 }: Props) => {
         )}
 
         {/* ── Far mountains — VIVID green ── */}
-        <g style={{ transform: `translateY(${s * -0.06}px)` }}>
+        <g style={{ transform: `translateY(${s * -0.06}px)` }} opacity={isNight ? 0.55 : 0.9}>
           <path d="M0,95 L35,62 L75,78 L120,46 L165,70 L210,42 L260,65 L305,50 L345,68 L400,52 L400,95Z"
-            fill="hsl(150,40%,38%)" className="cf2-mtn-far" />
+            fill="hsl(150,40%,38%)" />
           {/* Snow caps */}
           <path d="M210,42 L203,54 L217,54Z" fill="white" opacity="0.35" />
           <path d="M120,46 L114,56 L126,56Z" fill="white" opacity="0.3" />
@@ -106,9 +106,9 @@ const CampfireScene = ({ scrollY = 0 }: Props) => {
         </g>
 
         {/* ── Near mountains ── */}
-        <g style={{ transform: `translateY(${s * -0.03}px)` }}>
+        <g style={{ transform: `translateY(${s * -0.03}px)` }} opacity={isNight ? 0.6 : 0.95}>
           <path d="M0,105 L30,74 L70,90 L115,64 L160,85 L200,60 L245,78 L290,68 L335,84 L380,72 L400,80 L400,105Z"
-            fill="hsl(150,38%,28%)" className="cf2-mtn-near" />
+            fill="hsl(150,38%,28%)" />
         </g>
 
         {/* ── Tree line ── */}
