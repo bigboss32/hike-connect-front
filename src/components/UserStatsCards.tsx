@@ -18,7 +18,7 @@ interface StatCardProps {
 
 const StatCard = ({ icon, value, label, color, delay, onClick, className = "" }: StatCardProps) => (
   <div 
-    className={`bg-card rounded-2xl p-4 shadow-soft border border-border/50 text-center transition-all duration-200 ${onClick ? "cursor-pointer hover:shadow-elevated hover:-translate-y-0.5" : ""} ${className}`}
+    className={`backdrop-blur-sm bg-foreground/[0.06] border border-foreground/[0.08] rounded-2xl p-4 text-center transition-all duration-200 ${onClick ? "cursor-pointer hover:bg-foreground/[0.1] hover:-translate-y-0.5" : ""} ${className}`}
     style={{ animationDelay: `${delay}ms` }}
     onClick={onClick}
   >
