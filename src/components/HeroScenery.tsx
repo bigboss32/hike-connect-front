@@ -225,7 +225,8 @@ const TrailScene = ({ rainy = false, time = "morning" as TimeSlot }: { rainy?: b
       </g>
     ))}
   </svg>
-);
+  );
+};
 
 interface HeroSceneryProps {
   scrollY?: number;
