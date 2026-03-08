@@ -118,53 +118,55 @@ const TrailScene = ({ rainy = false, time = "morning" as TimeSlot }: { rainy?: b
       </rect>
     </g>
 
-    {/* ── Hiker — feet on ground y=90 ── */}
+    {/* ── Hiker — clean silhouette, feet on ground y=90 ── */}
     <g>
       <animateTransform attributeName="transform" type="translate" from="-8,0" to="325,0" dur="14s" repeatCount="indefinite" />
       {/* Shadow */}
-      <ellipse cx="10" cy="91" rx="10" ry="2" fill="currentColor" className="text-primary" opacity="0.06" />
+      <ellipse cx="10" cy="91" rx="8" ry="1.5" fill="currentColor" className="text-primary" opacity="0.08" />
       {/* Head */}
-      <circle cx="10" cy="42" r="5" fill="currentColor" className="text-primary" opacity="0.8" />
-      {/* Hat */}
-      {!rainy && <>
-        <ellipse cx="10" cy="38.5" rx="7.5" ry="1.8" fill="currentColor" className="text-primary" opacity="0.6" />
-        <path d="M5.5,38.5 Q10,34 14.5,38.5" fill="currentColor" className="text-primary" opacity="0.65" />
-      </>}
-      {/* Umbrella */}
+      <circle cx="10.5" cy="52" r="4.5" fill="currentColor" className="text-primary" opacity="0.85" />
+      {/* Hat brim */}
+      {!rainy && <ellipse cx="10.5" cy="48.5" rx="6.5" ry="1.5" fill="currentColor" className="text-primary" opacity="0.7" />}
+      {/* Hat top */}
+      {!rainy && <rect x="6" y="45" width="9" height="4" rx="2" fill="currentColor" className="text-primary" opacity="0.7" />}
+      {/* Umbrella when rainy */}
       {rainy && <>
-        <path d="M0,30 Q10,20 20,30" fill="#60A5FA" opacity="0.5" />
-        <line x1="10" y1="30" x2="10" y2="42" stroke="currentColor" className="text-primary" strokeWidth="1" opacity="0.4" />
+        <path d="M2,42 Q10.5,33 19,42" fill="#60A5FA" opacity="0.6" />
+        <line x1="10.5" y1="42" x2="10.5" y2="52" stroke="#60A5FA" strokeWidth="1" opacity="0.5" />
       </>}
-      {/* Body */}
-      <rect x="7.5" y="47" width="6" height="15" rx="2.5" fill="currentColor" className="text-primary" opacity="0.75" />
+      {/* Torso */}
+      <rect x="7" y="57" width="7" height="14" rx="3" fill="currentColor" className="text-primary" opacity="0.8" />
       {/* Backpack */}
-      <rect x="13.5" y="48" width="5.5" height="12" rx="2" fill="currentColor" className="text-primary" opacity="0.4" />
-      {/* Sleeping bag on backpack */}
-      <ellipse cx="16.5" cy="47.5" rx="3" ry="1.5" fill="currentColor" className="text-primary" opacity="0.3" />
+      <rect x="14" y="58" width="5" height="10" rx="2" fill="currentColor" className="text-primary" opacity="0.45" />
+      <ellipse cx="16.5" cy="57.5" rx="2.8" ry="1.2" fill="currentColor" className="text-primary" opacity="0.35" />
+      {/* Left arm (swinging) */}
+      <line x1="7" y1="59" x2="2" y2="70" stroke="currentColor" className="text-primary" strokeWidth="2" strokeLinecap="round" opacity="0.6">
+        <animate attributeName="x2" values="2;4;2" dur="0.8s" repeatCount="indefinite" />
+      </line>
       {/* Right arm + hiking stick */}
       {!rainy && <>
-        <line x1="13.5" y1="50" x2="21" y2="90" stroke="currentColor" className="text-primary" strokeWidth="1" strokeLinecap="round" opacity="0.35">
-          <animate attributeName="x2" values="21;19;21" dur="1.2s" repeatCount="indefinite" />
+        <line x1="14" y1="59" x2="18" y2="69" stroke="currentColor" className="text-primary" strokeWidth="2" strokeLinecap="round" opacity="0.6">
+          <animate attributeName="x2" values="18;16;18" dur="0.8s" repeatCount="indefinite" />
         </line>
-        <line x1="13" y1="51" x2="17" y2="60" stroke="currentColor" className="text-primary" strokeWidth="1.8" strokeLinecap="round" opacity="0.55">
-          <animate attributeName="x2" values="17;15.5;17" dur="1.2s" repeatCount="indefinite" />
+        <line x1="18" y1="59" x2="22" y2="90" stroke="currentColor" className="text-primary" strokeWidth="1.2" strokeLinecap="round" opacity="0.4">
+          <animate attributeName="x2" values="22;20;22" dur="0.8s" repeatCount="indefinite" />
         </line>
       </>}
-      {/* Left arm */}
-      <line x1="7.5" y1="51" x2="3" y2="60" stroke="currentColor" className="text-primary" strokeWidth="1.5" strokeLinecap="round" opacity="0.5" />
       {/* Left leg */}
-      <rect x="6.5" y="62" width="3.5" height="15" rx="1.5" fill="currentColor" className="text-primary" opacity="0.7">
-        <animate attributeName="x" values="6.5;5;6.5" dur="0.8s" repeatCount="indefinite" />
-      </rect>
-      <ellipse cx="8.5" cy="78" rx="3.5" ry="1.5" fill="currentColor" className="text-primary" opacity="0.55">
-        <animate attributeName="cx" values="8.5;7;8.5" dur="0.8s" repeatCount="indefinite" />
+      <line x1="9" y1="71" x2="6" y2="89" stroke="currentColor" className="text-primary" strokeWidth="2.5" strokeLinecap="round" opacity="0.75">
+        <animate attributeName="x2" values="6;4;6" dur="0.8s" repeatCount="indefinite" />
+      </line>
+      {/* Left boot */}
+      <ellipse cx="6" cy="89.5" rx="3" ry="1.5" fill="currentColor" className="text-primary" opacity="0.6">
+        <animate attributeName="cx" values="6;4;6" dur="0.8s" repeatCount="indefinite" />
       </ellipse>
       {/* Right leg */}
-      <rect x="10" y="62" width="3.5" height="15" rx="1.5" fill="currentColor" className="text-primary" opacity="0.7">
-        <animate attributeName="x" values="10;11.5;10" dur="0.8s" repeatCount="indefinite" />
-      </rect>
-      <ellipse cx="12" cy="78" rx="3.5" ry="1.5" fill="currentColor" className="text-primary" opacity="0.55">
-        <animate attributeName="cx" values="12;13.5;12" dur="0.8s" repeatCount="indefinite" />
+      <line x1="11" y1="71" x2="14" y2="89" stroke="currentColor" className="text-primary" strokeWidth="2.5" strokeLinecap="round" opacity="0.75">
+        <animate attributeName="x2" values="14;16;14" dur="0.8s" repeatCount="indefinite" />
+      </line>
+      {/* Right boot */}
+      <ellipse cx="14" cy="89.5" rx="3" ry="1.5" fill="currentColor" className="text-primary" opacity="0.6">
+        <animate attributeName="cx" values="14;16;14" dur="0.8s" repeatCount="indefinite" />
       </ellipse>
     </g>
 
