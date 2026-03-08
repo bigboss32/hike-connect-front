@@ -58,7 +58,7 @@ const FeaturedRoutesCarousel = () => {
   const currentRoute = bannerRoutes[currentIndex];
 
   return (
-    <div className="relative overflow-hidden rounded-2xl shadow-elevated">
+    <div className="relative overflow-hidden rounded-2xl backdrop-blur-sm bg-foreground/[0.06] border border-foreground/[0.08]">
       {/* Main Carousel */}
       <div className="relative h-56">
         {bannerRoutes.map((route: BannerRoute, index: number) => (

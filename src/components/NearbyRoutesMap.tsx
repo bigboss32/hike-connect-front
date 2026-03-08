@@ -86,8 +86,8 @@ const NearbyRoutesMap = () => {
   };
 
   return (
-    <div className="bg-card rounded-xl overflow-hidden shadow-elevated">
-      <div className="flex items-center justify-between p-4 border-b border-border">
+    <div className="backdrop-blur-sm bg-foreground/[0.06] border border-foreground/[0.08] rounded-xl overflow-hidden">
+      <div className="flex items-center justify-between p-4 border-b border-foreground/[0.08]">
         <div className="flex items-center gap-2">
           <MapPin className="w-5 h-5 text-primary" />
           <h3 className="font-semibold text-foreground">Rutas Cercanas</h3>
@@ -122,7 +122,7 @@ const NearbyRoutesMap = () => {
 
       {/* Location info */}
       {latitude && longitude && (
-        <div className="px-4 py-2 border-b border-border bg-muted/50">
+        <div className="px-4 py-2 border-b border-foreground/[0.08] bg-foreground/[0.03]">
           <p className="text-xs text-muted-foreground flex items-center gap-1.5">
             <span className="w-2 h-2 rounded-full bg-blue-500 inline-block animate-pulse" />
             GPS activo — {latitude.toFixed(4)}, {longitude.toFixed(4)}
