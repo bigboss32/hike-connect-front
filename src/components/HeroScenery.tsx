@@ -20,185 +20,189 @@ const getTimeSlot = (): TimeSlot => {
  * Everything shares the same coordinate system so alignment is perfect.
  */
 const TrailScene = ({ rainy = false }: { rainy?: boolean }) => (
-  <svg viewBox="0 0 400 65" preserveAspectRatio="xMidYMax slice" className="w-full h-full" fill="none">
+  <svg viewBox="0 0 400 100" preserveAspectRatio="xMidYMax slice" className="w-full h-full" fill="none">
     {/* Ground line */}
-    <line x1="10" y1="55" x2="390" y2="55" stroke="currentColor" className="text-primary" strokeWidth="0.8" opacity="0.12" />
-    <line x1="20" y1="55" x2="380" y2="55" stroke="currentColor" className="text-primary" strokeWidth="0.4" opacity="0.08" strokeDasharray="4 3" />
+    <line x1="10" y1="90" x2="390" y2="90" stroke="currentColor" className="text-primary" strokeWidth="0.8" opacity="0.12" />
+    <line x1="20" y1="90" x2="380" y2="90" stroke="currentColor" className="text-primary" strokeWidth="0.4" opacity="0.08" strokeDasharray="4 3" />
 
     {/* Trail sign at start */}
     <g opacity="0.3">
-      <rect x="16" y="33" width="1.5" height="22" rx="0.5" fill="currentColor" className="text-primary" />
-      <rect x="17" y="35" width="8" height="4" rx="1" fill="currentColor" className="text-primary" />
-      <polygon points="17,35 17,39 15,37" fill="currentColor" className="text-primary" />
-      <rect x="9" y="40" width="8" height="3.5" rx="1" fill="currentColor" className="text-primary" opacity="0.7" />
+      <rect x="16" y="55" width="2" height="35" rx="0.5" fill="currentColor" className="text-primary" />
+      <rect x="17.5" y="58" width="12" height="6" rx="1.5" fill="currentColor" className="text-primary" />
+      <polygon points="17.5,58 17.5,64 15,61" fill="currentColor" className="text-primary" />
+      <rect x="7" y="67" width="11" height="5" rx="1.5" fill="currentColor" className="text-primary" opacity="0.7" />
     </g>
 
     {/* Bushes / grass tufts */}
-    {[45, 100, 160, 220, 275, 330].map((x, i) => (
-      <g key={`bush-${i}`} opacity={0.2 + (i % 2) * 0.08}>
-        <ellipse cx={x} cy="53" rx={3 + (i % 2)} ry={2 + (i % 2)} fill="#22C55E" />
-        <ellipse cx={x + 4} cy="52" rx={2} ry={1.5} fill="#16A34A" />
+    {[50, 110, 170, 230, 280, 335].map((x, i) => (
+      <g key={`bush-${i}`} opacity={0.22 + (i % 2) * 0.08}>
+        <ellipse cx={x} cy="87" rx={4 + (i % 2) * 2} ry={3 + (i % 2)} fill="#22C55E" />
+        <ellipse cx={x + 6} cy="86" rx={3} ry={2} fill="#16A34A" />
       </g>
     ))}
 
     {/* Flowers */}
-    {[{x:65,c:"#F472B6"},{x:140,c:"#A78BFA"},{x:205,c:"#FB923C"},{x:285,c:"#34D399"},{x:340,c:"#F472B6"}].map((f,i) => (
-      <g key={`flower-${i}`} opacity="0.45">
-        <line x1={f.x} y1="55" x2={f.x} y2="49" stroke="#22C55E" strokeWidth="0.5" />
-        <circle cx={f.x} cy="48" r="1.8" fill={f.c} opacity="0.7">
-          <animate attributeName="r" values="1.8;2.2;1.8" dur={`${3 + i * 0.5}s`} repeatCount="indefinite" />
+    {[{x:70,c:"#F472B6"},{x:145,c:"#A78BFA"},{x:210,c:"#FB923C"},{x:290,c:"#34D399"},{x:345,c:"#F472B6"}].map((f,i) => (
+      <g key={`flower-${i}`} opacity="0.5">
+        <line x1={f.x} y1="90" x2={f.x} y2="81" stroke="#22C55E" strokeWidth="0.7" />
+        <circle cx={f.x} cy="79.5" r="2.5" fill={f.c} opacity="0.7">
+          <animate attributeName="r" values="2.5;3;2.5" dur={`${3 + i * 0.5}s`} repeatCount="indefinite" />
         </circle>
-        <circle cx={f.x + 3} cy="49" r="1.3" fill={f.c} opacity="0.5" />
+        <circle cx={f.x + 4} cy="81" r="1.8" fill={f.c} opacity="0.5" />
       </g>
     ))}
 
     {/* Small rocks */}
-    {[85, 175, 255, 315].map((x, i) => (
-      <ellipse key={`rock-${i}`} cx={x} cy="56" rx={2.5 + i % 2} ry={1} fill="currentColor" className="text-muted-foreground" opacity="0.1" />
+    {[90, 180, 260, 320].map((x, i) => (
+      <ellipse key={`rock-${i}`} cx={x} cy="91.5" rx={3 + i % 2} ry={1.3} fill="currentColor" className="text-muted-foreground" opacity="0.1" />
     ))}
 
     {/* Footprints — follow hiker */}
     <g opacity="0.06">
       <animateTransform attributeName="transform" type="translate" from="-20,0" to="320,0" dur="14s" repeatCount="indefinite" />
       {[...Array(10)].map((_, i) => (
-        <ellipse key={i} cx={-i * 9} cy="56" rx="1.5" ry="0.7" fill="currentColor" className="text-primary" opacity={Math.max(0.2, 1 - i * 0.1)} />
+        <ellipse key={i} cx={-i * 10} cy="91.5" rx="2" ry="0.8" fill="currentColor" className="text-primary" opacity={Math.max(0.2, 1 - i * 0.1)} />
       ))}
     </g>
 
-    {/* ── Dog — runs slightly ahead, feet on ground y=55 ── */}
+    {/* ── Dog — runs slightly ahead, feet on ground y=90 ── */}
     <g>
-      <animateTransform attributeName="transform" type="translate" from="8,0" to="340,0" dur="14s" repeatCount="indefinite" />
+      <animateTransform attributeName="transform" type="translate" from="12,0" to="340,0" dur="14s" repeatCount="indefinite" />
       {/* Shadow */}
-      <ellipse cx="10" cy="56" rx="6" ry="1.2" fill="currentColor" className="text-primary" opacity="0.06" />
+      <ellipse cx="12" cy="91" rx="9" ry="1.8" fill="currentColor" className="text-primary" opacity="0.06" />
       {/* Body */}
-      <ellipse cx="10" cy="47" rx="6" ry="3.5" fill="currentColor" className="text-primary" opacity="0.6" />
+      <ellipse cx="12" cy="78" rx="9" ry="5.5" fill="currentColor" className="text-primary" opacity="0.6" />
       {/* Head */}
-      <circle cx="17" cy="44" r="2.8" fill="currentColor" className="text-primary" opacity="0.65" />
+      <circle cx="22" cy="73" r="4.2" fill="currentColor" className="text-primary" opacity="0.65" />
       {/* Snout */}
-      <ellipse cx="19.5" cy="44.5" rx="1.5" ry="1" fill="currentColor" className="text-primary" opacity="0.5" />
+      <ellipse cx="25.5" cy="74" rx="2.2" ry="1.5" fill="currentColor" className="text-primary" opacity="0.5" />
       {/* Ear */}
-      <ellipse cx="18" cy="42" rx="1.2" ry="1.8" fill="currentColor" className="text-primary" opacity="0.45" />
+      <ellipse cx="23" cy="70" rx="1.8" ry="2.8" fill="currentColor" className="text-primary" opacity="0.45" />
       {/* Eye */}
-      <circle cx="18" cy="43.5" r="0.5" fill="hsl(var(--background))" opacity="0.7" />
+      <circle cx="23.5" cy="72.5" r="0.8" fill="hsl(var(--background))" opacity="0.7" />
       {/* Tail */}
-      <path d="M4,45 Q1,41 3,39" fill="none" stroke="currentColor" className="text-primary" strokeWidth="1.2" strokeLinecap="round" opacity="0.5">
-        <animate attributeName="d" values="M4,45 Q1,41 3,39;M4,45 Q2,41 4,42;M4,45 Q1,41 3,39" dur="0.4s" repeatCount="indefinite" />
+      <path d="M3,76 Q-1,70 2,67" fill="none" stroke="currentColor" className="text-primary" strokeWidth="1.8" strokeLinecap="round" opacity="0.5">
+        <animate attributeName="d" values="M3,76 Q-1,70 2,67;M3,76 Q0,70 4,71;M3,76 Q-1,70 2,67" dur="0.4s" repeatCount="indefinite" />
       </path>
-      {/* Front legs */}
-      <rect x="14" y="50" width="1.2" height="5" rx="0.5" fill="currentColor" className="text-primary" opacity="0.55">
-        <animate attributeName="height" values="5;4;5" dur="0.4s" repeatCount="indefinite" />
+      {/* Legs */}
+      <rect x="17" y="83" width="1.8" height="7" rx="0.7" fill="currentColor" className="text-primary" opacity="0.55">
+        <animate attributeName="height" values="7;5.5;7" dur="0.4s" repeatCount="indefinite" />
       </rect>
-      <rect x="16" y="50" width="1.2" height="5" rx="0.5" fill="currentColor" className="text-primary" opacity="0.55">
-        <animate attributeName="height" values="4;5;4" dur="0.4s" repeatCount="indefinite" />
+      <rect x="20" y="83" width="1.8" height="7" rx="0.7" fill="currentColor" className="text-primary" opacity="0.55">
+        <animate attributeName="height" values="5.5;7;5.5" dur="0.4s" repeatCount="indefinite" />
       </rect>
-      {/* Back legs */}
-      <rect x="6" y="50" width="1.2" height="5" rx="0.5" fill="currentColor" className="text-primary" opacity="0.55">
-        <animate attributeName="height" values="5;4;5" dur="0.4s" begin="0.2s" repeatCount="indefinite" />
+      <rect x="7" y="83" width="1.8" height="7" rx="0.7" fill="currentColor" className="text-primary" opacity="0.55">
+        <animate attributeName="height" values="7;5.5;7" dur="0.4s" begin="0.2s" repeatCount="indefinite" />
       </rect>
-      <rect x="8" y="50" width="1.2" height="5" rx="0.5" fill="currentColor" className="text-primary" opacity="0.55">
-        <animate attributeName="height" values="4;5;4" dur="0.4s" begin="0.2s" repeatCount="indefinite" />
+      <rect x="10" y="83" width="1.8" height="7" rx="0.7" fill="currentColor" className="text-primary" opacity="0.55">
+        <animate attributeName="height" values="5.5;7;5.5" dur="0.4s" begin="0.2s" repeatCount="indefinite" />
       </rect>
     </g>
 
-    {/* ── Hiker — feet on ground y=55 ── */}
+    {/* ── Hiker — feet on ground y=90 ── */}
     <g>
       <animateTransform attributeName="transform" type="translate" from="-8,0" to="325,0" dur="14s" repeatCount="indefinite" />
       {/* Shadow */}
-      <ellipse cx="8" cy="56" rx="7" ry="1.5" fill="currentColor" className="text-primary" opacity="0.06" />
+      <ellipse cx="10" cy="91" rx="10" ry="2" fill="currentColor" className="text-primary" opacity="0.06" />
       {/* Head */}
-      <circle cx="8" cy="26" r="3.5" fill="currentColor" className="text-primary" opacity="0.8" />
+      <circle cx="10" cy="42" r="5" fill="currentColor" className="text-primary" opacity="0.8" />
       {/* Hat */}
       {!rainy && <>
-        <ellipse cx="8" cy="23.5" rx="5.5" ry="1.3" fill="currentColor" className="text-primary" opacity="0.6" />
-        <path d="M5,23.5 Q8,20 11,23.5" fill="currentColor" className="text-primary" opacity="0.65" />
+        <ellipse cx="10" cy="38.5" rx="7.5" ry="1.8" fill="currentColor" className="text-primary" opacity="0.6" />
+        <path d="M5.5,38.5 Q10,34 14.5,38.5" fill="currentColor" className="text-primary" opacity="0.65" />
       </>}
       {/* Umbrella */}
       {rainy && <>
-        <path d="M1,18 Q8,10 15,18" fill="#60A5FA" opacity="0.5" />
-        <line x1="8" y1="18" x2="8" y2="26" stroke="currentColor" className="text-primary" strokeWidth="0.8" opacity="0.4" />
+        <path d="M0,30 Q10,20 20,30" fill="#60A5FA" opacity="0.5" />
+        <line x1="10" y1="30" x2="10" y2="42" stroke="currentColor" className="text-primary" strokeWidth="1" opacity="0.4" />
       </>}
       {/* Body */}
-      <rect x="6" y="29.5" width="4.5" height="10" rx="1.8" fill="currentColor" className="text-primary" opacity="0.75" />
+      <rect x="7.5" y="47" width="6" height="15" rx="2.5" fill="currentColor" className="text-primary" opacity="0.75" />
       {/* Backpack */}
-      <rect x="10.5" y="30" width="4" height="8" rx="1.5" fill="currentColor" className="text-primary" opacity="0.4" />
+      <rect x="13.5" y="48" width="5.5" height="12" rx="2" fill="currentColor" className="text-primary" opacity="0.4" />
       {/* Sleeping bag on backpack */}
-      <ellipse cx="12.5" cy="29.5" rx="2.3" ry="1" fill="currentColor" className="text-primary" opacity="0.3" />
+      <ellipse cx="16.5" cy="47.5" rx="3" ry="1.5" fill="currentColor" className="text-primary" opacity="0.3" />
       {/* Right arm + hiking stick */}
       {!rainy && <>
-        <line x1="10.5" y1="31" x2="16" y2="55" stroke="currentColor" className="text-primary" strokeWidth="0.8" strokeLinecap="round" opacity="0.35">
-          <animate attributeName="x2" values="16;15;16" dur="1.2s" repeatCount="indefinite" />
+        <line x1="13.5" y1="50" x2="21" y2="90" stroke="currentColor" className="text-primary" strokeWidth="1" strokeLinecap="round" opacity="0.35">
+          <animate attributeName="x2" values="21;19;21" dur="1.2s" repeatCount="indefinite" />
         </line>
-        <line x1="10" y1="32" x2="13" y2="38" stroke="currentColor" className="text-primary" strokeWidth="1.3" strokeLinecap="round" opacity="0.55">
-          <animate attributeName="x2" values="13;12;13" dur="1.2s" repeatCount="indefinite" />
+        <line x1="13" y1="51" x2="17" y2="60" stroke="currentColor" className="text-primary" strokeWidth="1.8" strokeLinecap="round" opacity="0.55">
+          <animate attributeName="x2" values="17;15.5;17" dur="1.2s" repeatCount="indefinite" />
         </line>
       </>}
       {/* Left arm */}
-      <line x1="6" y1="32" x2="3" y2="38" stroke="currentColor" className="text-primary" strokeWidth="1.2" strokeLinecap="round" opacity="0.5" />
+      <line x1="7.5" y1="51" x2="3" y2="60" stroke="currentColor" className="text-primary" strokeWidth="1.5" strokeLinecap="round" opacity="0.5" />
       {/* Left leg */}
-      <rect x="5.5" y="39" width="2.5" height="10" rx="1" fill="currentColor" className="text-primary" opacity="0.7">
-        <animate attributeName="x" values="5.5;4.5;5.5" dur="0.8s" repeatCount="indefinite" />
+      <rect x="6.5" y="62" width="3.5" height="15" rx="1.5" fill="currentColor" className="text-primary" opacity="0.7">
+        <animate attributeName="x" values="6.5;5;6.5" dur="0.8s" repeatCount="indefinite" />
       </rect>
-      <ellipse cx="7" cy="49.5" rx="2.5" ry="1" fill="currentColor" className="text-primary" opacity="0.55">
-        <animate attributeName="cx" values="7;6;7" dur="0.8s" repeatCount="indefinite" />
+      <ellipse cx="8.5" cy="78" rx="3.5" ry="1.5" fill="currentColor" className="text-primary" opacity="0.55">
+        <animate attributeName="cx" values="8.5;7;8.5" dur="0.8s" repeatCount="indefinite" />
       </ellipse>
       {/* Right leg */}
-      <rect x="8" y="39" width="2.5" height="10" rx="1" fill="currentColor" className="text-primary" opacity="0.7">
-        <animate attributeName="x" values="8;9;8" dur="0.8s" repeatCount="indefinite" />
+      <rect x="10" y="62" width="3.5" height="15" rx="1.5" fill="currentColor" className="text-primary" opacity="0.7">
+        <animate attributeName="x" values="10;11.5;10" dur="0.8s" repeatCount="indefinite" />
       </rect>
-      <ellipse cx="9.5" cy="49.5" rx="2.5" ry="1" fill="currentColor" className="text-primary" opacity="0.55">
-        <animate attributeName="cx" values="9.5;10.5;9.5" dur="0.8s" repeatCount="indefinite" />
+      <ellipse cx="12" cy="78" rx="3.5" ry="1.5" fill="currentColor" className="text-primary" opacity="0.55">
+        <animate attributeName="cx" values="12;13.5;12" dur="0.8s" repeatCount="indefinite" />
       </ellipse>
     </g>
 
     {/* ── Destination: Tent ── */}
-    <g opacity="0.3">
-      <polygon points="370,55 390,55 380,37" fill="currentColor" className="text-primary" />
-      <polygon points="380,37 376,55 384,55" fill="currentColor" className="text-primary" opacity="0.7" />
-      <path d="M378,55 Q380,47 382,55" fill="hsl(var(--background))" opacity="0.4" />
-      <line x1="380" y1="37" x2="380" y2="32" stroke="currentColor" className="text-primary" strokeWidth="0.6" />
-      <polygon points="380,32 380,35 385,33.5" fill="#F59E0B" opacity="0.6">
-        <animate attributeName="points" values="380,32 380,35 385,33.5;380,32 380,35 384,34;380,32 380,35 385,33.5" dur="2s" repeatCount="indefinite" />
+    <g opacity="0.35">
+      <polygon points="370,90 395,90 382.5,60" fill="currentColor" className="text-primary" />
+      <polygon points="382.5,60 377,90 388,90" fill="currentColor" className="text-primary" opacity="0.7" />
+      <path d="M380,90 Q382.5,78 385,90" fill="hsl(var(--background))" opacity="0.4" />
+      <line x1="382.5" y1="60" x2="382.5" y2="53" stroke="currentColor" className="text-primary" strokeWidth="0.8" />
+      <polygon points="382.5,53 382.5,57 389,55" fill="#F59E0B" opacity="0.6">
+        <animate attributeName="points" values="382.5,53 382.5,57 389,55;382.5,53 382.5,57 388,56;382.5,53 382.5,57 389,55" dur="2s" repeatCount="indefinite" />
       </polygon>
     </g>
 
     {/* ── Destination: Campfire ── */}
     <g>
-      <rect x="355" y="52.5" width="10" height="2" rx="1" fill="currentColor" className="text-primary" opacity="0.2" transform="rotate(-8 360 53.5)" />
-      <rect x="357" y="51.5" width="8" height="1.8" rx="0.8" fill="currentColor" className="text-primary" opacity="0.15" transform="rotate(5 361 52.5)" />
+      {/* Stones */}
+      {[{x:348,y:88},{x:353,y:89},{x:358,y:89.5},{x:363,y:89},{x:368,y:88}].map((s,i) => (
+        <ellipse key={i} cx={s.x} cy={s.y} rx="2.5" ry="1.3" fill="currentColor" className="text-muted-foreground" opacity="0.12" />
+      ))}
+      {/* Logs */}
+      <rect x="349" y="86" width="14" height="3" rx="1.2" fill="currentColor" className="text-primary" opacity="0.2" transform="rotate(-8 356 87.5)" />
+      <rect x="352" y="85" width="11" height="2.5" rx="1" fill="currentColor" className="text-primary" opacity="0.15" transform="rotate(5 357.5 86)" />
       {/* Flames */}
-      <ellipse cx="360" cy="46" rx="3.5" ry="7" fill="#FBBF24" opacity="0.75">
-        <animate attributeName="ry" values="7;8;6.5;7" dur="0.6s" repeatCount="indefinite" />
+      <ellipse cx="358" cy="74" rx="5" ry="11" fill="#FBBF24" opacity="0.75">
+        <animate attributeName="ry" values="11;12.5;10;11" dur="0.6s" repeatCount="indefinite" />
       </ellipse>
-      <ellipse cx="358" cy="45" rx="2.5" ry="5.5" fill="#F97316" opacity="0.55">
-        <animate attributeName="ry" values="5.5;6.2;5;5.5" dur="0.5s" repeatCount="indefinite" />
+      <ellipse cx="355" cy="73" rx="3.5" ry="8.5" fill="#F97316" opacity="0.55">
+        <animate attributeName="ry" values="8.5;9.5;7.5;8.5" dur="0.5s" repeatCount="indefinite" />
       </ellipse>
-      <ellipse cx="362" cy="45.5" rx="2" ry="5" fill="#EF4444" opacity="0.4">
-        <animate attributeName="ry" values="5;5.8;4.5;5" dur="0.7s" repeatCount="indefinite" />
+      <ellipse cx="361" cy="73.5" rx="3" ry="7.5" fill="#EF4444" opacity="0.4">
+        <animate attributeName="ry" values="7.5;8.5;6.5;7.5" dur="0.7s" repeatCount="indefinite" />
       </ellipse>
-      <ellipse cx="360" cy="44" rx="1.5" ry="3.5" fill="#FDE68A" opacity="0.45">
-        <animate attributeName="ry" values="3.5;4;3;3.5" dur="0.4s" repeatCount="indefinite" />
+      <ellipse cx="358" cy="71" rx="2" ry="5" fill="#FDE68A" opacity="0.45">
+        <animate attributeName="ry" values="5;6;4.5;5" dur="0.4s" repeatCount="indefinite" />
       </ellipse>
       {/* Sparks */}
-      {[{x:358,y:37,d:"0s"},{x:362,y:35,d:"0.5s"},{x:360,y:33,d:"1s"}].map((sp,i) => (
-        <circle key={i} cx={sp.x} cy={sp.y} r="0.7" fill="#FDE68A" opacity="0.5">
-          <animate attributeName="cy" values={`${sp.y};${sp.y - 7}`} dur="1.5s" begin={sp.d} repeatCount="indefinite" />
+      {[{x:355,y:60,d:"0s"},{x:361,y:57,d:"0.5s"},{x:358,y:54,d:"1s"}].map((sp,i) => (
+        <circle key={i} cx={sp.x} cy={sp.y} r="1" fill="#FDE68A" opacity="0.5">
+          <animate attributeName="cy" values={`${sp.y};${sp.y - 10}`} dur="1.5s" begin={sp.d} repeatCount="indefinite" />
           <animate attributeName="opacity" values="0.6;0" dur="1.5s" begin={sp.d} repeatCount="indefinite" />
         </circle>
       ))}
       {/* Smoke */}
-      <circle cx="359" cy="32" r="1.3" fill="currentColor" className="text-muted-foreground" opacity="0.08">
-        <animate attributeName="cy" values="32;24" dur="2.5s" repeatCount="indefinite" />
+      <circle cx="357" cy="54" r="2" fill="currentColor" className="text-muted-foreground" opacity="0.08">
+        <animate attributeName="cy" values="54;42" dur="2.5s" repeatCount="indefinite" />
         <animate attributeName="opacity" values="0.08;0" dur="2.5s" repeatCount="indefinite" />
       </circle>
       {/* Ground glow */}
-      <ellipse cx="360" cy="55" rx="12" ry="3" fill="#FBBF24" opacity="0.05" />
+      <ellipse cx="358" cy="90" rx="16" ry="4" fill="#FBBF24" opacity="0.05" />
     </g>
 
     {/* Small trees near destination */}
-    {[{x:345,h:11},{x:396,h:9}].map((t,i) => (
-      <g key={`tree-${i}`} opacity="0.18">
-        <rect x={t.x - 0.5} y={55 - t.h * 0.4} width="1.2" height={t.h * 0.45} rx="0.4" fill="currentColor" className="text-primary" />
-        <polygon points={`${t.x},${55 - t.h} ${t.x - 4},${55 - t.h * 0.3} ${t.x + 4},${55 - t.h * 0.3}`} fill="#22C55E" opacity="0.7" />
+    {[{x:340,h:18},{x:398,h:14}].map((t,i) => (
+      <g key={`tree-${i}`} opacity="0.2">
+        <rect x={t.x - 0.6} y={90 - t.h * 0.4} width="1.5" height={t.h * 0.45} rx="0.5" fill="currentColor" className="text-primary" />
+        <polygon points={`${t.x},${90 - t.h} ${t.x - 5},${90 - t.h * 0.3} ${t.x + 5},${90 - t.h * 0.3}`} fill="#22C55E" opacity="0.7" />
       </g>
     ))}
   </svg>
@@ -301,7 +305,7 @@ const HeroScenery = ({ scrollY = 0 }: HeroSceneryProps) => {
       </div>
 
       {/* Trail Scene — hiker, dog, campfire, all aligned in one SVG */}
-      <div className="absolute bottom-[6%] left-0 right-0 h-16 z-[2]">
+      <div className="absolute bottom-[2%] left-0 right-0 h-28 z-[2]">
         <TrailScene rainy={weather === "rainy"} />
       </div>
 
