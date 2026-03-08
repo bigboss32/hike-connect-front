@@ -1,18 +1,21 @@
 import Navigation from "@/components/Navigation";
 import RoutesHeroScene from "@/components/RoutesHeroScene";
-
 import RouteCard from "@/components/RouteCard";
 import RouteFiltersDialog, { type RouteFilters } from "@/components/RouteFiltersDialog";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Search, SlidersHorizontal, Loader2, X } from "lucide-react";
+import { Search, SlidersHorizontal, Loader2, X, TreePine, Home as HomeIcon } from "lucide-react";
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useRoutes } from "@/hooks/useRoutes";
 import { Skeleton } from "@/components/ui/skeleton";
 import EmptyRoutesScene from "@/components/EmptyRoutesScene";
+import { cn } from "@/lib/utils";
+
+type ExperienceTab = "rutas" | "hospedajes";
 
 const Routes = () => {
+  const [activeTab, setActiveTab] = useState<ExperienceTab>("rutas");
   const [filters, setFilters] = useState<RouteFilters>({
     category: "todas",
     type: "todas",
@@ -78,27 +81,20 @@ const Routes = () => {
 
   // Filter routes by distance, duration, and difficulty on client side
   const allRoutes = (data?.pages.flatMap((page) => page.results) ?? []).filter((route) => {
-    // Distance filter (parse from string like "3 km")
     if (filters.maxDistance < 50) {
       const distanceNum = parseFloat(route.distance?.replace(/[^\d.]/g, "") || "0");
       if (distanceNum > filters.maxDistance) return false;
     }
-    
-    // Duration filter (parse from string like "2 h")
     if (filters.maxDuration < 12) {
       const durationNum = parseFloat(route.duration?.replace(/[^\d.]/g, "") || "0");
       if (durationNum > filters.maxDuration) return false;
     }
-    
-    // Difficulty filter
     if (filters.difficulty !== "todas" && route.difficulty !== filters.difficulty) {
       return false;
     }
-    
     return true;
   });
 
-  // Check if any filter is active
   const hasActiveFilters = 
     filters.category !== "todas" || 
     filters.type !== "todas" || 
@@ -110,7 +106,6 @@ const Routes = () => {
     filters.format !== "todas" ||
     filters.agroDuration < 24;
 
-  // Get active filter labels for display
   const getActiveFilterLabels = () => {
     const labels = [];
     if (filters.category !== "todas") labels.push(filters.category);
@@ -129,82 +124,114 @@ const Routes = () => {
 
   return (
     <div className="min-h-screen bg-background pb-20">
-      {/* Hero zone — scenery with search embedded inside the animation */}
+      {/* Hero zone — background scenery like Home */}
       <div className="relative bg-gradient-to-br from-primary/15 via-background to-accent/10 overflow-hidden">
         <RoutesHeroScene />
 
-        {/* Title overlaid at top of scenery */}
-        <div className="absolute top-0 left-0 right-0 z-10 px-4 pt-6">
-          <div className="max-w-lg mx-auto">
-            <h1 className="text-2xl font-bold text-foreground animate-fade-in drop-shadow-sm">Experiencias</h1>
-            <p className="text-sm text-muted-foreground mt-0.5 animate-fade-in drop-shadow-sm" style={{ animationDelay: '50ms' }}>
-              Rutas, hospedajes y más aventuras
-            </p>
-          </div>
-        </div>
-
-        {/* Search + Filter — embedded at bottom inside the animation */}
-        <div className="absolute bottom-5 left-0 right-0 z-10 px-4">
-          <div className="max-w-lg mx-auto animate-fade-in" style={{ animationDelay: '100ms' }}>
-            <div className="flex gap-2">
-              <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/70" />
-                <Input
-                  placeholder="Buscar experiencias..."
-                  className="pl-10 bg-background/25 backdrop-blur-md border-white/10 text-foreground placeholder:text-muted-foreground/60 shadow-lg"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                />
-              </div>
-              <Button 
-                variant={hasActiveFilters ? "default" : "outline"} 
-                size="icon"
-                onClick={() => setShowFiltersModal(true)}
-                className={hasActiveFilters ? "relative shadow-lg" : "relative bg-background/25 backdrop-blur-md border-white/10 shadow-lg hover:bg-background/35"}
-              >
-                <SlidersHorizontal className="w-4 h-4" />
-                {hasActiveFilters && (
-                  <span className="absolute -top-1 -right-1 w-5 h-5 bg-primary text-primary-foreground text-xs rounded-full flex items-center justify-center border-2 border-background">
-                    {activeLabels.length}
-                  </span>
-                )}
-              </Button>
+        {/* All content overlaid on scenery */}
+        <div className="relative z-10 pt-6 pb-28 px-4">
+          <div className="max-w-lg mx-auto space-y-4">
+            {/* Title */}
+            <div className="animate-fade-in">
+              <h1 className="text-2xl font-bold text-foreground">Experiencias</h1>
+              <p className="text-sm text-muted-foreground mt-0.5">
+                Rutas, hospedajes y más aventuras
+              </p>
             </div>
 
-            {/* Active filters chips */}
-            {activeLabels.length > 0 && (
-              <div className="flex flex-wrap gap-2 mt-2 animate-fade-in">
-                {activeLabels.map((label, index) => (
-                  <Badge 
-                    key={index} 
-                    variant="secondary"
-                    className="text-xs capitalize bg-background/25 backdrop-blur-sm border-white/10"
-                  >
-                    {label}
-                  </Badge>
-                ))}
-                <Badge 
-                  variant="outline" 
-                  className="text-xs cursor-pointer bg-background/25 backdrop-blur-sm border-white/10 hover:bg-destructive/10 hover:text-destructive hover:border-destructive"
-                  onClick={() => setFilters({
-                    category: "todas",
-                    type: "todas",
-                    maxDistance: 50,
-                    difficulty: "todas",
-                    maxDuration: 12,
-                    companion: "todas",
-                    experience: "todas",
-                    format: "todas",
-                    agroDuration: 24,
-                  })}
+            {/* Tab switcher — Rutas / Hospedajes */}
+            <div className="animate-fade-in flex gap-2" style={{ animationDelay: '80ms' }}>
+              <button
+                onClick={() => setActiveTab("rutas")}
+                className={cn(
+                  "flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium transition-all",
+                  activeTab === "rutas"
+                    ? "bg-primary text-primary-foreground shadow-lg shadow-primary/25"
+                    : "backdrop-blur-md bg-foreground/[0.06] border border-foreground/[0.08] text-muted-foreground hover:text-foreground"
+                )}
+              >
+                <TreePine className="w-4 h-4" />
+                Rutas
+              </button>
+              <button
+                onClick={() => setActiveTab("hospedajes")}
+                className={cn(
+                  "flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium transition-all",
+                  activeTab === "hospedajes"
+                    ? "bg-primary text-primary-foreground shadow-lg shadow-primary/25"
+                    : "backdrop-blur-md bg-foreground/[0.06] border border-foreground/[0.08] text-muted-foreground hover:text-foreground"
+                )}
+              >
+                <HomeIcon className="w-4 h-4" />
+                Hospedajes
+              </button>
+            </div>
+
+            {/* Search + Filter inside hero */}
+            <div className="animate-fade-in" style={{ animationDelay: '150ms' }}>
+              <div className="flex gap-2">
+                <div className="relative flex-1">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/70" />
+                  <Input
+                    placeholder={activeTab === "rutas" ? "Buscar rutas..." : "Buscar hospedajes..."}
+                    className="pl-10 backdrop-blur-md bg-foreground/[0.06] border-foreground/[0.08] text-foreground placeholder:text-muted-foreground/60"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                  />
+                </div>
+                <Button 
+                  variant={hasActiveFilters ? "default" : "outline"} 
+                  size="icon"
+                  onClick={() => setShowFiltersModal(true)}
+                  className={hasActiveFilters ? "relative" : "relative backdrop-blur-md bg-foreground/[0.06] border-foreground/[0.08] hover:bg-foreground/[0.1]"}
                 >
-                  <X className="w-3 h-3 mr-1" />
-                  Limpiar
-                </Badge>
+                  <SlidersHorizontal className="w-4 h-4" />
+                  {hasActiveFilters && (
+                    <span className="absolute -top-1 -right-1 w-5 h-5 bg-primary text-primary-foreground text-xs rounded-full flex items-center justify-center border-2 border-background">
+                      {activeLabels.length}
+                    </span>
+                  )}
+                </Button>
               </div>
-            )}
+
+              {/* Active filters chips */}
+              {activeLabels.length > 0 && (
+                <div className="flex flex-wrap gap-2 mt-2 animate-fade-in">
+                  {activeLabels.map((label, index) => (
+                    <Badge 
+                      key={index} 
+                      variant="secondary"
+                      className="text-xs capitalize bg-foreground/[0.06] backdrop-blur-sm border-foreground/[0.08]"
+                    >
+                      {label}
+                    </Badge>
+                  ))}
+                  <Badge 
+                    variant="outline" 
+                    className="text-xs cursor-pointer bg-foreground/[0.06] backdrop-blur-sm border-foreground/[0.08] hover:bg-destructive/10 hover:text-destructive hover:border-destructive"
+                    onClick={() => setFilters({
+                      category: "todas",
+                      type: "todas",
+                      maxDistance: 50,
+                      difficulty: "todas",
+                      maxDuration: 12,
+                      companion: "todas",
+                      experience: "todas",
+                      format: "todas",
+                      agroDuration: 24,
+                    })}
+                  >
+                    <X className="w-3 h-3 mr-1" />
+                    Limpiar
+                  </Badge>
+                </div>
+              )}
+            </div>
           </div>
         </div>
+
+        {/* Smooth gradient transition */}
+        <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-background via-background/50 to-transparent z-[5]" />
       </div>
 
       <RouteFiltersDialog
@@ -214,65 +241,80 @@ const Routes = () => {
         onFiltersChange={setFilters}
       />
 
-      <main className="max-w-lg mx-auto px-4 -mt-10 relative z-10 space-y-4">
-        {isLoading ? (
-          <div className="grid gap-4">
-            {[...Array(3)].map((_, i) => (
-              <div key={i} className="rounded-lg overflow-hidden border border-border">
-                <Skeleton className="h-40 w-full" />
-                <div className="p-4 space-y-3">
-                  <Skeleton className="h-5 w-3/4" />
-                  <Skeleton className="h-4 w-1/2" />
-                  <Skeleton className="h-4 w-1/3" />
+      <main className="max-w-lg mx-auto px-4 -mt-12 relative z-10 space-y-4">
+        {activeTab === "rutas" ? (
+          <>
+            {isLoading ? (
+              <div className="grid gap-4">
+                {[...Array(3)].map((_, i) => (
+                  <div key={i} className="rounded-lg overflow-hidden border border-border">
+                    <Skeleton className="h-40 w-full" />
+                    <div className="p-4 space-y-3">
+                      <Skeleton className="h-5 w-3/4" />
+                      <Skeleton className="h-4 w-1/2" />
+                      <Skeleton className="h-4 w-1/3" />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : isError ? (
+              <div className="text-center py-12">
+                <p className="text-destructive mb-2">Error al cargar las rutas</p>
+                <p className="text-muted-foreground text-sm">{(error as Error)?.message}</p>
+              </div>
+            ) : allRoutes.length === 0 ? (
+              <EmptyRoutesScene />
+            ) : (
+              <div className="grid gap-4">
+                {allRoutes.map((route, index) => (
+                  <div key={route.id} className="route-card-stagger" style={{ animationDelay: `${index * 100}ms` }}>
+                    <RouteCard
+                      id={route.id}
+                      title={route.title}
+                      location={route.location}
+                      distance={route.distance}
+                      duration={route.duration}
+                      difficulty={route.difficulty}
+                      image={route.image}
+                      type={route.type}
+                      company={route.company}
+                      category={route.category}
+                      rating_avg={route.rating_avg}
+                      rating_count={route.rating_count}
+                      base_price={route.base_price}
+                      requires_payment={route.requires_payment}
+                      max_capacity={route.max_capacity}
+                    />
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* Infinite scroll trigger */}
+            <div ref={loadMoreRef} className="py-4 flex justify-center">
+              {isFetchingNextPage && (
+                <div className="flex items-center gap-2 text-muted-foreground">
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  <span className="text-sm">Cargando más rutas...</span>
                 </div>
-              </div>
-            ))}
-          </div>
-        ) : isError ? (
-          <div className="text-center py-12">
-            <p className="text-destructive mb-2">Error al cargar las rutas</p>
-            <p className="text-muted-foreground text-sm">{(error as Error)?.message}</p>
-          </div>
-        ) : allRoutes.length === 0 ? (
-          <EmptyRoutesScene />
+              )}
+              {!hasNextPage && allRoutes.length > 0 && (
+                <p className="text-muted-foreground text-sm">No hay más rutas</p>
+              )}
+            </div>
+          </>
         ) : (
-          <div className="grid gap-4">
-            {allRoutes.map((route, index) => (
-              <div key={route.id} className="route-card-stagger" style={{ animationDelay: `${index * 100}ms` }}>
-              <RouteCard
-                id={route.id}
-                title={route.title}
-                location={route.location}
-                distance={route.distance}
-                duration={route.duration}
-                difficulty={route.difficulty}
-                image={route.image}
-                type={route.type}
-                company={route.company}
-                category={route.category}
-                rating_avg={route.rating_avg}
-                rating_count={route.rating_count}
-                base_price={route.base_price}
-                requires_payment={route.requires_payment}
-                max_capacity={route.max_capacity}
-              />
-              </div>
-            ))}
+          /* Hospedajes tab — placeholder until endpoint is ready */
+          <div className="text-center py-16 animate-fade-in">
+            <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-4">
+              <HomeIcon className="w-8 h-8 text-primary" />
+            </div>
+            <h3 className="font-bold text-foreground text-lg mb-2">Hospedajes</h3>
+            <p className="text-sm text-muted-foreground max-w-xs mx-auto">
+              Próximamente podrás descubrir fincas, cabañas y experiencias de agroturismo cerca de ti.
+            </p>
           </div>
         )}
-
-        {/* Infinite scroll trigger */}
-        <div ref={loadMoreRef} className="py-4 flex justify-center">
-          {isFetchingNextPage && (
-            <div className="flex items-center gap-2 text-muted-foreground">
-              <Loader2 className="w-4 h-4 animate-spin" />
-              <span className="text-sm">Cargando más rutas...</span>
-            </div>
-          )}
-          {!hasNextPage && allRoutes.length > 0 && (
-            <p className="text-muted-foreground text-sm">No hay más rutas</p>
-          )}
-        </div>
       </main>
 
       <Navigation />
