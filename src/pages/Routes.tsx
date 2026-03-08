@@ -217,7 +217,7 @@ const Routes = () => {
         onFiltersChange={setFilters}
       />
 
-      <main className="max-w-lg mx-auto px-4 -mt-4 relative z-10">
+      <main className="max-w-lg mx-auto px-4 -mt-10 relative z-10 space-y-4">
         {isLoading ? (
           <div className="grid gap-4">
             {[...Array(3)].map((_, i) => (
