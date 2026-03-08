@@ -129,74 +129,86 @@ const Routes = () => {
 
   return (
     <div className="min-h-screen bg-background pb-20">
-      {/* Hero scene */}
-      <div className="relative">
+      {/* Extended hero zone — scenery flows into content */}
+      <div className="relative bg-gradient-to-br from-primary/15 via-background to-accent/10 overflow-hidden">
         <RoutesHeroScene />
-        <div className="absolute bottom-0 left-0 right-0 h-10 bg-gradient-to-t from-background to-transparent" />
-      </div>
 
-      <ScrollHeader className="bg-card border-b border-border shadow-soft">
-        <div className="max-w-lg mx-auto px-4 py-3">
-          <h1 className="text-2xl font-bold text-foreground mb-3">Explorar Rutas</h1>
-          <div className="flex gap-2">
-            <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-              <Input
-                placeholder="Buscar rutas..."
-                className="pl-10"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
-            </div>
-            <Button 
-              variant={hasActiveFilters ? "default" : "outline"} 
-              size="icon"
-              onClick={() => setShowFiltersModal(true)}
-              className="relative"
-            >
-              <SlidersHorizontal className="w-4 h-4" />
-              {hasActiveFilters && (
-                <span className="absolute -top-1 -right-1 w-5 h-5 bg-primary text-primary-foreground text-xs rounded-full flex items-center justify-center border-2 border-background">
-                  {activeLabels.length}
-                </span>
-              )}
-            </Button>
+        {/* Title overlaid on hero */}
+        <div className="relative z-10 px-4 pt-2 pb-4">
+          <div className="max-w-lg mx-auto">
+            <h1 className="text-2xl font-bold text-foreground animate-fade-in">Experiencias</h1>
+            <p className="text-sm text-muted-foreground mt-0.5 animate-fade-in" style={{ animationDelay: '50ms' }}>
+              Rutas, hospedajes y más aventuras
+            </p>
           </div>
-          
-          {/* Active filters chips */}
-          {activeLabels.length > 0 && (
-            <div className="flex flex-wrap gap-2 mt-3 animate-fade-in">
-              {activeLabels.map((label, index) => (
-                <Badge 
-                  key={index} 
-                  variant="secondary"
-                  className="text-xs capitalize"
-                >
-                  {label}
-                </Badge>
-              ))}
-              <Badge 
-                variant="outline" 
-                className="text-xs cursor-pointer hover:bg-destructive/10 hover:text-destructive hover:border-destructive"
-                onClick={() => setFilters({
-                  category: "todas",
-                  type: "todas",
-                  maxDistance: 50,
-                  difficulty: "todas",
-                  maxDuration: 12,
-                  companion: "todas",
-                  experience: "todas",
-                  format: "todas",
-                  agroDuration: 24,
-                })}
-              >
-                <X className="w-3 h-3 mr-1" />
-                Limpiar
-              </Badge>
-            </div>
-          )}
         </div>
-      </ScrollHeader>
+
+        {/* Search bar inside hero zone */}
+        <div className="relative z-10 px-4 pb-8">
+          <div className="max-w-lg mx-auto">
+            <div className="flex gap-2">
+              <div className="relative flex-1">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                <Input
+                  placeholder="Buscar experiencias..."
+                  className="pl-10 bg-card/80 backdrop-blur-sm"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                />
+              </div>
+              <Button 
+                variant={hasActiveFilters ? "default" : "outline"} 
+                size="icon"
+                onClick={() => setShowFiltersModal(true)}
+                className="relative bg-card/80 backdrop-blur-sm"
+              >
+                <SlidersHorizontal className="w-4 h-4" />
+                {hasActiveFilters && (
+                  <span className="absolute -top-1 -right-1 w-5 h-5 bg-primary text-primary-foreground text-xs rounded-full flex items-center justify-center border-2 border-background">
+                    {activeLabels.length}
+                  </span>
+                )}
+              </Button>
+            </div>
+
+            {/* Active filters chips */}
+            {activeLabels.length > 0 && (
+              <div className="flex flex-wrap gap-2 mt-3 animate-fade-in">
+                {activeLabels.map((label, index) => (
+                  <Badge 
+                    key={index} 
+                    variant="secondary"
+                    className="text-xs capitalize"
+                  >
+                    {label}
+                  </Badge>
+                ))}
+                <Badge 
+                  variant="outline" 
+                  className="text-xs cursor-pointer hover:bg-destructive/10 hover:text-destructive hover:border-destructive"
+                  onClick={() => setFilters({
+                    category: "todas",
+                    type: "todas",
+                    maxDistance: 50,
+                    difficulty: "todas",
+                    maxDuration: 12,
+                    companion: "todas",
+                    experience: "todas",
+                    format: "todas",
+                    agroDuration: 24,
+                  })}
+                >
+                  <X className="w-3 h-3 mr-1" />
+                  Limpiar
+                </Badge>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Smooth gradient transition */}
+        <div className="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-background via-background/50 to-transparent z-[5]" />
+      </div>
 
       <RouteFiltersDialog
         open={showFiltersModal}
@@ -205,7 +217,7 @@ const Routes = () => {
         onFiltersChange={setFilters}
       />
 
-      <main className="max-w-lg mx-auto px-4 py-6">
+      <main className="max-w-lg mx-auto px-4 -mt-4 relative z-10">
         {isLoading ? (
           <div className="grid gap-4">
             {[...Array(3)].map((_, i) => (
