@@ -171,7 +171,7 @@ const HeroScenery = () => {
 
         {/* Hiker walking */}
         <div className="absolute bottom-[3px]" style={{ animation: "hikerWalk 12s linear infinite" }}>
-          <WalkingHiker />
+          <WalkingHiker rainy={weather === "rainy"} />
         </div>
 
         {/* Campfire at destination */}
