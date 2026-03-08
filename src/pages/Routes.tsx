@@ -16,6 +16,13 @@ type ExperienceTab = "rutas" | "hospedajes";
 
 const Routes = () => {
   const [activeTab, setActiveTab] = useState<ExperienceTab>("rutas");
+  const [scrollY, setScrollY] = useState(0);
+
+  useEffect(() => {
+    const onScroll = () => setScrollY(window.scrollY);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
   const [filters, setFilters] = useState<RouteFilters>({
     category: "todas",
     type: "todas",
