@@ -127,7 +127,7 @@ const HeroScenery = ({ scrollY = 0 }: HeroSceneryProps) => {
   return (
     <div ref={containerRef} className="absolute inset-0 overflow-hidden pointer-events-auto z-0">
       {/* Sky */}
-      <div className={`absolute inset-0 bg-gradient-to-br ${sky[time]} transition-colors duration-500`} />
+      <div className={`absolute inset-0 bg-gradient-to-br ${sky[time]} transition-colors duration-500`} style={{ transform: `translateY(${sc * 0.04}px)` }} />
 
       {/* === Rolling hills / terrain at bottom === */}
       <div className="absolute bottom-0 left-0 right-0 transition-transform duration-300 ease-out" style={{ transform: `translate(${px(0.08)}px, ${py(0.05)}px)` }}>
