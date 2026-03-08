@@ -19,7 +19,25 @@ const getTimeSlot = (): TimeSlot => {
  * TrailScene — Single SVG containing hiker, dog, trail details, campfire, tent.
  * Everything shares the same coordinate system so alignment is perfect.
  */
-const TrailScene = ({ rainy = false }: { rainy?: boolean }) => (
+const getWeatherForTime = (time: TimeSlot): "clear" | "cloudy" | "windy" | "rainy" => {
+  switch (time) {
+    case "dawn": return "clear";      // Amanecer fresco y despejado
+    case "morning": return "clear";   // Mañana soleada
+    case "afternoon": return "cloudy"; // Tarde algo nublada
+    case "sunset": return "windy";    // Atardecer con brisa
+    case "night": return "clear";     // Noche estrellada
+  }
+};
+
+const TrailScene = ({ rainy = false, time = "morning" as TimeSlot }: { rainy?: boolean; time?: TimeSlot }) => {
+  const trailColors: Record<TimeSlot, { ground: string; bush: string; bushAlt: string; flower: string }> = {
+    dawn: { ground: "hsl(var(--primary))", bush: "#34D399", bushAlt: "#10B981", flower: "#FBBF24" },
+    morning: { ground: "hsl(var(--primary))", bush: "#22C55E", bushAlt: "#16A34A", flower: "#F472B6" },
+    afternoon: { ground: "#D97706", bush: "#84CC16", bushAlt: "#65A30D", flower: "#FB923C" },
+    sunset: { ground: "#EA580C", bush: "#4ADE80", bushAlt: "#22C55E", flower: "#F43F5E" },
+    night: { ground: "#6366F1", bush: "#065F46", bushAlt: "#064E3B", flower: "#818CF8" },
+  };
+  const c = trailColors[time];
   <svg viewBox="0 0 400 100" preserveAspectRatio="xMidYMax slice" className="w-full h-full" fill="none">
     {/* Ground line */}
     <line x1="10" y1="90" x2="390" y2="90" stroke="currentColor" className="text-primary" strokeWidth="0.8" opacity="0.12" />
