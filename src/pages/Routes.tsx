@@ -16,6 +16,13 @@ type ExperienceTab = "rutas" | "hospedajes";
 
 const Routes = () => {
   const [activeTab, setActiveTab] = useState<ExperienceTab>("rutas");
+  const [scrollY, setScrollY] = useState(0);
+
+  useEffect(() => {
+    const onScroll = () => setScrollY(window.scrollY);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
   const [filters, setFilters] = useState<RouteFilters>({
     category: "todas",
     type: "todas",
@@ -126,7 +133,7 @@ const Routes = () => {
     <div className="min-h-screen bg-background pb-20">
       {/* Hero zone — background scenery like Home */}
       <div className="relative bg-gradient-to-br from-primary/15 via-background to-accent/10 overflow-hidden">
-        <RoutesHeroScene mode={activeTab} />
+        <RoutesHeroScene mode={activeTab} scrollY={scrollY} />
 
         {/* All content overlaid on scenery */}
         <div className="relative z-10 pt-6 pb-28 px-4">

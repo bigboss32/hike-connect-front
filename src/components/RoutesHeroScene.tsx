@@ -17,14 +17,16 @@ const getTimeSlot = (): TimeSlot => {
 
 interface Props {
   mode?: "rutas" | "hospedajes";
+  scrollY?: number;
 }
 
-const RoutesHeroScene = ({ mode = "rutas" }: Props) => {
+const RoutesHeroScene = ({ mode = "rutas", scrollY = 0 }: Props) => {
   const time = getTimeSlot();
   const isNight = time === "night";
   const isSunset = time === "sunset";
   const isDawn = time === "dawn";
   const isHospedaje = mode === "hospedajes";
+  const s = Math.min(scrollY, 300);
 
   const sky: Record<TimeSlot, string> = {
     dawn: "from-rose-300/30 via-amber-200/20 to-sky-200/15",
@@ -42,7 +44,7 @@ const RoutesHeroScene = ({ mode = "rutas" }: Props) => {
 
   return (
     <div className="absolute inset-0 overflow-hidden z-0">
-      <div className={`absolute inset-0 bg-gradient-to-br ${sky[time]} transition-colors duration-700`} />
+      <div className={`absolute inset-0 bg-gradient-to-br ${sky[time]} transition-colors duration-700`} style={{ transform: `translateY(${s * 0.05}px)` }} />
 
       <svg viewBox="0 0 400 200" preserveAspectRatio="xMidYMax slice"
         className="absolute inset-0 w-full h-full" aria-hidden="true">
@@ -82,7 +84,8 @@ const RoutesHeroScene = ({ mode = "rutas" }: Props) => {
           </radialGradient>
         </defs>
 
-        {/* ── CELESTIAL ── */}
+        {/* ── CELESTIAL (parallax: fastest) ── */}
+        <g style={{ transform: `translateY(${s * -0.12}px)` }}>
         {isNight ? (
           <g>
             <circle cx="320" cy="28" r="14" fill="#E2E8F0" opacity="0.12" />
@@ -108,9 +111,10 @@ const RoutesHeroScene = ({ mode = "rutas" }: Props) => {
             ))}
           </g>
         )}
+        </g>
 
-        {/* ── CLOUDS ── */}
-        <g opacity={isNight ? 0.12 : 0.32}>
+        {/* ── CLOUDS (parallax: fast) ── */}
+        <g opacity={isNight ? 0.12 : 0.32} style={{ transform: `translateY(${s * -0.08}px)` }}>
           <g className="rs-cloud1">
             <ellipse cx="0" cy="36" rx="30" ry="8" fill="white" opacity="0.5" />
             <ellipse cx="12" cy="33" rx="16" ry="6" fill="white" opacity="0.35" />
@@ -124,36 +128,42 @@ const RoutesHeroScene = ({ mode = "rutas" }: Props) => {
           </g>
         </g>
 
-        {/* ── FAR MOUNTAINS ── */}
-        <path d="M0,120 L30,88 L70,100 L110,76 L150,95 L190,68 L230,88 L270,74 L310,82 L350,65 L380,80 L400,75 L400,120Z"
-          fill="url(#rs-farMtn)" opacity="0.35" />
-        <path d="M190,68 L183,78 L197,78Z" fill="white" opacity="0.25" />
-        <path d="M350,65 L344,74 L356,74Z" fill="white" opacity="0.2" />
-        <path d="M110,76 L105,84 L115,84Z" fill="white" opacity="0.15" />
+        {/* ── FAR MOUNTAINS (parallax: medium) ── */}
+        <g style={{ transform: `translateY(${s * -0.06}px)` }}>
+          <path d="M0,120 L30,88 L70,100 L110,76 L150,95 L190,68 L230,88 L270,74 L310,82 L350,65 L380,80 L400,75 L400,120Z"
+            fill="url(#rs-farMtn)" opacity="0.35" />
+          <path d="M190,68 L183,78 L197,78Z" fill="white" opacity="0.25" />
+          <path d="M350,65 L344,74 L356,74Z" fill="white" opacity="0.2" />
+          <path d="M110,76 L105,84 L115,84Z" fill="white" opacity="0.15" />
+        </g>
 
-        {/* ── MID MOUNTAINS ── */}
-        <path d="M0,135 L25,105 L65,118 L100,92 L140,110 L175,85 L215,103 L255,90 L290,100 L330,82 L370,98 L400,92 L400,135Z"
-          fill="url(#rs-midMtn)" opacity="0.55" />
-        <path d="M175,85 L169,94 L181,94Z" fill="white" opacity="0.2" />
-        <path d="M330,82 L325,90 L335,90Z" fill="white" opacity="0.15" />
-        <path d="M100,92 L115,97 L130,95" fill="none" stroke="hsl(150,20%,25%)" strokeWidth="0.4" opacity="0.3" />
-        <path d="M255,90 L268,95 L280,93" fill="none" stroke="hsl(150,20%,25%)" strokeWidth="0.4" opacity="0.3" />
+        {/* ── MID MOUNTAINS (parallax: slow-medium) ── */}
+        <g style={{ transform: `translateY(${s * -0.04}px)` }}>
+          <path d="M0,135 L25,105 L65,118 L100,92 L140,110 L175,85 L215,103 L255,90 L290,100 L330,82 L370,98 L400,92 L400,135Z"
+            fill="url(#rs-midMtn)" opacity="0.55" />
+          <path d="M175,85 L169,94 L181,94Z" fill="white" opacity="0.2" />
+          <path d="M330,82 L325,90 L335,90Z" fill="white" opacity="0.15" />
+          <path d="M100,92 L115,97 L130,95" fill="none" stroke="hsl(150,20%,25%)" strokeWidth="0.4" opacity="0.3" />
+          <path d="M255,90 L268,95 L280,93" fill="none" stroke="hsl(150,20%,25%)" strokeWidth="0.4" opacity="0.3" />
+        </g>
 
-        {/* ── NEAR MOUNTAINS ── */}
-        <path d="M0,155 L20,128 L58,138 L95,118 L135,132 L170,112 L210,128 L250,120 L290,135 L330,122 L370,130 L400,126 L400,155Z"
-          fill="url(#rs-nearMtn)" opacity="0.7" />
+        {/* ── NEAR MOUNTAINS (parallax: slow) ── */}
+        <g style={{ transform: `translateY(${s * -0.02}px)` }}>
+          <path d="M0,155 L20,128 L58,138 L95,118 L135,132 L170,112 L210,128 L250,120 L290,135 L330,122 L370,130 L400,126 L400,155Z"
+            fill="url(#rs-nearMtn)" opacity="0.7" />
 
-        {/* ── WATERFALL ── */}
-        <path d="M172,112 L172,130" fill="none" stroke="hsl(200,50%,60%)" strokeWidth="1" opacity="0.2"
-          strokeDasharray="2 2" className="rs-waterfall" />
-        <ellipse cx="172" cy="132" rx="3" ry="1" fill="hsl(200,50%,60%)" opacity="0.1" />
+          {/* ── WATERFALL ── */}
+          <path d="M172,112 L172,130" fill="none" stroke="hsl(200,50%,60%)" strokeWidth="1" opacity="0.2"
+            strokeDasharray="2 2" className="rs-waterfall" />
+          <ellipse cx="172" cy="132" rx="3" ry="1" fill="hsl(200,50%,60%)" opacity="0.1" />
+        </g>
 
         {/* ── River ── */}
         <path d="M-5,172 Q60,165 130,170 Q200,178 270,168 Q340,160 410,170"
           fill="none" stroke="url(#rs-river)" strokeWidth="2" className="rs-riverFlow" />
 
-        {/* ── Far tree line ── */}
-        <g opacity="0.3">
+        {/* ── Far tree line (parallax: very slow) ── */}
+        <g opacity="0.3" style={{ transform: `translateY(${s * -0.015}px)` }}>
           {[20,50,85,120,155,190,225,260,295,330,365].map((x, i) => (
             <g key={i}>
               <polygon points={`${x},145 ${x - 3 - (i%2)},134 ${x + 3 + (i%2)},134`} fill="hsl(150,38%,30%)" />
