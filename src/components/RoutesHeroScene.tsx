@@ -407,10 +407,6 @@ const RoutesHeroScene = () => {
           30% { transform: rotate(1.5deg); }
           70% { transform: rotate(-1deg); }
         }
-        @keyframes hikerWalk {
-          0% { left: -5%; }
-          100% { left: 95%; }
-        }
         @keyframes heroBirdFly {
           0% { left: 105%; }
           100% { left: -8%; }
