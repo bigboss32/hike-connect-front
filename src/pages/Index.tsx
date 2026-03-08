@@ -50,7 +50,7 @@ const Index = () => {
       {/* Hero greeting */}
       <div className="relative bg-gradient-to-br from-primary/15 via-background to-accent/10 pt-8 pb-6 px-4 overflow-hidden">
         <HeroScenery />
-        <div className="max-w-lg mx-auto">
+        <div className="max-w-lg mx-auto relative z-10">
           <p className="text-sm text-muted-foreground mb-1 animate-fade-in flex items-center gap-1.5">
             <span>{greeting.emoji}</span>
             {greeting.text}
