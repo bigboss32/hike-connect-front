@@ -128,8 +128,8 @@ const RoutesHeroScene = ({ mode = "rutas", scrollY = 0 }: Props) => {
           </g>
         </g>
 
-        {/* ── FAR MOUNTAINS ── */}
-        <path d="M0,120 L30,88 L70,100 L110,76 L150,95 L190,68 L230,88 L270,74 L310,82 L350,65 L380,80 L400,75 L400,120Z"
+        {/* ── FAR MOUNTAINS (parallax: medium) ── */}
+        <g style={{ transform: `translateY(${s * -0.06}px)` }}>
           fill="url(#rs-farMtn)" opacity="0.35" />
         <path d="M190,68 L183,78 L197,78Z" fill="white" opacity="0.25" />
         <path d="M350,65 L344,74 L356,74Z" fill="white" opacity="0.2" />
