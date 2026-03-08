@@ -106,17 +106,16 @@ const Achievements = () => {
 
   return (
     <div className="min-h-screen bg-background pb-20">
-      {/* Header */}
-      <ScrollHeader className="bg-background/80 backdrop-blur-lg border-b">
-        <div className="px-4 py-4">
-          <h1 className="text-2xl font-bold text-foreground">Mis Logros</h1>
+      {/* Hero scene with animated summit */}
+      <div className="relative">
+        <AchievementCelebration />
+        <div className="absolute bottom-0 left-0 right-0 px-4 pb-3">
+          <h1 className="text-2xl font-bold text-foreground drop-shadow-sm">Mis Logros</h1>
           <p className="text-sm text-muted-foreground">Tu progreso como explorador</p>
         </div>
-      </ScrollHeader>
+      </div>
 
       <div className="px-4 py-4 space-y-6">
-        {/* Celebration animation */}
-        <AchievementCelebration />
 
         {/* Showcase */}
         <AchievementShowcase
