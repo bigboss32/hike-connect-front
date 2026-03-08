@@ -158,24 +158,24 @@ const HeroScenery = () => {
       </div>
 
       {/* === Walking Hiker + Footprints + Campfire === */}
-      <div className="absolute bottom-[3%] left-0 right-0 h-8">
+      <div className="absolute bottom-[14%] left-0 right-0 h-10 z-[2]">
         {/* Trail / ground line */}
-        <div className="absolute bottom-1 left-[5%] right-[5%] h-[1.5px] bg-gradient-to-r from-transparent via-primary/20 to-transparent" />
+        <div className="absolute bottom-1 left-[5%] right-[5%] h-[2px] bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
         
         {/* Footprints trailing */}
-        <div className="absolute bottom-[5px] left-0 right-0 flex gap-3 opacity-10" style={{ animation: "hikerWalk 12s linear infinite" }}>
+        <div className="absolute bottom-[6px] left-0 right-0 flex gap-3 opacity-15" style={{ animation: "hikerWalk 12s linear infinite" }}>
           {[...Array(16)].map((_, i) => (
-            <div key={i} className="w-1 h-0.5 rounded-full bg-primary shrink-0" style={{ opacity: 1 - i * 0.05 }} />
+            <div key={i} className="w-1.5 h-0.5 rounded-full bg-primary shrink-0" style={{ opacity: 1 - i * 0.05 }} />
           ))}
         </div>
 
         {/* Hiker walking */}
-        <div className="absolute bottom-[3px]" style={{ animation: "hikerWalk 12s linear infinite" }}>
+        <div className="absolute bottom-[4px]" style={{ animation: "hikerWalk 12s linear infinite" }}>
           <WalkingHiker rainy={weather === "rainy"} />
         </div>
 
         {/* Campfire at destination */}
-        <div className="absolute bottom-[3px] right-[8%]">
+        <div className="absolute bottom-[4px] right-[8%]">
           <Campfire />
         </div>
       </div>
