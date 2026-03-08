@@ -16,25 +16,6 @@ const getTimeSlot = (): TimeSlot => {
   return "night";
 };
 
-/* ── Mini Walking Hiker ── */
-const TrailHiker = () => (
-  <svg width="12" height="16" viewBox="0 0 14 20" fill="none" className="text-primary">
-    <circle cx="7" cy="3.5" r="2.5" fill="currentColor" opacity="0.9" />
-    <ellipse cx="7" cy="2" rx="3.5" ry="0.8" fill="currentColor" opacity="0.7" />
-    <path d="M5 2 Q7 -0.5 9 2" fill="currentColor" opacity="0.8" />
-    <rect x="5.8" y="6" width="2.4" height="6" rx="1.2" fill="currentColor" opacity="0.85" />
-    <g style={{ transformOrigin: "6.5px 12px", animation: "legSwing 0.8s ease-in-out infinite" }}>
-      <rect x="5.5" y="12" width="1.8" height="5" rx="0.9" fill="currentColor" opacity="0.8" />
-    </g>
-    <g style={{ transformOrigin: "7.5px 12px", animation: "legSwing 0.8s ease-in-out 0.4s infinite" }}>
-      <rect x="6.8" y="12" width="1.8" height="5" rx="0.9" fill="currentColor" opacity="0.8" />
-    </g>
-    <g style={{ transformOrigin: "9px 7px", animation: "stickSwing 1.2s ease-in-out infinite" }}>
-      <line x1="9" y1="7" x2="12" y2="16" stroke="currentColor" strokeWidth="0.8" strokeLinecap="round" opacity="0.5" />
-    </g>
-  </svg>
-);
-
 const RoutesHeroScene = () => {
   const time = getTimeSlot();
   const containerRef = useRef<HTMLDivElement>(null);
@@ -277,20 +258,6 @@ const RoutesHeroScene = () => {
         </svg>
       </div>
 
-      {/* ═══ WALKING HIKER ═══ */}
-      <div className="absolute bottom-[7%] left-0 right-0 h-6 z-[2]"
-        style={{ transform: `translate(${px(0.12)}px, 0)` }}>
-        <div className="absolute bottom-0" style={{ animation: "hikerWalk 14s linear infinite" }}>
-          <TrailHiker />
-        </div>
-        {/* Footprints */}
-        <div className="absolute bottom-[2px] left-0 right-0 flex gap-2.5 opacity-10"
-          style={{ animation: "hikerWalk 14s linear infinite" }}>
-          {[...Array(12)].map((_, i) => (
-            <div key={i} className="w-1 h-0.5 rounded-full bg-primary shrink-0" style={{ opacity: 1 - i * 0.07 }} />
-          ))}
-        </div>
-      </div>
 
       {/* ═══ TRAIL MARKERS ═══ */}
       <div className="absolute bottom-[5%] left-0 right-0 transition-transform duration-200 ease-out"
@@ -439,10 +406,6 @@ const RoutesHeroScene = () => {
           0%, 100% { transform: rotate(0deg); }
           30% { transform: rotate(1.5deg); }
           70% { transform: rotate(-1deg); }
-        }
-        @keyframes hikerWalk {
-          0% { left: -5%; }
-          100% { left: 95%; }
         }
         @keyframes heroBirdFly {
           0% { left: 105%; }
