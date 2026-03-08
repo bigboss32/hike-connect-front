@@ -412,6 +412,57 @@ const HeroScenery = () => {
         </div>
       )}
 
+      {/* === WEATHER: Rain === */}
+      {weather === "rainy" && (
+        <>
+          {/* Rain clouds */}
+          <div className="absolute inset-0" style={{ transform: `translate(${px(0.1)}px, ${py(0.05)}px)` }}>
+            {[
+              { top: "5%", opacity: 0.35, dur: "20s", delay: "0s", w: 70 },
+              { top: "8%", opacity: 0.25, dur: "28s", delay: "8s", w: 55 },
+              { top: "3%", opacity: 0.2, dur: "24s", delay: "4s", w: 50 },
+            ].map((c, i) => (
+              <div key={i} className="absolute" style={{ top: c.top, opacity: c.opacity, animation: `heroCloudDrift ${c.dur} linear ${c.delay} infinite` }}>
+                <svg width={c.w} height={c.w * 0.35} viewBox={`0 0 ${c.w} ${c.w * 0.35}`} className="text-slate-400 dark:text-slate-500/40">
+                  <ellipse cx={c.w / 2} cy={c.w * 0.25} rx={c.w * 0.47} ry={c.w * 0.12} fill="currentColor" />
+                  <ellipse cx={c.w * 0.33} cy={c.w * 0.17} rx={c.w * 0.23} ry={c.w * 0.15} fill="currentColor" />
+                  <ellipse cx={c.w * 0.63} cy={c.w * 0.15} rx={c.w * 0.2} ry={c.w * 0.13} fill="currentColor" />
+                </svg>
+              </div>
+            ))}
+          </div>
+          {/* Raindrops */}
+          <div className="absolute inset-0 overflow-hidden">
+            {Array.from({ length: 30 }).map((_, i) => {
+              const x = `${(i * 3.3 + Math.random() * 2) % 100}%`;
+              const dur = 0.6 + Math.random() * 0.4;
+              const delay = Math.random() * 2;
+              return (
+                <div
+                  key={i}
+                  className="absolute w-[1px] h-3 bg-gradient-to-b from-transparent via-sky-300/40 to-sky-400/20 dark:via-sky-400/25 dark:to-sky-500/15"
+                  style={{
+                    left: x,
+                    animation: `rainFall ${dur}s linear ${delay}s infinite`,
+                  }}
+                />
+              );
+            })}
+          </div>
+          {/* Puddle ripples at bottom */}
+          {[{ x: "15%", delay: "0s" }, { x: "45%", delay: "0.8s" }, { x: "72%", delay: "1.5s" }].map((r, i) => (
+            <div key={i} className="absolute bottom-[4%]" style={{ left: r.x }}>
+              <svg width="12" height="4" viewBox="0 0 16 6" opacity="0.2">
+                <ellipse cx="8" cy="3" rx="7" ry="2.5" fill="none" stroke="currentColor" strokeWidth="0.5" className="text-sky-300 dark:text-sky-400">
+                  <animate attributeName="rx" values="2;7;2" dur="2s" begin={r.delay} repeatCount="indefinite" />
+                  <animate attributeName="opacity" values="0.6;0;0.6" dur="2s" begin={r.delay} repeatCount="indefinite" />
+                </ellipse>
+              </svg>
+            </div>
+          ))}
+        </>
+      )}
+
       {/* Floating particles — drift downward */}
       <div className="absolute inset-0 transition-transform duration-200 ease-out" style={{ transform: `translate(${px(0.2)}px, ${py(0.15)}px)` }}>
         {[
