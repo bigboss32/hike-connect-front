@@ -16,17 +16,34 @@ const getTimeSlot = (): TimeSlot => {
 };
 
 /* ── Walking Hiker SVG ── */
-const WalkingHiker = () => (
-  <svg width="18" height="24" viewBox="0 0 20 28" fill="none" className="text-primary">
+const WalkingHiker = ({ rainy = false }: { rainy?: boolean }) => (
+  <svg width="18" height={rainy ? "30" : "24"} viewBox={rainy ? "0 -8 20 36" : "0 0 20 28"} fill="none" className="text-primary">
+    {/* Umbrella when rainy */}
+    {rainy && (
+      <g>
+        {/* Umbrella canopy */}
+        <path d="M3,-6 Q10,-14 17,-6" fill="#60A5FA" opacity="0.7" />
+        <path d="M3,-6 Q10,-12 17,-6" fill="#3B82F6" opacity="0.5" />
+        {/* Umbrella pole */}
+        <line x1="10" y1="-6" x2="10" y2="5" stroke="currentColor" strokeWidth="1" opacity="0.6" />
+        {/* Handle */}
+        <path d="M10,5 Q12,7 10,7" fill="none" stroke="currentColor" strokeWidth="0.8" opacity="0.5" />
+        {/* Rain drops bouncing off umbrella */}
+        <circle cx="5" cy="-8" r="0.5" fill="#93C5FD" opacity="0.5" style={{ animation: "dewSparkle 1.5s ease-in-out 0s infinite" }} />
+        <circle cx="14" cy="-9" r="0.5" fill="#93C5FD" opacity="0.4" style={{ animation: "dewSparkle 1.5s ease-in-out 0.5s infinite" }} />
+      </g>
+    )}
     <circle cx="10" cy="4.5" r="3" fill="currentColor" opacity="0.9" />
-    <ellipse cx="10" cy="2.8" rx="4.5" ry="1" fill="currentColor" opacity="0.7" />
-    <path d="M7 2.8 Q10 -0.5 13 2.8" fill="currentColor" opacity="0.8" />
+    {!rainy && <ellipse cx="10" cy="2.8" rx="4.5" ry="1" fill="currentColor" opacity="0.7" />}
+    {!rainy && <path d="M7 2.8 Q10 -0.5 13 2.8" fill="currentColor" opacity="0.8" />}
     <rect x="8.5" y="7.5" width="3" height="8" rx="1.5" fill="currentColor" opacity="0.85" />
-    <rect x="5.5" y="7.5" width="3.5" height="6" rx="1.5" fill="currentColor" opacity="0.45" />
-    <g style={{ transformOrigin: "13px 8px", animation: "stickSwing 1.2s ease-in-out infinite" }}>
-      <line x1="13" y1="8" x2="17" y2="22" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" opacity="0.5" />
-      <line x1="11.5" y1="8" x2="14" y2="14" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" opacity="0.7" />
-    </g>
+    {!rainy && <rect x="5.5" y="7.5" width="3.5" height="6" rx="1.5" fill="currentColor" opacity="0.45" />}
+    {!rainy && (
+      <g style={{ transformOrigin: "13px 8px", animation: "stickSwing 1.2s ease-in-out infinite" }}>
+        <line x1="13" y1="8" x2="17" y2="22" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" opacity="0.5" />
+        <line x1="11.5" y1="8" x2="14" y2="14" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" opacity="0.7" />
+      </g>
+    )}
     <g style={{ transformOrigin: "9.5px 15px", animation: "legSwing 0.8s ease-in-out infinite" }}>
       <rect x="8" y="15" width="2.2" height="7" rx="1.1" fill="currentColor" opacity="0.8" />
       <ellipse cx="9.5" cy="22.5" rx="2.2" ry="1" fill="currentColor" opacity="0.7" />
