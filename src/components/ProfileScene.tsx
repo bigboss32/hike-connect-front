@@ -32,7 +32,7 @@ const ProfileScene = () => {
   const sunColor = isSunset ? "#FB923C" : isDawn ? "#FDE68A" : "#FBBF24";
 
   return (
-    <div className="relative w-full overflow-hidden rounded-2xl" style={{ height: 180 }}>
+    <div className="relative w-full overflow-hidden" style={{ height: 180 }}>
       {/* Sky */}
       <div className={`absolute inset-0 bg-gradient-to-b ${sky[time]} transition-colors duration-700`} />
 
