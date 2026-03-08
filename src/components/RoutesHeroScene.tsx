@@ -258,20 +258,6 @@ const RoutesHeroScene = () => {
         </svg>
       </div>
 
-      {/* ═══ WALKING HIKER ═══ */}
-      <div className="absolute bottom-[7%] left-0 right-0 h-6 z-[2]"
-        style={{ transform: `translate(${px(0.12)}px, 0)` }}>
-        <div className="absolute bottom-0" style={{ animation: "hikerWalk 14s linear infinite" }}>
-          <TrailHiker />
-        </div>
-        {/* Footprints */}
-        <div className="absolute bottom-[2px] left-0 right-0 flex gap-2.5 opacity-10"
-          style={{ animation: "hikerWalk 14s linear infinite" }}>
-          {[...Array(12)].map((_, i) => (
-            <div key={i} className="w-1 h-0.5 rounded-full bg-primary shrink-0" style={{ opacity: 1 - i * 0.07 }} />
-          ))}
-        </div>
-      </div>
 
       {/* ═══ TRAIL MARKERS ═══ */}
       <div className="absolute bottom-[5%] left-0 right-0 transition-transform duration-200 ease-out"
