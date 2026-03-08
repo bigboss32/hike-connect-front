@@ -19,7 +19,26 @@ const getTimeSlot = (): TimeSlot => {
  * TrailScene — Single SVG containing hiker, dog, trail details, campfire, tent.
  * Everything shares the same coordinate system so alignment is perfect.
  */
-const TrailScene = ({ rainy = false }: { rainy?: boolean }) => (
+const getWeatherForTime = (time: TimeSlot): "clear" | "cloudy" | "windy" | "rainy" => {
+  switch (time) {
+    case "dawn": return "clear";      // Amanecer fresco y despejado
+    case "morning": return "clear";   // Mañana soleada
+    case "afternoon": return "cloudy"; // Tarde algo nublada
+    case "sunset": return "windy";    // Atardecer con brisa
+    case "night": return "clear";     // Noche estrellada
+  }
+};
+
+const TrailScene = ({ rainy = false, time = "morning" as TimeSlot }: { rainy?: boolean; time?: TimeSlot }) => {
+  const trailColors: Record<TimeSlot, { ground: string; bush: string; bushAlt: string; flower: string }> = {
+    dawn: { ground: "hsl(var(--primary))", bush: "#34D399", bushAlt: "#10B981", flower: "#FBBF24" },
+    morning: { ground: "hsl(var(--primary))", bush: "#22C55E", bushAlt: "#16A34A", flower: "#F472B6" },
+    afternoon: { ground: "#D97706", bush: "#84CC16", bushAlt: "#65A30D", flower: "#FB923C" },
+    sunset: { ground: "#EA580C", bush: "#4ADE80", bushAlt: "#22C55E", flower: "#F43F5E" },
+    night: { ground: "#6366F1", bush: "#065F46", bushAlt: "#064E3B", flower: "#818CF8" },
+  };
+  const c = trailColors[time];
+  return (
   <svg viewBox="0 0 400 100" preserveAspectRatio="xMidYMax slice" className="w-full h-full" fill="none">
     {/* Ground line */}
     <line x1="10" y1="90" x2="390" y2="90" stroke="currentColor" className="text-primary" strokeWidth="0.8" opacity="0.12" />
@@ -206,7 +225,8 @@ const TrailScene = ({ rainy = false }: { rainy?: boolean }) => (
       </g>
     ))}
   </svg>
-);
+  );
+};
 
 interface HeroSceneryProps {
   scrollY?: number;
@@ -218,10 +238,7 @@ const HeroScenery = ({ scrollY = 0 }: HeroSceneryProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [mouse, setMouse] = useState({ x: 0.5, y: 0.5 });
 
-  const weather = useMemo(() => {
-    const opts = ["clear", "cloudy", "windy", "rainy"] as const;
-    return opts[Math.floor(Math.random() * opts.length)];
-  }, []);
+  const weather = useMemo(() => getWeatherForTime(time), [time]);
 
   const handleMove = useCallback((clientX: number, clientY: number) => {
     if (!containerRef.current) return;
@@ -306,7 +323,7 @@ const HeroScenery = ({ scrollY = 0 }: HeroSceneryProps) => {
 
       {/* Trail Scene — hiker, dog, campfire — subtle, behind fade */}
       <div className="absolute bottom-0 left-0 right-0 h-12 z-[1] opacity-40">
-        <TrailScene rainy={weather === "rainy"} />
+        <TrailScene rainy={weather === "rainy"} time={time} />
       </div>
 
       {/* === DAWN === */}
