@@ -66,8 +66,13 @@ const Campfire = () => (
   </svg>
 );
 
-const HeroScenery = () => {
+interface HeroSceneryProps {
+  scrollY?: number;
+}
+
+const HeroScenery = ({ scrollY = 0 }: HeroSceneryProps) => {
   const time = getTimeSlot();
+  const sc = Math.min(scrollY, 400);
   const containerRef = useRef<HTMLDivElement>(null);
   const [mouse, setMouse] = useState({ x: 0.5, y: 0.5 });
 
