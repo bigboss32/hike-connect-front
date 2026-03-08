@@ -57,8 +57,9 @@ const CampfireScene = ({ scrollY = 0 }: Props) => {
           </radialGradient>
         </defs>
 
-        {/* ── Stars (dark mode) ── */}
-        <g style={{ transform: `translateY(${s * -0.12}px)` }} className="cf2-stars">
+        {/* ── Stars (night only) ── */}
+        {showStars && (
+        <g style={{ transform: `translateY(${s * -0.12}px)` }}>
           {[
             {x:18,y:12},{x:52,y:22},{x:95,y:8},{x:135,y:28},{x:178,y:14},
             {x:225,y:24},{x:268,y:10},{x:310,y:20},{x:348,y:16},{x:380,y:28},
@@ -72,22 +73,27 @@ const CampfireScene = ({ scrollY = 0 }: Props) => {
           <circle cx="340" cy="24" r="7" fill="#F1F5F9" opacity="0.8" />
           <circle cx="337" cy="22" r="1.2" fill="#CBD5E1" opacity="0.3" />
         </g>
+        )}
 
-        {/* ── Sun (light mode) ── */}
-        <g className="cf2-sun" style={{ transform: `translateY(${s * -0.1}px)` }}>
-          <circle cx="345" cy="20" r="22" fill="#FBBF24" opacity="0.2" />
-          <circle cx="345" cy="20" r="10" fill="#F59E0B" opacity="0.45" />
-          <circle cx="345" cy="20" r="5" fill="#FDE68A" opacity="0.7" />
+        {/* ── Sun (daytime) ── */}
+        {showSun && (
+        <g style={{ transform: `translateY(${s * -0.1}px)` }}>
+          <circle cx="345" cy={isDawn ? 36 : isSunset ? 32 : 20} r="22" fill={isSunset ? "#FB923C" : "#FBBF24"} opacity="0.2" />
+          <circle cx="345" cy={isDawn ? 36 : isSunset ? 32 : 20} r="10" fill={isSunset ? "#F97316" : "#F59E0B"} opacity="0.45" />
+          <circle cx="345" cy={isDawn ? 36 : isSunset ? 32 : 20} r="5" fill="#FDE68A" opacity="0.7" />
         </g>
+        )}
 
-        {/* ── Birds (light mode) ── */}
-        <g className="cf2-birds">
+        {/* ── Birds (daytime only) ── */}
+        {showSun && (
+        <g opacity="0.35">
           {[{x:60,y:22},{x:150,y:15},{x:280,y:28}].map((b,i) => (
             <path key={i} d={`M${b.x},${b.y} Q${b.x+4},${b.y-3} ${b.x+8},${b.y} Q${b.x+12},${b.y-3} ${b.x+16},${b.y}`}
               fill="none" stroke="hsl(20,30%,25%)" strokeWidth="1.4" strokeLinecap="round"
               className="cf2-bird" style={{ animationDelay: `${i * 3}s` }} />
           ))}
         </g>
+        )}
 
         {/* ── Far mountains — VIVID green ── */}
         <g style={{ transform: `translateY(${s * -0.06}px)` }}>
