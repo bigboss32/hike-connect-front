@@ -15,54 +15,111 @@ const getTimeSlot = (): TimeSlot => {
   return "night";
 };
 
-/* ── Walking Hiker SVG ── */
+/* ── Walking Hiker SVG — with backpack ── */
 const WalkingHiker = ({ rainy = false }: { rainy?: boolean }) => (
-  <svg width="18" height={rainy ? "30" : "24"} viewBox={rainy ? "0 -8 20 36" : "0 0 20 28"} fill="none" className="text-primary">
-    {/* Umbrella when rainy */}
+  <svg width="20" height={rainy ? "32" : "28"} viewBox={rainy ? "0 -8 24 40" : "0 0 24 32"} fill="none" className="text-primary">
     {rainy && (
       <g>
-        {/* Umbrella canopy */}
-        <path d="M3,-6 Q10,-14 17,-6" fill="#60A5FA" opacity="0.7" />
-        <path d="M3,-6 Q10,-12 17,-6" fill="#3B82F6" opacity="0.5" />
-        {/* Umbrella pole */}
-        <line x1="10" y1="-6" x2="10" y2="5" stroke="currentColor" strokeWidth="1" opacity="0.6" />
-        {/* Handle */}
-        <path d="M10,5 Q12,7 10,7" fill="none" stroke="currentColor" strokeWidth="0.8" opacity="0.5" />
-        {/* Rain drops bouncing off umbrella */}
-        <circle cx="5" cy="-8" r="0.5" fill="#93C5FD" opacity="0.5" style={{ animation: "dewSparkle 1.5s ease-in-out 0s infinite" }} />
-        <circle cx="14" cy="-9" r="0.5" fill="#93C5FD" opacity="0.4" style={{ animation: "dewSparkle 1.5s ease-in-out 0.5s infinite" }} />
+        <path d="M5,-6 Q12,-14 19,-6" fill="#60A5FA" opacity="0.7" />
+        <line x1="12" y1="-6" x2="12" y2="5" stroke="currentColor" strokeWidth="1" opacity="0.6" />
       </g>
     )}
-    <circle cx="10" cy="4.5" r="3" fill="currentColor" opacity="0.9" />
-    {!rainy && <ellipse cx="10" cy="2.8" rx="4.5" ry="1" fill="currentColor" opacity="0.7" />}
-    {!rainy && <path d="M7 2.8 Q10 -0.5 13 2.8" fill="currentColor" opacity="0.8" />}
-    <rect x="8.5" y="7.5" width="3" height="8" rx="1.5" fill="currentColor" opacity="0.85" />
-    {!rainy && <rect x="5.5" y="7.5" width="3.5" height="6" rx="1.5" fill="currentColor" opacity="0.45" />}
+    <circle cx="12" cy="4.5" r="3.2" fill="currentColor" opacity="0.9" />
+    {!rainy && <ellipse cx="12" cy="2.8" rx="5" ry="1.2" fill="currentColor" opacity="0.7" />}
+    {!rainy && <path d="M9 2.8 Q12 -0.5 15 2.8" fill="currentColor" opacity="0.8" />}
+    <rect x="10" y="7.5" width="4" height="9" rx="1.5" fill="currentColor" opacity="0.85" />
+    <rect x="14" y="8" width="4" height="7" rx="1.5" fill="currentColor" opacity="0.5" />
+    <ellipse cx="16" cy="7.5" rx="2.2" ry="1" fill="currentColor" opacity="0.4" />
     {!rainy && (
-      <g style={{ transformOrigin: "13px 8px", animation: "stickSwing 1.2s ease-in-out infinite" }}>
-        <line x1="13" y1="8" x2="17" y2="22" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" opacity="0.5" />
-        <line x1="11.5" y1="8" x2="14" y2="14" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" opacity="0.7" />
+      <g style={{ transformOrigin: "14px 9px", animation: "stickSwing 1.2s ease-in-out infinite" }}>
+        <line x1="14" y1="9" x2="19" y2="24" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" opacity="0.5" />
+        <line x1="13" y1="9" x2="16" y2="15" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" opacity="0.7" />
       </g>
     )}
-    <g style={{ transformOrigin: "9.5px 15px", animation: "legSwing 0.8s ease-in-out infinite" }}>
-      <rect x="8" y="15" width="2.2" height="7" rx="1.1" fill="currentColor" opacity="0.8" />
-      <ellipse cx="9.5" cy="22.5" rx="2.2" ry="1" fill="currentColor" opacity="0.7" />
+    <line x1="10" y1="10" x2="7" y2="15" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" opacity="0.6" />
+    <g style={{ transformOrigin: "11px 16px", animation: "legSwing 0.8s ease-in-out infinite" }}>
+      <rect x="9.5" y="16" width="2.5" height="8" rx="1.1" fill="currentColor" opacity="0.8" />
+      <ellipse cx="11" cy="24.5" rx="2.5" ry="1.2" fill="currentColor" opacity="0.7" />
     </g>
-    <g style={{ transformOrigin: "11px 15px", animation: "legSwing 0.8s ease-in-out 0.4s infinite" }}>
-      <rect x="10" y="15" width="2.2" height="7" rx="1.1" fill="currentColor" opacity="0.8" />
-      <ellipse cx="11.5" cy="22.5" rx="2.2" ry="1" fill="currentColor" opacity="0.7" />
+    <g style={{ transformOrigin: "13px 16px", animation: "legSwing 0.8s ease-in-out 0.4s infinite" }}>
+      <rect x="12" y="16" width="2.5" height="8" rx="1.1" fill="currentColor" opacity="0.8" />
+      <ellipse cx="13.5" cy="24.5" rx="2.5" ry="1.2" fill="currentColor" opacity="0.7" />
     </g>
   </svg>
 );
 
-/* ── Campfire SVG ── */
+/* ── Companion Dog ── */
+const CompanionDog = () => (
+  <svg width="14" height="10" viewBox="0 0 20 16" fill="none" className="text-primary">
+    <ellipse cx="10" cy="10" rx="7" ry="4" fill="currentColor" opacity="0.65" />
+    <circle cx="17" cy="7" r="3" fill="currentColor" opacity="0.7" />
+    <ellipse cx="18.5" cy="5" rx="1.5" ry="2" fill="currentColor" opacity="0.5" transform="rotate(15 18.5 5)" />
+    <path d="M3,8 Q1,4 3,3" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" opacity="0.55"
+      style={{ transformOrigin: "3px 8px", animation: "tailWag 0.4s ease-in-out infinite" }} />
+    <g style={{ animation: "legSwing 0.8s ease-in-out infinite" }}>
+      <rect x="6" y="13" width="1.5" height="3" rx="0.5" fill="currentColor" opacity="0.6" />
+      <rect x="12" y="13" width="1.5" height="3" rx="0.5" fill="currentColor" opacity="0.6" />
+    </g>
+    <g style={{ animation: "legSwing 0.8s ease-in-out 0.4s infinite" }}>
+      <rect x="8" y="13" width="1.5" height="3" rx="0.5" fill="currentColor" opacity="0.6" />
+      <rect x="14" y="13" width="1.5" height="3" rx="0.5" fill="currentColor" opacity="0.6" />
+    </g>
+    <circle cx="18" cy="6.5" r="0.6" fill="hsl(var(--background))" opacity="0.8" />
+  </svg>
+);
+
+/* ── Trail Sign ── */
+const TrailSign = () => (
+  <svg width="10" height="18" viewBox="0 0 14 24" fill="none" className="text-primary">
+    <rect x="6" y="6" width="2" height="18" rx="0.5" fill="currentColor" opacity="0.35" />
+    <rect x="7" y="7" width="7" height="4" rx="1" fill="currentColor" opacity="0.3" />
+    <polygon points="7,7 7,11 5,9" fill="currentColor" opacity="0.3" />
+    <rect x="0" y="12" width="7" height="3.5" rx="1" fill="currentColor" opacity="0.22" />
+    <polygon points="7,12 7,15.5 9,13.75" fill="currentColor" opacity="0.22" />
+  </svg>
+);
+
+/* ── Destination Tent ── */
+const DestinationTent = () => (
+  <svg width="18" height="16" viewBox="0 0 24 22" fill="none" className="text-primary">
+    <polygon points="12,2 2,20 22,20" fill="currentColor" opacity="0.3" />
+    <polygon points="12,2 8,20 16,20" fill="currentColor" opacity="0.2" />
+    <path d="M10,20 Q12,14 14,20" fill="hsl(var(--background))" opacity="0.5" />
+    <line x1="12" y1="2" x2="12" y2="-2" stroke="currentColor" strokeWidth="0.7" opacity="0.4" />
+    <polygon points="12,-2 12,1 16,0" fill="#F59E0B" opacity="0.5" style={{ animation: "flagWave 2s ease-in-out infinite" }} />
+  </svg>
+);
+
+/* ── Flower cluster ── */
+const FlowerCluster = ({ variant = 0 }: { variant?: number }) => {
+  const colors = [["#F472B6","#FB923C"], ["#A78BFA","#FBBF24"], ["#34D399","#F472B6"]];
+  const [c1, c2] = colors[variant % 3];
+  return (
+    <svg width="8" height="7" viewBox="0 0 14 12" fill="none" opacity="0.45">
+      <circle cx="4" cy="5" r="2.5" fill={c1} opacity="0.7" />
+      <circle cx="10" cy="4" r="2" fill={c2} opacity="0.6" />
+      <line x1="4" y1="7.5" x2="4" y2="12" stroke="#22C55E" strokeWidth="0.6" opacity="0.5" />
+      <line x1="10" y1="6" x2="10" y2="12" stroke="#22C55E" strokeWidth="0.6" opacity="0.5" />
+    </svg>
+  );
+};
+
+/* ── Campfire SVG — enhanced ── */
 const Campfire = () => (
-  <svg width="14" height="18" viewBox="0 0 16 20" fill="none">
-    <rect x="3" y="16" width="10" height="2" rx="1" fill="currentColor" className="text-primary" opacity="0.3" />
-    <path d="M8 5 Q10 8 9 11 Q8.5 13 8 14 Q7.5 13 7 11 Q6 8 8 5Z" fill="#F59E0B" opacity="0.85" style={{ animation: "fireFlicker 0.6s ease-in-out infinite alternate" }} />
-    <path d="M8 7 Q9 9.5 8.5 12 Q8.2 13 8 13.2 Q7.8 13 7.5 12 Q7 9.5 8 7Z" fill="#EF4444" opacity="0.55" style={{ animation: "fireFlicker 0.6s ease-in-out 0.15s infinite alternate" }} />
-    <circle cx="7.5" cy="3.5" r="1" fill="currentColor" className="text-muted-foreground" opacity="0.15" style={{ animation: "smokeRise 2s ease-out infinite" }} />
-    <circle cx="8.5" cy="2" r="0.7" fill="currentColor" className="text-muted-foreground" opacity="0.1" style={{ animation: "smokeRise 2.5s ease-out 0.5s infinite" }} />
+  <svg width="18" height="22" viewBox="0 0 20 26" fill="none">
+    {[{x:3,y:21},{x:7,y:22},{x:13,y:22},{x:17,y:21}].map((s,i) => (
+      <ellipse key={i} cx={s.x} cy={s.y} rx="2" ry="1.2" fill="currentColor" className="text-muted-foreground" opacity="0.2" />
+    ))}
+    <rect x="4" y="19" width="12" height="2.5" rx="1" fill="currentColor" className="text-primary" opacity="0.3" />
+    <rect x="6" y="17.5" width="8" height="2" rx="1" fill="currentColor" className="text-primary" opacity="0.25" transform="rotate(-8 10 18.5)" />
+    <path d="M10 5 Q13 9 11 14 Q10.5 16 10 17 Q9.5 16 9 14 Q7 9 10 5Z" fill="#F59E0B" opacity="0.85" style={{ animation: "fireFlicker 0.6s ease-in-out infinite alternate" }} />
+    <path d="M10 8 Q11.5 11 10.5 15 Q10.2 16 10 16.2 Q9.8 16 9.5 15 Q8.5 11 10 8Z" fill="#EF4444" opacity="0.55" style={{ animation: "fireFlicker 0.6s ease-in-out 0.15s infinite alternate" }} />
+    <ellipse cx="10" cy="12" rx="2" ry="4" fill="#FDE68A" opacity="0.4" style={{ animation: "fireFlicker 0.5s ease-in-out 0.3s infinite alternate" }} />
+    {[{x:8,y:3,d:0},{x:12,y:2,d:0.5},{x:10,y:1,d:1}].map((sp,i) => (
+      <circle key={i} cx={sp.x} cy={sp.y} r="0.7" fill="#FDE68A" opacity="0.6" style={{ animation: `smokeRise 1.5s ease-out ${sp.d}s infinite` }} />
+    ))}
+    <circle cx="9" cy="2" r="1.2" fill="currentColor" className="text-muted-foreground" opacity="0.12" style={{ animation: "smokeRise 2s ease-out infinite" }} />
+    <ellipse cx="10" cy="21" rx="8" ry="2" fill="#FBBF24" opacity="0.08" />
   </svg>
 );
 
