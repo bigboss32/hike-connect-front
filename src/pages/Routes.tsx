@@ -129,85 +129,82 @@ const Routes = () => {
 
   return (
     <div className="min-h-screen bg-background pb-20">
-      {/* Extended hero zone — scenery flows into content */}
+      {/* Hero zone — scenery with search embedded inside the animation */}
       <div className="relative bg-gradient-to-br from-primary/15 via-background to-accent/10 overflow-hidden">
         <RoutesHeroScene />
 
-        {/* Title + Search inside hero — mimetized like Home bookings */}
-        <div className="relative z-10 px-4 pt-2 pb-28">
-          <div className="max-w-lg mx-auto space-y-3">
-            <div>
-              <h1 className="text-2xl font-bold text-foreground animate-fade-in">Experiencias</h1>
-              <p className="text-sm text-muted-foreground mt-0.5 animate-fade-in" style={{ animationDelay: '50ms' }}>
-                Rutas, hospedajes y más aventuras
-              </p>
-            </div>
-
-            {/* Search + Filter — glassmorphism card */}
-            <div className="animate-fade-in rounded-2xl backdrop-blur-md bg-foreground/[0.06] border border-foreground/[0.08] p-3 space-y-3" style={{ animationDelay: '100ms' }}>
-              <div className="flex gap-2">
-                <div className="relative flex-1">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                  <Input
-                    placeholder="Buscar experiencias..."
-                    className="pl-10 bg-background/40 backdrop-blur-sm border-foreground/[0.08]"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                  />
-                </div>
-                <Button 
-                  variant={hasActiveFilters ? "default" : "outline"} 
-                  size="icon"
-                  onClick={() => setShowFiltersModal(true)}
-                  className={hasActiveFilters ? "relative" : "relative bg-background/40 backdrop-blur-sm border-foreground/[0.08]"}
-                >
-                  <SlidersHorizontal className="w-4 h-4" />
-                  {hasActiveFilters && (
-                    <span className="absolute -top-1 -right-1 w-5 h-5 bg-primary text-primary-foreground text-xs rounded-full flex items-center justify-center border-2 border-background">
-                      {activeLabels.length}
-                    </span>
-                  )}
-                </Button>
-              </div>
-
-              {/* Active filters chips */}
-              {activeLabels.length > 0 && (
-                <div className="flex flex-wrap gap-2 animate-fade-in">
-                  {activeLabels.map((label, index) => (
-                    <Badge 
-                      key={index} 
-                      variant="secondary"
-                      className="text-xs capitalize bg-background/40"
-                    >
-                      {label}
-                    </Badge>
-                  ))}
-                  <Badge 
-                    variant="outline" 
-                    className="text-xs cursor-pointer bg-background/40 hover:bg-destructive/10 hover:text-destructive hover:border-destructive"
-                    onClick={() => setFilters({
-                      category: "todas",
-                      type: "todas",
-                      maxDistance: 50,
-                      difficulty: "todas",
-                      maxDuration: 12,
-                      companion: "todas",
-                      experience: "todas",
-                      format: "todas",
-                      agroDuration: 24,
-                    })}
-                  >
-                    <X className="w-3 h-3 mr-1" />
-                    Limpiar
-                  </Badge>
-                </div>
-              )}
-            </div>
+        {/* Title overlaid at top of scenery */}
+        <div className="absolute top-0 left-0 right-0 z-10 px-4 pt-6">
+          <div className="max-w-lg mx-auto">
+            <h1 className="text-2xl font-bold text-foreground animate-fade-in drop-shadow-sm">Experiencias</h1>
+            <p className="text-sm text-muted-foreground mt-0.5 animate-fade-in drop-shadow-sm" style={{ animationDelay: '50ms' }}>
+              Rutas, hospedajes y más aventuras
+            </p>
           </div>
         </div>
 
-        {/* Smooth gradient transition */}
-        <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-background via-background/50 to-transparent z-[5]" />
+        {/* Search + Filter — embedded at bottom inside the animation */}
+        <div className="absolute bottom-5 left-0 right-0 z-10 px-4">
+          <div className="max-w-lg mx-auto animate-fade-in" style={{ animationDelay: '100ms' }}>
+            <div className="flex gap-2">
+              <div className="relative flex-1">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/70" />
+                <Input
+                  placeholder="Buscar experiencias..."
+                  className="pl-10 bg-background/25 backdrop-blur-md border-white/10 text-foreground placeholder:text-muted-foreground/60 shadow-lg"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                />
+              </div>
+              <Button 
+                variant={hasActiveFilters ? "default" : "outline"} 
+                size="icon"
+                onClick={() => setShowFiltersModal(true)}
+                className={hasActiveFilters ? "relative shadow-lg" : "relative bg-background/25 backdrop-blur-md border-white/10 shadow-lg hover:bg-background/35"}
+              >
+                <SlidersHorizontal className="w-4 h-4" />
+                {hasActiveFilters && (
+                  <span className="absolute -top-1 -right-1 w-5 h-5 bg-primary text-primary-foreground text-xs rounded-full flex items-center justify-center border-2 border-background">
+                    {activeLabels.length}
+                  </span>
+                )}
+              </Button>
+            </div>
+
+            {/* Active filters chips */}
+            {activeLabels.length > 0 && (
+              <div className="flex flex-wrap gap-2 mt-2 animate-fade-in">
+                {activeLabels.map((label, index) => (
+                  <Badge 
+                    key={index} 
+                    variant="secondary"
+                    className="text-xs capitalize bg-background/25 backdrop-blur-sm border-white/10"
+                  >
+                    {label}
+                  </Badge>
+                ))}
+                <Badge 
+                  variant="outline" 
+                  className="text-xs cursor-pointer bg-background/25 backdrop-blur-sm border-white/10 hover:bg-destructive/10 hover:text-destructive hover:border-destructive"
+                  onClick={() => setFilters({
+                    category: "todas",
+                    type: "todas",
+                    maxDistance: 50,
+                    difficulty: "todas",
+                    maxDuration: 12,
+                    companion: "todas",
+                    experience: "todas",
+                    format: "todas",
+                    agroDuration: 24,
+                  })}
+                >
+                  <X className="w-3 h-3 mr-1" />
+                  Limpiar
+                </Badge>
+              </div>
+            )}
+          </div>
+        </div>
       </div>
 
       <RouteFiltersDialog
