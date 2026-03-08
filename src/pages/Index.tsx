@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import Navigation from "@/components/Navigation";
 import HeroScenery from "@/components/HeroScenery";
 import FeaturedRoutesCarousel from "@/components/FeaturedRoutesCarousel";
@@ -24,6 +24,13 @@ const Index = () => {
   const greeting = getGreeting();
   const firstName = user?.name?.split(' ')[0] || 'Aventurero';
   const [refreshKey, setRefreshKey] = useState(0);
+  const [scrollY, setScrollY] = useState(0);
+
+  useEffect(() => {
+    const onScroll = () => setScrollY(window.scrollY);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   const handleRefresh = useCallback(async () => {
     await fetchProfile();
@@ -49,7 +56,7 @@ const Index = () => {
 
       {/* Extended hero zone — scenery covers greeting + bookings */}
       <div className="relative bg-gradient-to-br from-primary/15 via-background to-accent/10 overflow-hidden">
-        <HeroScenery />
+        <HeroScenery scrollY={scrollY} />
 
         {/* Greeting text */}
         <div className="relative z-10 pt-8 pb-4 px-4">

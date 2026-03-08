@@ -66,8 +66,13 @@ const Campfire = () => (
   </svg>
 );
 
-const HeroScenery = () => {
+interface HeroSceneryProps {
+  scrollY?: number;
+}
+
+const HeroScenery = ({ scrollY = 0 }: HeroSceneryProps) => {
   const time = getTimeSlot();
+  const sc = Math.min(scrollY, 400);
   const containerRef = useRef<HTMLDivElement>(null);
   const [mouse, setMouse] = useState({ x: 0.5, y: 0.5 });
 
@@ -122,10 +127,10 @@ const HeroScenery = () => {
   return (
     <div ref={containerRef} className="absolute inset-0 overflow-hidden pointer-events-auto z-0">
       {/* Sky */}
-      <div className={`absolute inset-0 bg-gradient-to-br ${sky[time]} transition-colors duration-500`} />
+      <div className={`absolute inset-0 bg-gradient-to-br ${sky[time]} transition-colors duration-500`} style={{ transform: `translateY(${sc * 0.04}px)` }} />
 
       {/* === Rolling hills / terrain at bottom === */}
-      <div className="absolute bottom-0 left-0 right-0 transition-transform duration-300 ease-out" style={{ transform: `translate(${px(0.08)}px, ${py(0.05)}px)` }}>
+      <div className="absolute bottom-0 left-0 right-0 transition-transform duration-300 ease-out" style={{ transform: `translate(${px(0.08)}px, ${py(0.05) + sc * -0.01}px)` }}>
         <svg viewBox="0 0 400 60" preserveAspectRatio="none" className={`w-full h-16 ${terrainColor[time]}`} fill="currentColor">
           <path d="M0,40 Q50,15 100,35 Q150,50 200,30 Q250,10 300,35 Q350,50 400,25 L400,60 L0,60Z" opacity="0.6" />
           <path d="M0,45 Q60,30 120,42 Q180,55 240,38 Q300,20 360,40 Q380,48 400,35 L400,60 L0,60Z" opacity="0.4" />
@@ -133,14 +138,14 @@ const HeroScenery = () => {
       </div>
 
       {/* === Distant mountain silhouettes === */}
-      <div className="absolute bottom-[8%] left-0 right-0 transition-transform duration-300 ease-out" style={{ transform: `translate(${px(0.05)}px, ${py(0.03)}px)` }}>
+      <div className="absolute bottom-[8%] left-0 right-0 transition-transform duration-300 ease-out" style={{ transform: `translate(${px(0.05)}px, ${py(0.03) + sc * -0.04}px)` }}>
         <svg viewBox="0 0 400 40" preserveAspectRatio="none" className={`w-full h-10 ${terrainColor[time]}`} fill="currentColor" opacity="0.3">
           <path d="M0,40 L40,25 L80,32 L130,12 L170,28 L220,8 L260,22 L310,15 L350,30 L400,18 L400,40Z" />
         </svg>
       </div>
 
       {/* === Scattered trees === */}
-      <div className="absolute bottom-[4%] left-0 right-0 transition-transform duration-200 ease-out" style={{ transform: `translate(${px(0.12)}px, ${py(0.08)}px)` }}>
+      <div className="absolute bottom-[4%] left-0 right-0 transition-transform duration-200 ease-out" style={{ transform: `translate(${px(0.12)}px, ${py(0.08) + sc * -0.02}px)` }}>
         {[
           { x: "8%", h: 18, delay: "0s" },
           { x: "22%", h: 14, delay: "0.5s" },
@@ -182,7 +187,7 @@ const HeroScenery = () => {
 
       {/* === DAWN === */}
       {time === "dawn" && (
-        <div className="absolute inset-0 transition-transform duration-300 ease-out" style={{ transform: `translate(${px(0.15)}px, ${py(0.1)}px)` }}>
+        <div className="absolute inset-0 transition-transform duration-300 ease-out" style={{ transform: `translate(${px(0.15)}px, ${py(0.1) + sc * -0.08}px)` }}>
           <div className="absolute bottom-[55%] right-[20%]" style={{ animation: "dawnRise 4s ease-out forwards" }}>
             <svg width="34" height="34" viewBox="0 0 30 30">
               <defs><radialGradient id="dawnSun"><stop offset="0%" stopColor="#FDE68A" stopOpacity="0.9" /><stop offset="100%" stopColor="#F59E0B" stopOpacity="0" /></radialGradient></defs>
