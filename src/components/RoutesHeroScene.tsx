@@ -111,9 +111,10 @@ const RoutesHeroScene = ({ mode = "rutas", scrollY = 0 }: Props) => {
             ))}
           </g>
         )}
+        </g>
 
-        {/* ── CLOUDS ── */}
-        <g opacity={isNight ? 0.12 : 0.32}>
+        {/* ── CLOUDS (parallax: fast) ── */}
+        <g opacity={isNight ? 0.12 : 0.32} style={{ transform: `translateY(${s * -0.08}px)` }}>
           <g className="rs-cloud1">
             <ellipse cx="0" cy="36" rx="30" ry="8" fill="white" opacity="0.5" />
             <ellipse cx="12" cy="33" rx="16" ry="6" fill="white" opacity="0.35" />
