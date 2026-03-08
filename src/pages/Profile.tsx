@@ -120,6 +120,8 @@ const Profile = () => {
       </ScrollHeader>
 
       <main className="max-w-lg mx-auto px-4 py-6 stagger-fade-up">
+        {/* Animated scene */}
+        <ProfileScene />
         <Card className="mb-6 shadow-soft">
           <CardContent className="p-6">
             <div className="flex items-start gap-4 mb-4">
