@@ -1,4 +1,5 @@
 import Navigation from "@/components/Navigation";
+import RoutesHeroScene from "@/components/RoutesHeroScene";
 import ScrollHeader from "@/components/ScrollHeader";
 import RouteCard from "@/components/RouteCard";
 import RouteFiltersDialog, { type RouteFilters } from "@/components/RouteFiltersDialog";
