@@ -219,25 +219,61 @@ const HeroScenery = ({ scrollY = 0 }: HeroSceneryProps) => {
         ))}
       </div>
 
-      {/* === Walking Hiker + Footprints + Campfire === */}
-      <div className="absolute bottom-[14%] left-0 right-0 h-10 z-[2]">
-        {/* Trail / ground line */}
-        <div className="absolute bottom-1 left-[5%] right-[5%] h-[2px] bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
-        
-        {/* Footprints trailing */}
-        <div className="absolute bottom-[6px] left-0 right-0 flex gap-3 opacity-15" style={{ animation: "hikerWalk 12s linear infinite" }}>
-          {[...Array(16)].map((_, i) => (
-            <div key={i} className="w-1.5 h-0.5 rounded-full bg-primary shrink-0" style={{ opacity: 1 - i * 0.05 }} />
+      {/* === Walking Hiker + Dog + Trail details + Campfire + Tent === */}
+      <div className="absolute bottom-[14%] left-0 right-0 h-14 z-[2]">
+        {/* Trail / ground line — dashed for path feel */}
+        <div className="absolute bottom-2 left-[5%] right-[5%] h-[2px] bg-gradient-to-r from-transparent via-primary/25 to-transparent" />
+        <div className="absolute bottom-[9px] left-[8%] right-[8%] flex gap-4 opacity-10">
+          {[...Array(20)].map((_, i) => (
+            <div key={i} className="w-2 h-[1px] bg-primary shrink-0 rounded-full" />
           ))}
         </div>
 
+        {/* Trail sign at start */}
+        <div className="absolute bottom-[2px] left-[4%]">
+          <TrailSign />
+        </div>
+
+        {/* Flowers along the trail */}
+        {[{ left: "15%", delay: "0s" }, { left: "32%", delay: "1s" }, { left: "52%", delay: "0.5s" }, { left: "72%", delay: "1.5s" }].map((f, i) => (
+          <div key={i} className="absolute bottom-[2px]" style={{ left: f.left, animation: `treeBreeze 3s ease-in-out ${f.delay} infinite` }}>
+            <FlowerCluster variant={i} />
+          </div>
+        ))}
+
+        {/* Small rocks along path */}
+        {["20%", "40%", "60%", "78%"].map((x, i) => (
+          <div key={i} className="absolute bottom-[4px]" style={{ left: x }}>
+            <svg width="6" height="4" viewBox="0 0 8 5" fill="none" className="text-primary" opacity="0.15">
+              <ellipse cx="4" cy="3" rx="3.5" ry="2" fill="currentColor" />
+            </svg>
+          </div>
+        ))}
+
+        {/* Footprints trailing behind hiker */}
+        <div className="absolute bottom-[8px] left-0 right-0 flex gap-3 opacity-10" style={{ animation: "hikerWalk 14s linear infinite" }}>
+          {[...Array(18)].map((_, i) => (
+            <div key={i} className="shrink-0" style={{ opacity: Math.max(0, 1 - i * 0.06) }}>
+              <svg width="4" height="3" viewBox="0 0 6 4" fill="none" className="text-primary">
+                <ellipse cx="3" cy="2" rx="2.5" ry="1.5" fill="currentColor" opacity={i % 2 === 0 ? "0.5" : "0.3"} />
+              </svg>
+            </div>
+          ))}
+        </div>
+
+        {/* Companion dog — slightly ahead of hiker */}
+        <div className="absolute bottom-[4px]" style={{ animation: "dogWalk 14s linear infinite" }}>
+          <CompanionDog />
+        </div>
+
         {/* Hiker walking */}
-        <div className="absolute bottom-[4px]" style={{ animation: "hikerWalk 12s linear infinite" }}>
+        <div className="absolute bottom-[2px]" style={{ animation: "hikerWalk 14s linear infinite" }}>
           <WalkingHiker rainy={weather === "rainy"} />
         </div>
 
-        {/* Campfire at destination */}
-        <div className="absolute bottom-[4px] right-[8%]">
+        {/* Destination area — tent + campfire */}
+        <div className="absolute bottom-[2px] right-[5%] flex items-end gap-1">
+          <DestinationTent />
           <Campfire />
         </div>
       </div>
