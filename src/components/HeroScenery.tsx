@@ -60,13 +60,7 @@ const HeroScenery = () => {
     night: "from-indigo-900/30 via-slate-800/25 to-emerald-900/20 dark:from-indigo-950/40 dark:via-slate-900/30 dark:to-emerald-950/25",
   };
 
-  const hillColors: Record<TimeSlot, [string, string]> = {
-    dawn: ["fill-emerald-700/20 dark:fill-emerald-900/30", "fill-emerald-600/15 dark:fill-emerald-800/25"],
-    morning: ["fill-emerald-700/15 dark:fill-emerald-900/25", "fill-emerald-600/10 dark:fill-emerald-800/20"],
-    afternoon: ["fill-emerald-700/18 dark:fill-emerald-900/28", "fill-emerald-600/12 dark:fill-emerald-800/22"],
-    sunset: ["fill-orange-800/20 dark:fill-orange-950/30", "fill-amber-700/15 dark:fill-amber-900/25"],
-    night: ["fill-emerald-900/30 dark:fill-emerald-950/40", "fill-emerald-800/25 dark:fill-emerald-900/35"],
-  };
+  // Removed hills — scenery is sky-only to not overlap text
 
   return (
     <div ref={containerRef} className="absolute inset-0 overflow-hidden pointer-events-auto z-0">
@@ -224,16 +218,9 @@ const HeroScenery = () => {
         </div>
       )}
 
-      {/* === Hills — pushed down so they don't overlap text === */}
-      <svg
-        className="absolute bottom-0 left-0 right-0 w-full transition-transform duration-500 ease-out"
-        viewBox="0 0 400 40"
-        preserveAspectRatio="none"
-        style={{ height: "25%", transform: `translate(${px(0.05)}px, ${py(0.03)}px)` }}
-      >
-        <path d="M0,40 L0,25 Q50,10 100,22 Q150,6 200,18 Q250,4 300,20 Q350,8 400,22 L400,40 Z" className={hillColors[time][0]} />
-        <path d="M0,40 L0,30 Q60,18 120,28 Q180,14 240,25 Q300,12 360,24 L400,28 L400,40 Z" className={hillColors[time][1]} />
-      </svg>
+
+      {/* Soft bottom fade — blends into content below */}
+      <div className="absolute bottom-0 left-0 right-0 h-8 bg-gradient-to-t from-background/80 to-transparent" />
 
       {/* Keyframes */}
       <style>{`
