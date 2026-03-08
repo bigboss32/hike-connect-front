@@ -6,8 +6,8 @@
 const CampfireScene = () => {
   return (
     <div className="relative w-full overflow-hidden rounded-b-2xl" style={{ height: 200 }}>
-      {/* Sky gradient */}
-      <div className="absolute inset-0 bg-gradient-to-b from-indigo-950/40 via-slate-900/30 to-background" />
+      {/* Sky gradient — warm sunset in light, dark night in dark mode */}
+      <div className="absolute inset-0 bg-gradient-to-b from-orange-300/40 via-amber-200/25 to-background dark:from-indigo-950/40 dark:via-slate-900/30 dark:to-background" />
 
       <svg viewBox="0 0 400 160" preserveAspectRatio="xMidYMax slice"
         className="absolute inset-0 w-full h-full" aria-hidden="true">
