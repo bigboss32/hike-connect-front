@@ -84,7 +84,8 @@ const RoutesHeroScene = ({ mode = "rutas", scrollY = 0 }: Props) => {
           </radialGradient>
         </defs>
 
-        {/* ── CELESTIAL ── */}
+        {/* ── CELESTIAL (parallax: fastest) ── */}
+        <g style={{ transform: `translateY(${s * -0.12}px)` }}>
         {isNight ? (
           <g>
             <circle cx="320" cy="28" r="14" fill="#E2E8F0" opacity="0.12" />
