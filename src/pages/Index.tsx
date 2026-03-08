@@ -24,6 +24,13 @@ const Index = () => {
   const greeting = getGreeting();
   const firstName = user?.name?.split(' ')[0] || 'Aventurero';
   const [refreshKey, setRefreshKey] = useState(0);
+  const [scrollY, setScrollY] = useState(0);
+
+  useEffect(() => {
+    const onScroll = () => setScrollY(window.scrollY);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   const handleRefresh = useCallback(async () => {
     await fetchProfile();
