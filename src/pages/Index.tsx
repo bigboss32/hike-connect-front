@@ -56,7 +56,7 @@ const Index = () => {
 
       {/* Extended hero zone — scenery covers greeting + bookings */}
       <div className="relative bg-gradient-to-br from-primary/15 via-background to-accent/10 overflow-hidden">
-        <HeroScenery />
+        <HeroScenery scrollY={scrollY} />
 
         {/* Greeting text */}
         <div className="relative z-10 pt-8 pb-4 px-4">
