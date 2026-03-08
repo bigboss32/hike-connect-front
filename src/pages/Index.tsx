@@ -47,29 +47,40 @@ const Index = () => {
         </div>
       )}
 
-      {/* Hero greeting */}
-      <div className="relative bg-gradient-to-br from-primary/15 via-background to-accent/10 pt-8 pb-6 px-4 overflow-hidden">
+      {/* Extended hero zone — scenery covers greeting + bookings */}
+      <div className="relative bg-gradient-to-br from-primary/15 via-background to-accent/10 overflow-hidden">
         <HeroScenery />
-        <div className="max-w-lg mx-auto relative z-10">
-          <p className="text-sm text-muted-foreground mb-1 animate-fade-in flex items-center gap-1.5">
-            <span>{greeting.emoji}</span>
-            {greeting.text}
-          </p>
-          <h1 className="text-2xl font-bold text-foreground animate-fade-in" style={{ animationDelay: '50ms' }}>
-            {firstName}
-          </h1>
-          <p className="text-sm text-muted-foreground mt-1 animate-fade-in" style={{ animationDelay: '100ms' }}>
-            ¿Listo para tu próxima aventura?
-          </p>
+
+        {/* Greeting text */}
+        <div className="relative z-10 pt-8 pb-4 px-4">
+          <div className="max-w-lg mx-auto">
+            <p className="text-sm text-muted-foreground mb-1 animate-fade-in flex items-center gap-1.5">
+              <span>{greeting.emoji}</span>
+              {greeting.text}
+            </p>
+            <h1 className="text-2xl font-bold text-foreground animate-fade-in" style={{ animationDelay: '50ms' }}>
+              {firstName}
+            </h1>
+            <p className="text-sm text-muted-foreground mt-1 animate-fade-in" style={{ animationDelay: '100ms' }}>
+              ¿Listo para tu próxima aventura?
+            </p>
+          </div>
         </div>
+
+        {/* Bookings inside the hero zone */}
+        <div className="relative z-10 px-4 pb-5">
+          <div className="max-w-lg mx-auto">
+            <section className="animate-fade-in" style={{ animationDelay: '150ms' }}>
+              <MyBookingsSection key={refreshKey} />
+            </section>
+          </div>
+        </div>
+
+        {/* Bottom fade into normal background */}
+        <div className="absolute bottom-0 left-0 right-0 h-6 bg-gradient-to-t from-background to-transparent z-[5]" />
       </div>
 
       <main className="max-w-lg mx-auto px-4 mt-2 space-y-5 relative z-10">
-
-        {/* Próximas Reservas — ahora primero, más visible */}
-        <section className="animate-fade-in" style={{ animationDelay: '150ms' }}>
-          <MyBookingsSection key={refreshKey} />
-        </section>
 
         {/* User Stats */}
         <section className="animate-fade-in" style={{ animationDelay: '200ms' }}>
