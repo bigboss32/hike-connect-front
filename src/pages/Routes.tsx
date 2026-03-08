@@ -129,9 +129,15 @@ const Routes = () => {
 
   return (
     <div className="min-h-screen bg-background pb-20">
-      <ScrollHeader className="bg-card border-b border-border shadow-soft safe-top">
-        <div className="max-w-lg mx-auto px-4 py-4">
-          <h1 className="text-2xl font-bold text-foreground mb-4">Explorar Rutas</h1>
+      {/* Hero scene */}
+      <div className="relative">
+        <RoutesHeroScene />
+        <div className="absolute bottom-0 left-0 right-0 h-10 bg-gradient-to-t from-background to-transparent" />
+      </div>
+
+      <ScrollHeader className="bg-card border-b border-border shadow-soft">
+        <div className="max-w-lg mx-auto px-4 py-3">
+          <h1 className="text-2xl font-bold text-foreground mb-3">Explorar Rutas</h1>
           <div className="flex gap-2">
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
