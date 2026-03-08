@@ -219,7 +219,35 @@ const HeroScenery = () => {
       )}
 
 
-      {/* Soft bottom fade — blends into content below */}
+      {/* Floating particles — drift downward to connect with content below */}
+      <div className="absolute inset-0 transition-transform duration-200 ease-out" style={{ transform: `translate(${px(0.2)}px, ${py(0.15)}px)` }}>
+        {[
+          { x: "10%", dur: "6s", delay: "0s", size: 3 },
+          { x: "25%", dur: "8s", delay: "1s", size: 2 },
+          { x: "42%", dur: "7s", delay: "2.5s", size: 2.5 },
+          { x: "58%", dur: "9s", delay: "0.5s", size: 2 },
+          { x: "72%", dur: "6.5s", delay: "3s", size: 3 },
+          { x: "88%", dur: "7.5s", delay: "1.5s", size: 2 },
+        ].map((p, i) => (
+          <div
+            key={i}
+            className={`absolute rounded-full ${
+              time === "night" ? "bg-indigo-300/30" :
+              time === "sunset" ? "bg-orange-300/25" :
+              time === "dawn" ? "bg-rose-300/25" :
+              "bg-primary/15"
+            }`}
+            style={{
+              left: p.x,
+              width: p.size,
+              height: p.size,
+              animation: `particleDrift ${p.dur} ease-in-out ${p.delay} infinite`,
+            }}
+          />
+        ))}
+      </div>
+
+      {/* Soft bottom fade */}
       <div className="absolute bottom-0 left-0 right-0 h-8 bg-gradient-to-t from-background/80 to-transparent" />
 
       {/* Keyframes */}
