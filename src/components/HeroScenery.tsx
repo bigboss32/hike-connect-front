@@ -11,7 +11,7 @@ const getTimeSlot = (): TimeSlot => {
   if (hour >= 5 && hour < 7) return "dawn";
   if (hour >= 7 && hour < 12) return "morning";
   if (hour >= 12 && hour < 17) return "afternoon";
-  if (hour >= 17 && hour < 20) return "sunset";
+  if (hour >= 17 && hour < 18) return "sunset";
   return "night";
 };
 
@@ -324,7 +324,7 @@ const HeroScenery = ({ scrollY = 0 }: HeroSceneryProps) => {
       </div>
 
       {/* Trail Scene — hiker, dog, campfire */}
-      <div className="absolute bottom-[6%] left-0 right-0 h-20 z-[2] opacity-80">
+      <div className="absolute bottom-[8%] left-0 right-0 h-28 z-[2]">
         <TrailScene rainy={weather === "rainy"} time={time} />
       </div>
 
