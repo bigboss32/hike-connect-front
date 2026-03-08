@@ -120,16 +120,19 @@ const Profile = () => {
       </ScrollHeader>
 
       <main className="max-w-lg mx-auto px-4 py-6 stagger-fade-up">
-        {/* Animated scene */}
-        <ProfileScene />
-        <Card className="mb-6 shadow-soft">
-          <CardContent className="p-6">
+        {/* Profile card with integrated scene */}
+        <Card className="mb-6 shadow-soft overflow-hidden">
+          {/* Scene as card banner */}
+          <ProfileScene />
+          
+          {/* Profile info overlapping the scene */}
+          <CardContent className="p-6 -mt-10 relative z-10">
             <div className="flex items-start gap-4 mb-4">
-              <Avatar className="w-20 h-20 animate-avatar-entrance">
+              <Avatar className="w-20 h-20 animate-avatar-entrance ring-4 ring-card shadow-lg">
                 <AvatarImage src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${user.email}`} />
                 <AvatarFallback>{getInitials(user.name)}</AvatarFallback>
               </Avatar>
-              <div className="flex-1">
+              <div className="flex-1 pt-2">
                 <h2 className="text-xl font-bold text-foreground">{user.name}</h2>
                 <p className="text-muted-foreground text-sm mb-2">{user.email}</p>
                 <Badge variant="secondary">
