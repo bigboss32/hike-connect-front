@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import ScrollHeader from "@/components/ScrollHeader";
+import ProfileScene from "@/components/ProfileScene";
 import { Link } from "react-router-dom";
 import Navigation from "@/components/Navigation";
 import { Card, CardContent } from "@/components/ui/card";
@@ -119,6 +120,8 @@ const Profile = () => {
       </ScrollHeader>
 
       <main className="max-w-lg mx-auto px-4 py-6 stagger-fade-up">
+        {/* Animated scene */}
+        <ProfileScene />
         <Card className="mb-6 shadow-soft">
           <CardContent className="p-6">
             <div className="flex items-start gap-4 mb-4">
