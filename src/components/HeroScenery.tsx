@@ -138,7 +138,7 @@ const HeroScenery = ({ scrollY = 0 }: HeroSceneryProps) => {
       </div>
 
       {/* === Distant mountain silhouettes === */}
-      <div className="absolute bottom-[8%] left-0 right-0 transition-transform duration-300 ease-out" style={{ transform: `translate(${px(0.05)}px, ${py(0.03)}px)` }}>
+      <div className="absolute bottom-[8%] left-0 right-0 transition-transform duration-300 ease-out" style={{ transform: `translate(${px(0.05)}px, ${py(0.03) + sc * -0.04}px)` }}>
         <svg viewBox="0 0 400 40" preserveAspectRatio="none" className={`w-full h-10 ${terrainColor[time]}`} fill="currentColor" opacity="0.3">
           <path d="M0,40 L40,25 L80,32 L130,12 L170,28 L220,8 L260,22 L310,15 L350,30 L400,18 L400,40Z" />
         </svg>
