@@ -526,6 +526,7 @@ const HeroScenery = () => {
         @keyframes shootingStar { 0% { top: 5%; left: 80%; opacity: 0; } 2% { opacity: 0.9; } 5% { top: 20%; left: 40%; opacity: 0; } 100% { top: 20%; left: 40%; opacity: 0; } }
         @keyframes auroraShift { 0%, 100% { transform: translateX(0); opacity: 0.06; } 50% { transform: translateX(20px); opacity: 0.1; } }
         @keyframes leafSpin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        @keyframes rainFall { 0% { top: -3%; opacity: 0; } 10% { opacity: 0.7; } 90% { opacity: 0.5; } 100% { top: 100%; opacity: 0; } }
       `}</style>
     </div>
   );
