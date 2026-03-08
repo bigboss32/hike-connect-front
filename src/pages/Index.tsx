@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import Navigation from "@/components/Navigation";
 import HeroScenery from "@/components/HeroScenery";
 import FeaturedRoutesCarousel from "@/components/FeaturedRoutesCarousel";
