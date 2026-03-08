@@ -38,6 +38,7 @@ const TrailScene = ({ rainy = false, time = "morning" as TimeSlot }: { rainy?: b
     night: { ground: "#6366F1", bush: "#065F46", bushAlt: "#064E3B", flower: "#818CF8" },
   };
   const c = trailColors[time];
+  return (
   <svg viewBox="0 0 400 100" preserveAspectRatio="xMidYMax slice" className="w-full h-full" fill="none">
     {/* Ground line */}
     <line x1="10" y1="90" x2="390" y2="90" stroke="currentColor" className="text-primary" strokeWidth="0.8" opacity="0.12" />
