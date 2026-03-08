@@ -44,7 +44,7 @@ const RoutesHeroScene = ({ mode = "rutas", scrollY = 0 }: Props) => {
 
   return (
     <div className="absolute inset-0 overflow-hidden z-0">
-      <div className={`absolute inset-0 bg-gradient-to-br ${sky[time]} transition-colors duration-700`} />
+      <div className={`absolute inset-0 bg-gradient-to-br ${sky[time]} transition-colors duration-700`} style={{ transform: `translateY(${s * 0.05}px)` }} />
 
       <svg viewBox="0 0 400 200" preserveAspectRatio="xMidYMax slice"
         className="absolute inset-0 w-full h-full" aria-hidden="true">
