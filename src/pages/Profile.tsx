@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import ScrollHeader from "@/components/ScrollHeader";
+import ProfileScene from "@/components/ProfileScene";
 import { Link } from "react-router-dom";
 import Navigation from "@/components/Navigation";
 import { Card, CardContent } from "@/components/ui/card";
