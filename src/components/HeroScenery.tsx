@@ -20,7 +20,7 @@ const getTimeSlot = (): TimeSlot => {
  * Everything shares the same coordinate system so alignment is perfect.
  */
 const TrailScene = ({ rainy = false }: { rainy?: boolean }) => (
-  <svg viewBox="0 0 400 65" preserveAspectRatio="xMidYMax slice" className="w-full h-full" fill="none">
+  <svg viewBox="0 0 400 100" preserveAspectRatio="xMidYMax slice" className="w-full h-full" fill="none">
     {/* Ground line */}
     <line x1="10" y1="55" x2="390" y2="55" stroke="currentColor" className="text-primary" strokeWidth="0.8" opacity="0.12" />
     <line x1="20" y1="55" x2="380" y2="55" stroke="currentColor" className="text-primary" strokeWidth="0.4" opacity="0.08" strokeDasharray="4 3" />
