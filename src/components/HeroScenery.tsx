@@ -305,7 +305,7 @@ const HeroScenery = ({ scrollY = 0 }: HeroSceneryProps) => {
       </div>
 
       {/* Trail Scene — hiker, dog, campfire, all aligned in one SVG */}
-      <div className="absolute bottom-[2%] left-0 right-0 h-28 z-[2]">
+      <div className="absolute bottom-[14%] left-0 right-0 h-16 z-[2]">
         <TrailScene rainy={weather === "rainy"} />
       </div>
 
