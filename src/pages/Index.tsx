@@ -77,7 +77,7 @@ const Index = () => {
         </div>
 
         {/* Smooth gradient transition from hero to content */}
-        <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-background via-background/70 to-transparent z-[5]" />
+        <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-background via-background/50 to-transparent z-[5]" />
       </div>
 
       <main className="max-w-lg mx-auto px-4 -mt-16 relative z-10 space-y-5">
