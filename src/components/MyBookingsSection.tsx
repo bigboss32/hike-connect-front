@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Ticket, CalendarDays, Users, ChevronRight, MessageCircle } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
@@ -31,152 +30,272 @@ const formatCOP = (amount: string) => {
   }).format(num);
 };
 
-const WalkingHiker = () => (
-  <div className="relative w-full h-14 overflow-hidden my-2 rounded-xl bg-gradient-to-r from-accent/5 via-primary/5 to-accent/5">
-    {/* Sky gradient that shifts with day/night cycle */}
-    <div className="absolute inset-0 animate-dayNight rounded-xl z-0" />
+type BannerScene = "forest" | "desert" | "snowy" | "beach" | "classic";
+const BANNER_SCENES: BannerScene[] = ["forest", "desert", "snowy", "beach", "classic"];
 
-    {/* Stars - appear at night (behind everything) */}
-    <div className="absolute inset-0 animate-starsAppear z-[1]">
-      <div className="absolute top-1 left-[15%] w-1 h-1 bg-foreground/30 rounded-full" />
-      <div className="absolute top-2 left-[35%] w-0.5 h-0.5 bg-foreground/20 rounded-full" />
-      <div className="absolute top-1.5 right-[25%] w-1 h-1 bg-foreground/25 rounded-full" />
-      <div className="absolute top-3 right-[40%] w-0.5 h-0.5 bg-foreground/20 rounded-full" />
-    </div>
+const WalkingHiker = () => {
+  const [scene] = useState<BannerScene>(() => BANNER_SCENES[Math.floor(Math.random() * BANNER_SCENES.length)]);
 
-    {/* Sun - BEHIND mountains (z-[2]) */}
-    <div className="absolute animate-celestial z-[2]">
-      <svg width="16" height="16" viewBox="0 0 16 16">
-        <circle cx="8" cy="8" r="5" fill="#F59E0B" opacity="0.9"/>
-        <g opacity="0.5" stroke="#F59E0B" strokeWidth="1.5" strokeLinecap="round">
-          <line x1="8" y1="0" x2="8" y2="2"/>
-          <line x1="8" y1="14" x2="8" y2="16"/>
-          <line x1="0" y1="8" x2="2" y2="8"/>
-          <line x1="14" y1="8" x2="16" y2="8"/>
-          <line x1="2.3" y1="2.3" x2="3.7" y2="3.7"/>
-          <line x1="12.3" y1="12.3" x2="13.7" y2="13.7"/>
-          <line x1="2.3" y1="13.7" x2="3.7" y2="12.3"/>
-          <line x1="12.3" y1="3.7" x2="13.7" y2="2.3"/>
-        </g>
+  const bgGradient: Record<BannerScene, string> = {
+    classic: "from-accent/5 via-primary/5 to-accent/5",
+    forest: "from-emerald-500/10 via-emerald-700/8 to-emerald-500/10",
+    desert: "from-amber-400/10 via-orange-300/8 to-amber-400/10",
+    snowy: "from-sky-200/15 via-slate-200/10 to-sky-200/15",
+    beach: "from-cyan-400/10 via-sky-300/8 to-cyan-400/10",
+  };
+
+  const mountainClass: Record<BannerScene, [string, string]> = {
+    classic: ["text-primary", "text-accent"],
+    forest: ["text-emerald-700", "text-emerald-600"],
+    desert: ["text-amber-700", "text-orange-600"],
+    snowy: ["text-slate-400", "text-slate-300"],
+    beach: ["text-cyan-700", "text-sky-600"],
+  };
+
+  const treeColor: Record<BannerScene, string> = {
+    classic: "text-primary",
+    forest: "text-emerald-600",
+    desert: "text-amber-600",
+    snowy: "text-slate-300",
+    beach: "text-cyan-600",
+  };
+
+  return (
+    <div className={`relative w-full h-14 overflow-hidden my-2 rounded-xl bg-gradient-to-r ${bgGradient[scene]}`}>
+      {/* Sky day/night cycle */}
+      <div className="absolute inset-0 animate-dayNight rounded-xl z-0" />
+
+      {/* Stars */}
+      <div className="absolute inset-0 animate-starsAppear z-[1]">
+        <div className="absolute top-1 left-[15%] w-1 h-1 bg-foreground/30 rounded-full" />
+        <div className="absolute top-2 left-[35%] w-0.5 h-0.5 bg-foreground/20 rounded-full" />
+        <div className="absolute top-1.5 right-[25%] w-1 h-1 bg-foreground/25 rounded-full" />
+        <div className="absolute top-3 right-[40%] w-0.5 h-0.5 bg-foreground/20 rounded-full" />
+      </div>
+
+      {/* Sun */}
+      <div className="absolute animate-celestial z-[2]">
+        <svg width="16" height="16" viewBox="0 0 16 16">
+          <circle cx="8" cy="8" r="5" fill={scene === "desert" ? "#F97316" : scene === "snowy" ? "#94A3B8" : "#F59E0B"} opacity="0.9" />
+          <g opacity="0.5" stroke={scene === "desert" ? "#F97316" : "#F59E0B"} strokeWidth="1.5" strokeLinecap="round">
+            <line x1="8" y1="0" x2="8" y2="2" /><line x1="8" y1="14" x2="8" y2="16" />
+            <line x1="0" y1="8" x2="2" y2="8" /><line x1="14" y1="8" x2="16" y2="8" />
+          </g>
+        </svg>
+      </div>
+
+      {/* Moon */}
+      <div className="absolute animate-celestialMoon z-[2]">
+        <svg width="14" height="14" viewBox="0 0 14 14">
+          <path d="M10 1a6 6 0 1 0 0 12 5 5 0 0 1 0-12z" fill="#CBD5E1" opacity="0.9" />
+        </svg>
+      </div>
+
+      {/* Mountains */}
+      <svg className="absolute bottom-0 left-0 right-0 z-[3]" viewBox="0 0 320 30" preserveAspectRatio="none" style={{ height: "60%" }}>
+        <polygon points="0,30 20,10 45,20 70,5 100,18 130,8 160,22 190,6 220,15 250,3 280,18 310,8 320,30" className="fill-card" />
+        <polygon points="0,30 20,10 45,20 70,5 100,18 130,8 160,22 190,6 220,15 250,3 280,18 310,8 320,30" fill="currentColor" className={mountainClass[scene][0]} opacity="0.15" />
+        <polygon points="0,30 30,15 60,25 90,12 120,20 150,10 180,24 210,14 240,22 270,8 300,20 320,30" fill="currentColor" className={mountainClass[scene][1]} opacity="0.1" />
       </svg>
+
+      {/* === FOREST === */}
+      {scene === "forest" && (
+        <>
+          <svg className="absolute bottom-0 left-[20%] opacity-25 z-[4]" width="10" height="16" viewBox="0 0 10 16">
+            <polygon points="5,0 10,12 0,12" fill="currentColor" className="text-emerald-700" />
+            <rect x="4" y="12" width="2" height="4" fill="currentColor" className="text-emerald-700" opacity="0.7" />
+          </svg>
+          <svg className="absolute bottom-0 left-[35%] opacity-20 z-[4]" width="8" height="13" viewBox="0 0 8 13">
+            <polygon points="4,0 8,10 0,10" fill="currentColor" className="text-emerald-600" />
+            <rect x="3" y="10" width="2" height="3" fill="currentColor" className="text-emerald-600" opacity="0.7" />
+          </svg>
+          {/* Mushroom */}
+          <svg className="absolute bottom-[2px] left-[42%] z-[5] opacity-40" width="6" height="6" viewBox="0 0 8 8">
+            <ellipse cx="4" cy="3" rx="4" ry="3" fill="#DC2626" />
+            <rect x="3" y="5" width="2" height="3" rx="0.5" fill="#FDE68A" />
+            <circle cx="2.5" cy="2.5" r="0.8" fill="white" opacity="0.6" />
+          </svg>
+          {/* Butterfly */}
+          <div className="absolute z-[5]" style={{ top: "20%", left: "30%", animation: "butterflyBanner 5s ease-in-out infinite" }}>
+            <svg width="8" height="6" viewBox="0 0 14 10" opacity="0.5">
+              <ellipse cx="4" cy="5" rx="3" ry="3" fill="#A78BFA"><animate attributeName="rx" values="3;1;3" dur="0.35s" repeatCount="indefinite" /></ellipse>
+              <ellipse cx="10" cy="5" rx="3" ry="3" fill="#A78BFA"><animate attributeName="rx" values="3;1;3" dur="0.35s" repeatCount="indefinite" /></ellipse>
+            </svg>
+          </div>
+        </>
+      )}
+
+      {/* === DESERT === */}
+      {scene === "desert" && (
+        <>
+          {/* Cacti */}
+          <svg className="absolute bottom-0 left-[15%] opacity-30 z-[4]" width="8" height="18" viewBox="0 0 10 22">
+            <rect x="4" y="4" width="2.5" height="18" rx="1" fill="#16A34A" />
+            <rect x="0" y="8" width="4" height="2" rx="1" fill="#16A34A" />
+            <rect x="0" y="5" width="2" height="5" rx="1" fill="#16A34A" />
+            <rect x="6.5" y="10" width="4" height="2" rx="1" fill="#16A34A" />
+            <rect x="8.5" y="7" width="2" height="5" rx="1" fill="#16A34A" />
+          </svg>
+          <svg className="absolute bottom-0 left-[60%] opacity-25 z-[4]" width="6" height="14" viewBox="0 0 8 18">
+            <rect x="3" y="2" width="2" height="16" rx="1" fill="#16A34A" />
+            <rect x="0" y="6" width="3" height="2" rx="1" fill="#16A34A" />
+          </svg>
+          {/* Tumbleweed */}
+          <div className="absolute bottom-[3px] z-[5]" style={{ animation: "tumbleweed 8s linear 2s infinite" }}>
+            <svg width="8" height="8" viewBox="0 0 10 10" opacity="0.3">
+              <circle cx="5" cy="5" r="4" fill="none" stroke="#92400E" strokeWidth="0.8" />
+              <line x1="2" y1="3" x2="8" y2="7" stroke="#92400E" strokeWidth="0.5" />
+            </svg>
+          </div>
+          {/* Heat shimmer */}
+          <div className="absolute bottom-[5px] left-0 right-0 h-2 z-[4] opacity-20" style={{ animation: "heatShimmer 3s ease-in-out infinite" }}>
+            <div className="w-full h-full bg-gradient-to-r from-transparent via-orange-300/40 to-transparent" />
+          </div>
+        </>
+      )}
+
+      {/* === SNOWY === */}
+      {scene === "snowy" && (
+        <>
+          {[...Array(10)].map((_, i) => (
+            <div key={i} className="absolute w-1 h-1 bg-white/60 rounded-full z-[5]" style={{ left: `${8 + (i * 9.5) % 85}%`, animation: `snowfall ${2 + (i % 3)}s linear ${(i * 0.3) % 1.5}s infinite` }} />
+          ))}
+          <div className="absolute bottom-0 left-0 right-0 h-[4px] bg-gradient-to-r from-white/30 via-white/50 to-white/30 z-[7] rounded-b-xl" />
+          {/* Snowman */}
+          <svg className="absolute bottom-[2px] left-[45%] z-[5] opacity-35" width="10" height="14" viewBox="0 0 12 18">
+            <circle cx="6" cy="14" r="4" fill="white" />
+            <circle cx="6" cy="8" r="3" fill="white" />
+            <circle cx="6" cy="3.5" r="2.5" fill="white" />
+            <circle cx="5" cy="3" r="0.5" fill="#1e293b" />
+            <circle cx="7" cy="3" r="0.5" fill="#1e293b" />
+            <line x1="4" y1="4.5" x2="7.5" y2="4.5" stroke="#F97316" strokeWidth="0.8" />
+          </svg>
+        </>
+      )}
+
+      {/* === BEACH === */}
+      {scene === "beach" && (
+        <>
+          {/* Waves */}
+          <svg className="absolute bottom-0 left-0 right-0 z-[5] opacity-30" viewBox="0 0 320 10" preserveAspectRatio="none" style={{ height: "6px" }}>
+            <path d="M0,8 Q20,2 40,8 Q60,2 80,8 Q100,2 120,8 Q140,2 160,8 Q180,2 200,8 Q220,2 240,8 Q260,2 280,8 Q300,2 320,8" fill="none" stroke="#0EA5E9" strokeWidth="1.5">
+              <animate attributeName="d" values="M0,8 Q20,2 40,8 Q60,2 80,8 Q100,2 120,8 Q140,2 160,8 Q180,2 200,8 Q220,2 240,8 Q260,2 80,8 Q300,2 320,8;M0,6 Q20,10 40,6 Q60,10 80,6 Q100,10 120,6 Q140,10 160,6 Q180,10 200,6 Q220,10 240,6 Q260,10 280,6 Q300,10 320,6;M0,8 Q20,2 40,8 Q60,2 80,8 Q100,2 120,8 Q140,2 160,8 Q180,2 200,8 Q220,2 240,8 Q260,2 280,8 Q300,2 320,8" dur="2s" repeatCount="indefinite" />
+            </path>
+          </svg>
+          {/* Palm tree */}
+          <svg className="absolute bottom-0 left-[75%] z-[4] opacity-25" width="16" height="22" viewBox="0 0 20 28">
+            <rect x="9" y="10" width="2" height="18" rx="1" fill="#92400E" />
+            <path d="M10,10 Q4,6 0,8" fill="none" stroke="#16A34A" strokeWidth="2" strokeLinecap="round" />
+            <path d="M10,10 Q16,6 20,8" fill="none" stroke="#16A34A" strokeWidth="2" strokeLinecap="round" />
+            <path d="M10,10 Q7,2 3,4" fill="none" stroke="#22C55E" strokeWidth="1.5" strokeLinecap="round" />
+            <path d="M10,10 Q13,2 17,4" fill="none" stroke="#22C55E" strokeWidth="1.5" strokeLinecap="round" />
+          </svg>
+          {/* Seagull */}
+          <div className="absolute z-[5]" style={{ top: "15%", animation: "seagullFly 9s linear 1s infinite" }}>
+            <svg width="10" height="5" viewBox="0 0 20 10" className="text-foreground/25">
+              <path d="M0,6 Q5,0 10,5 Q15,0 20,6" fill="none" stroke="currentColor" strokeWidth="1.5" />
+            </svg>
+          </div>
+        </>
+      )}
+
+      {/* Default trees (classic/forest) */}
+      {![ "desert", "beach", "snowy"].includes(scene) && (
+        <>
+          <svg className="absolute bottom-0 left-[10%] opacity-20 z-[4]" width="12" height="18" viewBox="0 0 12 18">
+            <polygon points="6,0 12,14 0,14" fill="currentColor" className={treeColor[scene]} />
+            <rect x="5" y="14" width="2" height="4" fill="currentColor" className={treeColor[scene]} opacity="0.7" />
+          </svg>
+          <svg className="absolute bottom-0 left-[50%] opacity-15 z-[4]" width="10" height="14" viewBox="0 0 10 14">
+            <polygon points="5,0 10,11 0,11" fill="currentColor" className={treeColor[scene]} />
+            <rect x="4" y="11" width="2" height="3" fill="currentColor" className={treeColor[scene]} opacity="0.7" />
+          </svg>
+          <svg className="absolute bottom-0 right-[15%] opacity-20 z-[4]" width="14" height="20" viewBox="0 0 14 20">
+            <polygon points="7,0 14,16 0,16" fill="currentColor" className={treeColor[scene]} />
+            <rect x="6" y="16" width="2" height="4" fill="currentColor" className={treeColor[scene]} opacity="0.7" />
+          </svg>
+        </>
+      )}
+
+      {/* Clouds */}
+      <div className="absolute inset-0 z-[2] animate-cloudsHide">
+        <svg className="absolute animate-cloudDrift1" style={{ top: "8%", left: "0" }} width="36" height="12" viewBox="0 0 36 12" opacity="0.25">
+          <ellipse cx="18" cy="8" rx="18" ry="5" fill="currentColor" className="text-foreground" />
+          <ellipse cx="12" cy="6" rx="10" ry="5" fill="currentColor" className="text-foreground" />
+          <ellipse cx="24" cy="5" rx="8" ry="4" fill="currentColor" className="text-foreground" />
+        </svg>
+      </div>
+
+      {/* Rain */}
+      <div className="absolute inset-0 z-[5] animate-rainAppear pointer-events-none">
+        {[...Array(18)].map((_, i) => (
+          <div key={i} className="absolute w-[1px] bg-primary/30 animate-rainDrop" style={{ left: `${5 + (i * 5.2) % 90}%`, height: `${6 + (i % 3) * 3}px`, animationDelay: `${(i * 0.15) % 1.2}s`, animationDuration: `${0.5 + (i % 3) * 0.15}s` }} />
+        ))}
+      </div>
+
+      {/* Campfire */}
+      <div className="absolute bottom-[2px] right-[5%] z-[6]">
+        <svg width="16" height="20" viewBox="0 0 16 20" fill="none">
+          <rect x="2" y="16" width="12" height="2" rx="1" fill="currentColor" className="text-primary" opacity="0.4" />
+          <rect x="4" y="14.5" width="8" height="2" rx="1" fill="currentColor" className="text-primary" opacity="0.3" transform="rotate(-15 8 15.5)" />
+          <path d="M8 4 Q10 8 9 11 Q8.5 13 8 14 Q7.5 13 7 11 Q6 8 8 4Z" className="animate-fireFlicker" fill="#F59E0B" opacity="0.85" />
+          <path d="M8 6 Q9.2 9 8.5 12 Q8.2 13 8 13.5 Q7.8 13 7.5 12 Q6.8 9 8 6Z" className="animate-fireFlicker" fill="#EF4444" opacity="0.6" style={{ animationDelay: "0.15s" }} />
+          <path d="M8 8 Q8.8 10 8.3 12 Q8.1 12.5 8 12.8 Q7.9 12.5 7.7 12 Q7.2 10 8 8Z" fill="#FCD34D" opacity="0.9" className="animate-fireFlicker" style={{ animationDelay: "0.3s" }} />
+          <circle cx="7.5" cy="3" r="1" fill="currentColor" className="text-muted-foreground animate-smokeRise" opacity="0.15" />
+          <circle cx="8.5" cy="1.5" r="0.8" fill="currentColor" className="text-muted-foreground animate-smokeRise" opacity="0.1" style={{ animationDelay: "0.5s" }} />
+        </svg>
+      </div>
+
+      {/* Ground */}
+      <div className={`absolute bottom-0 left-0 right-0 h-[3px] z-[7] ${
+        scene === "snowy" ? "bg-gradient-to-r from-white/30 via-white/50 to-white/30" :
+        scene === "beach" ? "bg-gradient-to-r from-amber-300/20 via-amber-400/30 to-amber-300/20" :
+        scene === "desert" ? "bg-gradient-to-r from-amber-500/20 via-amber-600/30 to-amber-500/20" :
+        "bg-gradient-to-r from-primary/20 via-primary/30 to-primary/20"
+      }`} />
+
+      {/* Footprints */}
+      <div className="absolute bottom-[2px] left-0 right-0 flex gap-3 animate-walk opacity-20 z-[8]">
+        {[...Array(12)].map((_, i) => (
+          <div key={i} className="w-1.5 h-0.5 rounded-full bg-primary shrink-0" style={{ opacity: 1 - i * 0.07 }} />
+        ))}
+      </div>
+
+      {/* Hiker */}
+      <div className="absolute bottom-[3px] animate-walk z-[9]">
+        <svg width="20" height="28" viewBox="0 0 20 28" fill="none" className="text-primary">
+          <circle cx="10" cy="4.5" r="3" fill="currentColor" opacity="0.9" />
+          <ellipse cx="10" cy="2.8" rx="4.5" ry="1" fill="currentColor" opacity="0.7" />
+          <path d="M7 2.8 Q10 -0.5 13 2.8" fill="currentColor" opacity="0.8" />
+          <rect x="8.5" y="7.5" width="3" height="8" rx="1.5" fill="currentColor" opacity="0.85" />
+          <rect x="5.5" y="7.5" width="3.5" height="6" rx="1.5" fill="currentColor" opacity="0.45" />
+          <rect x="6" y="6.5" width="2.5" height="1.5" rx="0.75" fill="currentColor" opacity="0.35" />
+          <g className="animate-stickSwing" style={{ transformOrigin: "13px 8px" }}>
+            <line x1="13" y1="8" x2="17" y2="22" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" opacity="0.5" />
+            <line x1="11.5" y1="8" x2="14" y2="14" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" opacity="0.7" />
+          </g>
+          <g className="animate-legSwing" style={{ transformOrigin: "9.5px 15px" }}>
+            <rect x="8" y="15" width="2.2" height="7" rx="1.1" fill="currentColor" opacity="0.8" />
+            <ellipse cx="9.5" cy="22.5" rx="2.2" ry="1" fill="currentColor" opacity="0.7" />
+          </g>
+          <g className="animate-legSwing" style={{ transformOrigin: "11px 15px", animationDelay: "0.3s" }}>
+            <rect x="10" y="15" width="2.2" height="7" rx="1.1" fill="currentColor" opacity="0.8" />
+            <ellipse cx="11.5" cy="22.5" rx="2.2" ry="1" fill="currentColor" opacity="0.7" />
+          </g>
+        </svg>
+      </div>
+
+      {/* Scene keyframes */}
+      <style>{`
+        @keyframes butterflyBanner { 0% { transform: translate(0,0); } 25% { transform: translate(8px,-6px); } 50% { transform: translate(-4px,-10px); } 75% { transform: translate(10px,-3px); } 100% { transform: translate(0,0); } }
+        @keyframes tumbleweed { 0% { left: -5%; transform: rotate(0deg); } 100% { left: 105%; transform: rotate(720deg); } }
+        @keyframes heatShimmer { 0%,100% { transform: scaleY(1); opacity: 0.15; } 50% { transform: scaleY(1.3); opacity: 0.25; } }
+        @keyframes snowfall { 0% { top: -5%; opacity: 0.7; } 100% { top: 95%; opacity: 0; } }
+        @keyframes seagullFly { 0% { left: -5%; } 100% { left: 105%; } }
+      `}</style>
     </div>
-
-    {/* Moon - BEHIND mountains (z-[2]) */}
-    <div className="absolute animate-celestialMoon z-[2]">
-      <svg width="14" height="14" viewBox="0 0 14 14">
-        <path d="M10 1a6 6 0 1 0 0 12 5 5 0 0 1 0-12z" fill="#CBD5E1" opacity="0.9"/>
-        <circle cx="6" cy="4" r="0.6" fill="#94A3B8" opacity="0.5"/>
-        <circle cx="8.5" cy="7" r="0.8" fill="#94A3B8" opacity="0.4"/>
-        <circle cx="5" cy="8" r="0.5" fill="#94A3B8" opacity="0.3"/>
-      </svg>
-    </div>
-
-    {/* Mountains - IN FRONT of sun/moon (z-[3]) */}
-    <svg className="absolute bottom-0 left-0 right-0 z-[3]" viewBox="0 0 320 30" preserveAspectRatio="none" style={{ height: '60%' }}>
-      <polygon points="0,30 20,10 45,20 70,5 100,18 130,8 160,22 190,6 220,15 250,3 280,18 310,8 320,30" className="fill-card"/>
-      <polygon points="0,30 20,10 45,20 70,5 100,18 130,8 160,22 190,6 220,15 250,3 280,18 310,8 320,30" fill="currentColor" className="text-primary" opacity="0.15"/>
-      <polygon points="0,30 30,15 60,25 90,12 120,20 150,10 180,24 210,14 240,22 270,8 300,20 320,30" fill="currentColor" className="text-accent" opacity="0.1"/>
-    </svg>
-
-    {/* Trees - IN FRONT of mountains (z-[4]) */}
-    <svg className="absolute bottom-0 left-[10%] opacity-20 z-[4]" width="12" height="18" viewBox="0 0 12 18">
-      <polygon points="6,0 12,14 0,14" fill="currentColor" className="text-primary"/>
-      <rect x="5" y="14" width="2" height="4" fill="currentColor" className="text-primary" opacity="0.7"/>
-    </svg>
-    <svg className="absolute bottom-0 left-[50%] opacity-15 z-[4]" width="10" height="14" viewBox="0 0 10 14">
-      <polygon points="5,0 10,11 0,11" fill="currentColor" className="text-primary"/>
-      <rect x="4" y="11" width="2" height="3" fill="currentColor" className="text-primary" opacity="0.7"/>
-    </svg>
-    <svg className="absolute bottom-0 right-[15%] opacity-20 z-[4]" width="14" height="20" viewBox="0 0 14 20">
-      <polygon points="7,0 14,16 0,16" fill="currentColor" className="text-primary"/>
-      <rect x="6" y="16" width="2" height="4" fill="currentColor" className="text-primary" opacity="0.7"/>
-    </svg>
-
-    {/* Clouds - move slowly right to left, behind mountains (z-[2]) */}
-    <div className="absolute inset-0 z-[2] animate-cloudsHide">
-      <svg className="absolute animate-cloudDrift1" style={{ top: '8%', left: '0' }} width="36" height="12" viewBox="0 0 36 12" opacity="0.25">
-        <ellipse cx="18" cy="8" rx="18" ry="5" fill="currentColor" className="text-foreground"/>
-        <ellipse cx="12" cy="6" rx="10" ry="5" fill="currentColor" className="text-foreground"/>
-        <ellipse cx="24" cy="5" rx="8" ry="4" fill="currentColor" className="text-foreground"/>
-      </svg>
-      <svg className="absolute animate-cloudDrift2" style={{ top: '15%', left: '0' }} width="28" height="10" viewBox="0 0 28 10" opacity="0.18">
-        <ellipse cx="14" cy="6" rx="14" ry="4.5" fill="currentColor" className="text-foreground"/>
-        <ellipse cx="9" cy="5" rx="8" ry="4" fill="currentColor" className="text-foreground"/>
-      </svg>
-      <svg className="absolute animate-cloudDrift3" style={{ top: '5%', left: '0' }} width="24" height="9" viewBox="0 0 24 9" opacity="0.15">
-        <ellipse cx="12" cy="5" rx="12" ry="4" fill="currentColor" className="text-foreground"/>
-        <ellipse cx="17" cy="4" rx="7" ry="3.5" fill="currentColor" className="text-foreground"/>
-      </svg>
-    </div>
-
-    {/* Rain - occasional, z-[4.5] above mountains */}
-    <div className="absolute inset-0 z-[5] animate-rainAppear pointer-events-none">
-      {[...Array(18)].map((_, i) => (
-        <div
-          key={i}
-          className="absolute w-[1px] bg-primary/30 animate-rainDrop"
-          style={{
-            left: `${5 + (i * 5.2) % 90}%`,
-            height: `${6 + (i % 3) * 3}px`,
-            animationDelay: `${(i * 0.15) % 1.2}s`,
-            animationDuration: `${0.5 + (i % 3) * 0.15}s`,
-          }}
-        />
-      ))}
-    </div>
-
-    {/* Campfire at the right end - z-[6] */}
-    <div className="absolute bottom-[2px] right-[5%] z-[6]">
-      <svg width="16" height="20" viewBox="0 0 16 20" fill="none">
-        {/* Logs */}
-        <rect x="2" y="16" width="12" height="2" rx="1" fill="currentColor" className="text-primary" opacity="0.4"/>
-        <rect x="4" y="14.5" width="8" height="2" rx="1" fill="currentColor" className="text-primary" opacity="0.3" transform="rotate(-15 8 15.5)"/>
-        {/* Fire */}
-        <path d="M8 4 Q10 8 9 11 Q8.5 13 8 14 Q7.5 13 7 11 Q6 8 8 4Z" className="animate-fireFlicker" fill="#F59E0B" opacity="0.85"/>
-        <path d="M8 6 Q9.2 9 8.5 12 Q8.2 13 8 13.5 Q7.8 13 7.5 12 Q6.8 9 8 6Z" className="animate-fireFlicker" fill="#EF4444" opacity="0.6" style={{ animationDelay: '0.15s' }}/>
-        <path d="M8 8 Q8.8 10 8.3 12 Q8.1 12.5 8 12.8 Q7.9 12.5 7.7 12 Q7.2 10 8 8Z" fill="#FCD34D" opacity="0.9" className="animate-fireFlicker" style={{ animationDelay: '0.3s' }}/>
-        {/* Smoke particles */}
-        <circle cx="7.5" cy="3" r="1" fill="currentColor" className="text-muted-foreground animate-smokeRise" opacity="0.15"/>
-        <circle cx="8.5" cy="1.5" r="0.8" fill="currentColor" className="text-muted-foreground animate-smokeRise" opacity="0.1" style={{ animationDelay: '0.5s' }}/>
-        <circle cx="8" cy="0.5" r="1.2" fill="currentColor" className="text-muted-foreground animate-smokeRise" opacity="0.08" style={{ animationDelay: '1s' }}/>
-      </svg>
-    </div>
-
-    {/* Ground - (z-[7]) */}
-    <div className="absolute bottom-0 left-0 right-0 h-[3px] bg-gradient-to-r from-primary/20 via-primary/30 to-primary/20 z-[7]" />
-
-    {/* Footprints trail - (z-[8]) */}
-    <div className="absolute bottom-[2px] left-0 right-0 flex gap-3 animate-walk opacity-20 z-[8]">
-      {[...Array(12)].map((_, i) => (
-        <div key={i} className="w-1.5 h-0.5 rounded-full bg-primary shrink-0" style={{ opacity: 1 - i * 0.07 }} />
-      ))}
-    </div>
-
-    {/* Animated hiker - FIRST PLANE (z-[9]) */}
-    <div className="absolute bottom-[3px] animate-walk z-[9]">
-      <svg width="20" height="28" viewBox="0 0 20 28" fill="none" className="text-primary">
-        <circle cx="10" cy="4.5" r="3" fill="currentColor" opacity="0.9"/>
-        <ellipse cx="10" cy="2.8" rx="4.5" ry="1" fill="currentColor" opacity="0.7"/>
-        <path d="M7 2.8 Q10 -0.5 13 2.8" fill="currentColor" opacity="0.8"/>
-        <rect x="8.5" y="7.5" width="3" height="8" rx="1.5" fill="currentColor" opacity="0.85"/>
-        <rect x="5.5" y="7.5" width="3.5" height="6" rx="1.5" fill="currentColor" opacity="0.45"/>
-        <rect x="6" y="6.5" width="2.5" height="1.5" rx="0.75" fill="currentColor" opacity="0.35"/>
-        <g className="animate-stickSwing" style={{ transformOrigin: '13px 8px' }}>
-          <line x1="13" y1="8" x2="17" y2="22" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" opacity="0.5"/>
-          <line x1="11.5" y1="8" x2="14" y2="14" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" opacity="0.7"/>
-        </g>
-        <g className="animate-legSwing" style={{ transformOrigin: '9.5px 15px' }}>
-          <rect x="8" y="15" width="2.2" height="7" rx="1.1" fill="currentColor" opacity="0.8"/>
-          <ellipse cx="9.5" cy="22.5" rx="2.2" ry="1" fill="currentColor" opacity="0.7"/>
-        </g>
-        <g className="animate-legSwing" style={{ transformOrigin: '11px 15px', animationDelay: '0.3s' }}>
-          <rect x="10" y="15" width="2.2" height="7" rx="1.1" fill="currentColor" opacity="0.8"/>
-          <ellipse cx="11.5" cy="22.5" rx="2.2" ry="1" fill="currentColor" opacity="0.7"/>
-        </g>
-      </svg>
-    </div>
-  </div>
-);
+  );
+};
 
 const MyBookingsSection = () => {
   const { authFetch } = useAuth();
@@ -212,7 +331,6 @@ const MyBookingsSection = () => {
     );
   }
 
-  // No mostrar nada si no hay reservas
   if (bookings.length === 0) {
     return null;
   }
@@ -228,7 +346,6 @@ const MyBookingsSection = () => {
           <Badge variant="secondary">{bookings.length}</Badge>
         </div>
         
-        {/* Walking hiker animation */}
         <WalkingHiker />
 
         <div className="space-y-3">
