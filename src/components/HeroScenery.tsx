@@ -324,7 +324,7 @@ const HeroScenery = ({ scrollY = 0 }: HeroSceneryProps) => {
       </div>
 
       {/* Trail Scene — hiker, dog, campfire */}
-      <div className="absolute bottom-[6%] left-0 right-0 h-20 z-[2] opacity-80">
+      <div className="absolute bottom-[8%] left-0 right-0 h-28 z-[2]">
         <TrailScene rainy={weather === "rainy"} time={time} />
       </div>
 
