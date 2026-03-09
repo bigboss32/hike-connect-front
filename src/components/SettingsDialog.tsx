@@ -299,10 +299,8 @@ const SettingsDialog = ({ children }: SettingsDialogProps) => {
                 <AlertDialogAction
                   className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                   onClick={() => {
-                    logout();
-                    toast({ title: "Sesión cerrada", description: "Has cerrado sesión correctamente" });
                     setOpen(false);
-                    navigate("/auth", { replace: true });
+                    setShowLogoutAnim(true);
                   }}
                 >
                   Cerrar sesión
