@@ -123,8 +123,8 @@ const SettingsDialog = ({ children }: SettingsDialogProps) => {
     <>
     {showLogoutAnim && (
       <LogoutAnimation
-        onLogout={() => {
-          logout();
+        onLogout={async () => {
+          await logout();
           toast({ title: "Sesión cerrada", description: "Has cerrado sesión correctamente" });
           navigate("/auth", { replace: true });
         }}
