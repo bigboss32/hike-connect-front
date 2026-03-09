@@ -1,14 +1,14 @@
 import { useEffect, useState } from "react";
 
-const LogoutAnimation = ({ onComplete }: { onComplete: () => void }) => {
+const LogoutAnimation = ({ onLogout, onComplete }: { onLogout: () => void; onComplete: () => void }) => {
   const [phase, setPhase] = useState(0);
 
   useEffect(() => {
     const t1 = setTimeout(() => setPhase(1), 100);
-    const t2 = setTimeout(() => setPhase(2), 1200);
-    const t3 = setTimeout(() => onComplete(), 2200);
+    const t2 = setTimeout(() => { setPhase(2); onLogout(); }, 1800);
+    const t3 = setTimeout(() => onComplete(), 2600);
     return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); };
-  }, [onComplete]);
+  }, [onLogout, onComplete]);
 
   return (
     <div className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-background transition-opacity duration-500"
