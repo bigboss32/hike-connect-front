@@ -332,6 +332,7 @@ const SettingsDialog = ({ children }: SettingsDialogProps) => {
         </div>
       </DialogContent>
     </Dialog>
+    </>
   );
 };
 
