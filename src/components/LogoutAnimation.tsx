@@ -1,18 +1,44 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 
-const LogoutAnimation = ({ onLogout, onComplete }: { onLogout: () => void; onComplete: () => void }) => {
+interface LogoutAnimationProps {
+  onLogout: () => Promise<void>;
+  onComplete: () => void;
+}
+
+const LogoutAnimation = ({ onLogout, onComplete }: LogoutAnimationProps) => {
   const [phase, setPhase] = useState(0);
+  const logoutDone = useRef(false);
+  const minTimeDone = useRef(false);
+
+  const tryFinish = () => {
+    if (logoutDone.current && minTimeDone.current) {
+      setPhase(2);
+      setTimeout(() => onComplete(), 500);
+    }
+  };
 
   useEffect(() => {
+    // Phase 1: start walking animation
     const t1 = setTimeout(() => setPhase(1), 100);
-    const t2 = setTimeout(() => { onLogout(); }, 1800);
-    const t3 = setTimeout(() => { setPhase(2); }, 2200);
-    const t4 = setTimeout(() => onComplete(), 2700);
-    return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); clearTimeout(t4); };
-  }, [onLogout, onComplete]);
+
+    // Call logout API
+    onLogout().finally(() => {
+      logoutDone.current = true;
+      tryFinish();
+    });
+
+    // Minimum animation time (hiker walks away)
+    const t2 = setTimeout(() => {
+      minTimeDone.current = true;
+      tryFinish();
+    }, 2000);
+
+    return () => { clearTimeout(t1); clearTimeout(t2); };
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
-    <div className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-background transition-opacity duration-400"
+    <div
+      className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-background transition-opacity duration-400"
       style={{ opacity: phase >= 2 ? 0 : 1 }}
     >
       {/* Sky gradient */}
