@@ -5,13 +5,14 @@ const LogoutAnimation = ({ onLogout, onComplete }: { onLogout: () => void; onCom
 
   useEffect(() => {
     const t1 = setTimeout(() => setPhase(1), 100);
-    const t2 = setTimeout(() => { setPhase(2); onLogout(); }, 1800);
-    const t3 = setTimeout(() => onComplete(), 2600);
-    return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); };
+    const t2 = setTimeout(() => { onLogout(); }, 1800);
+    const t3 = setTimeout(() => { setPhase(2); }, 2200);
+    const t4 = setTimeout(() => onComplete(), 2700);
+    return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); clearTimeout(t4); };
   }, [onLogout, onComplete]);
 
   return (
-    <div className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-background transition-opacity duration-500"
+    <div className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-background transition-opacity duration-400"
       style={{ opacity: phase >= 2 ? 0 : 1 }}
     >
       {/* Sky gradient */}
