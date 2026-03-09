@@ -122,12 +122,14 @@ const SettingsDialog = ({ children }: SettingsDialogProps) => {
   return (
     <>
     {showLogoutAnim && (
-      <LogoutAnimation onComplete={() => {
-        logout();
-        toast({ title: "Sesión cerrada", description: "Has cerrado sesión correctamente" });
-        navigate("/auth", { replace: true });
-        setShowLogoutAnim(false);
-      }} />
+      <LogoutAnimation
+        onLogout={() => {
+          logout();
+          toast({ title: "Sesión cerrada", description: "Has cerrado sesión correctamente" });
+          navigate("/auth", { replace: true });
+        }}
+        onComplete={() => setShowLogoutAnim(false)}
+      />
     )}
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
