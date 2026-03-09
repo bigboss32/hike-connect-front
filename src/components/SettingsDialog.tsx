@@ -10,6 +10,7 @@ import { useTheme } from "@/components/ThemeProvider";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { Moon, Sun, HelpCircle, MessageCircle, FileText, Shield, ChevronRight, Info, LogOut, CreditCard, Trash2, Loader2 } from "lucide-react";
+import LogoutAnimation from "@/components/LogoutAnimation";
 
 interface SettingsDialogProps {
   children: React.ReactNode;
