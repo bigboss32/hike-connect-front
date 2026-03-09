@@ -41,6 +41,7 @@ const SettingsDialog = ({ children }: SettingsDialogProps) => {
   const [savedCards, setSavedCards] = useState<SavedCard[]>([]);
   const [cardsLoading, setCardsLoading] = useState(false);
   const [deletingCardId, setDeletingCardId] = useState<string | null>(null);
+  const [showLogoutAnim, setShowLogoutAnim] = useState(false);
 
   const isDark = theme === "dark";
 
