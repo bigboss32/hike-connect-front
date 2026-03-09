@@ -10,6 +10,7 @@ import { useTheme } from "@/components/ThemeProvider";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { Moon, Sun, HelpCircle, MessageCircle, FileText, Shield, ChevronRight, Info, LogOut, CreditCard, Trash2, Loader2 } from "lucide-react";
+import LogoutAnimation from "@/components/LogoutAnimation";
 
 interface SettingsDialogProps {
   children: React.ReactNode;
@@ -40,6 +41,7 @@ const SettingsDialog = ({ children }: SettingsDialogProps) => {
   const [savedCards, setSavedCards] = useState<SavedCard[]>([]);
   const [cardsLoading, setCardsLoading] = useState(false);
   const [deletingCardId, setDeletingCardId] = useState<string | null>(null);
+  const [showLogoutAnim, setShowLogoutAnim] = useState(false);
 
   const isDark = theme === "dark";
 
@@ -118,6 +120,15 @@ const SettingsDialog = ({ children }: SettingsDialogProps) => {
   ];
 
   return (
+    <>
+    {showLogoutAnim && (
+      <LogoutAnimation onComplete={() => {
+        logout();
+        toast({ title: "Sesión cerrada", description: "Has cerrado sesión correctamente" });
+        navigate("/auth", { replace: true });
+        setShowLogoutAnim(false);
+      }} />
+    )}
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         {children}
@@ -297,10 +308,8 @@ const SettingsDialog = ({ children }: SettingsDialogProps) => {
                 <AlertDialogAction
                   className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                   onClick={() => {
-                    logout();
-                    toast({ title: "Sesión cerrada", description: "Has cerrado sesión correctamente" });
                     setOpen(false);
-                    navigate("/auth", { replace: true });
+                    setShowLogoutAnim(true);
                   }}
                 >
                   Cerrar sesión
@@ -323,6 +332,7 @@ const SettingsDialog = ({ children }: SettingsDialogProps) => {
         </div>
       </DialogContent>
     </Dialog>
+    </>
   );
 };
 
