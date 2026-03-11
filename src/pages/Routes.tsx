@@ -311,16 +311,7 @@ const Routes = () => {
             </div>
           </>
         ) : (
-          /* Hospedajes tab — placeholder until endpoint is ready */
-          <div className="text-center py-16 animate-fade-in">
-            <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-4">
-              <HomeIcon className="w-8 h-8 text-primary" />
-            </div>
-            <h3 className="font-bold text-foreground text-lg mb-2">Hospedajes</h3>
-            <p className="text-sm text-muted-foreground max-w-xs mx-auto">
-              Próximamente podrás descubrir fincas, cabañas y experiencias de agroturismo cerca de ti.
-            </p>
-          </div>
+          <HospedajesTab />
         )}
       </main>
 
