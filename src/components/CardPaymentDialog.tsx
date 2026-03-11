@@ -114,8 +114,8 @@ const CardPaymentDialog = ({
   const [paymentResult, setPaymentResult] = useState<PaymentResult>(null);
   const [resultMessage, setResultMessage] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
-  const pollingRef = useRef<NodeJS.Timeout | null>(null);
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const pollingRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const isSubmittingRef = useRef(false);
 
   // New card form

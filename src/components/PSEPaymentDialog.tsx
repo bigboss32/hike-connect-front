@@ -96,8 +96,8 @@ const PSEPaymentDialog = ({
   const [redirectUrl, setRedirectUrl] = useState("");
   const [paymentId, setPaymentId] = useState<string | null>(null);
   const [confirmedAmount, setConfirmedAmount] = useState<number | null>(null);
-  const pollingRef = useRef<NodeJS.Timeout | null>(null);
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const pollingRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const redirectedRef = useRef(false);
 
   useEffect(() => {
