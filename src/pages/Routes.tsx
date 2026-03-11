@@ -16,6 +16,101 @@ import { cn } from "@/lib/utils";
 
 type ExperienceTab = "rutas" | "hospedajes";
 
+const HospedajesTab = () => {
+  const {
+    data,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    isLoading,
+    isError,
+    error,
+  } = useHospedajes("todos");
+
+  const observerRef = useRef<IntersectionObserver | null>(null);
+  const loadMoreRef = useRef<HTMLDivElement | null>(null);
+
+  const handleObserver = useCallback((entries: IntersectionObserverEntry[]) => {
+    const [target] = entries;
+    if (target.isIntersecting && hasNextPage && !isFetchingNextPage) {
+      fetchNextPage();
+    }
+  }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
+
+  useEffect(() => {
+    const element = loadMoreRef.current;
+    if (!element) return;
+    observerRef.current = new IntersectionObserver(handleObserver, { root: null, rootMargin: "100px", threshold: 0.1 });
+    observerRef.current.observe(element);
+    return () => { observerRef.current?.disconnect(); };
+  }, [handleObserver]);
+
+  const allHospedajes = data?.pages.flatMap((page) => page.results) ?? [];
+
+  if (isLoading) {
+    return (
+      <div className="grid gap-4">
+        {[...Array(3)].map((_, i) => (
+          <div key={i} className="rounded-lg overflow-hidden border border-border">
+            <Skeleton className="h-40 w-full" />
+            <div className="p-4 space-y-3">
+              <Skeleton className="h-5 w-3/4" />
+              <Skeleton className="h-4 w-1/2" />
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+  }
+
+  if (isError) {
+    return (
+      <div className="text-center py-12">
+        <p className="text-destructive mb-2">Error al cargar los hospedajes</p>
+        <p className="text-muted-foreground text-sm">{(error as Error)?.message}</p>
+      </div>
+    );
+  }
+
+  if (allHospedajes.length === 0) {
+    return (
+      <div className="text-center py-16 animate-fade-in">
+        <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-4">
+          <HomeIcon className="w-8 h-8 text-primary" />
+        </div>
+        <h3 className="font-bold text-foreground text-lg mb-2">Sin hospedajes</h3>
+        <p className="text-sm text-muted-foreground max-w-xs mx-auto">
+          No se encontraron hospedajes disponibles en este momento.
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <>
+      <div className="grid gap-4">
+        {allHospedajes.map((hospedaje, index) => (
+          <div key={hospedaje.id} className="route-card-stagger" style={{ animationDelay: `${index * 100}ms` }}>
+            <HospedajeCard hospedaje={hospedaje} />
+          </div>
+        ))}
+      </div>
+      <div ref={loadMoreRef} className="py-4 flex justify-center">
+        {isFetchingNextPage && (
+          <div className="flex items-center gap-2 text-muted-foreground">
+            <Loader2 className="w-4 h-4 animate-spin" />
+            <span className="text-sm">Cargando más hospedajes...</span>
+          </div>
+        )}
+        {!hasNextPage && allHospedajes.length > 0 && (
+          <p className="text-muted-foreground text-sm">No hay más hospedajes</p>
+        )}
+      </div>
+    </>
+  );
+};
+
+
 const Routes = () => {
   const [activeTab, setActiveTab] = useState<ExperienceTab>("rutas");
   const [scrollY, setScrollY] = useState(0);
