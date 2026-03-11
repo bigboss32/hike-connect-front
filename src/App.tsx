@@ -19,6 +19,7 @@ import Achievements from "./pages/Achievements";
 import Auth from "./pages/Auth";
 import Legends from "./pages/Legends";
 import BookingChat from "./pages/BookingChat";
+import HospedajeDetail from "./pages/HospedajeDetail";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
