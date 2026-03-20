@@ -2,6 +2,7 @@ import Navigation from "@/components/Navigation";
 import RoutesHeroScene from "@/components/RoutesHeroScene";
 import RouteCard from "@/components/RouteCard";
 import RouteFiltersDialog, { type RouteFilters } from "@/components/RouteFiltersDialog";
+import PackageFiltersDialog, { type PackageFilters, defaultPackageFilters } from "@/components/PackageFiltersDialog";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -9,7 +10,7 @@ import { Search, SlidersHorizontal, Loader2, X, TreePine, Home as HomeIcon, Pack
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useRoutes } from "@/hooks/useRoutes";
 import { useHospedajes } from "@/hooks/useHospedajes";
-import { useAdventurePackages } from "@/hooks/useAdventurePackages";
+import { useAdventurePackages, type PackageQueryFilters } from "@/hooks/useAdventurePackages";
 import HospedajeCard from "@/components/HospedajeCard";
 import AdventurePackageCard from "@/components/AdventurePackageCard";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -112,7 +113,7 @@ const HospedajesTab = () => {
   );
 };
 
-const PaquetesTab = () => {
+const PaquetesTab = ({ filters }: { filters?: import("@/hooks/useAdventurePackages").PackageQueryFilters }) => {
   const {
     data,
     fetchNextPage,
@@ -121,7 +122,7 @@ const PaquetesTab = () => {
     isLoading,
     isError,
     error,
-  } = useAdventurePackages();
+  } = useAdventurePackages(filters);
 
   const observerRef = useRef<IntersectionObserver | null>(null);
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
@@ -230,7 +231,9 @@ const Routes = () => {
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [debouncedSearch, setDebouncedSearch] = useState<string>("");
   const [showFiltersModal, setShowFiltersModal] = useState(false);
-  
+  const [packageFilters, setPackageFilters] = useState<PackageFilters>(defaultPackageFilters);
+  const [showPackageFilters, setShowPackageFilters] = useState(false);
+
   const observerRef = useRef<IntersectionObserver | null>(null);
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
 
@@ -295,19 +298,28 @@ const Routes = () => {
     return true;
   });
 
-  const hasActiveFilters = 
-    filters.category !== "todas" || 
-    filters.type !== "todas" || 
-    filters.maxDistance < 50 || 
-    filters.difficulty !== "todas" ||
-    filters.maxDuration < 12 ||
-    filters.companion !== "todas" ||
-    filters.experience !== "todas" ||
-    filters.format !== "todas" ||
-    filters.agroDuration < 24;
+  const hasActiveFilters = activeTab === "paquetes"
+    ? (packageFilters.location !== "" || packageFilters.price_min !== "" || packageFilters.price_max !== "" ||
+       packageFilters.min_people !== "" || packageFilters.package_type !== "todos" ||
+       packageFilters.available_date !== "" || packageFilters.component_type !== "" || packageFilters.component_name !== "")
+    : (filters.category !== "todas" || filters.type !== "todas" || filters.maxDistance < 50 || 
+       filters.difficulty !== "todas" || filters.maxDuration < 12 || filters.companion !== "todas" ||
+       filters.experience !== "todas" || filters.format !== "todas" || filters.agroDuration < 24);
 
   const getActiveFilterLabels = () => {
-    const labels = [];
+    if (activeTab === "paquetes") {
+      const labels: string[] = [];
+      if (packageFilters.location) labels.push(packageFilters.location);
+      if (packageFilters.package_type !== "todos") labels.push(packageFilters.package_type.replace(/_/g, " "));
+      if (packageFilters.price_min) labels.push(`≥$${packageFilters.price_min}`);
+      if (packageFilters.price_max) labels.push(`≤$${packageFilters.price_max}`);
+      if (packageFilters.min_people) labels.push(`≥${packageFilters.min_people} pers.`);
+      if (packageFilters.available_date) labels.push(packageFilters.available_date);
+      if (packageFilters.component_type) labels.push(packageFilters.component_type);
+      if (packageFilters.component_name) labels.push(packageFilters.component_name);
+      return labels;
+    }
+    const labels: string[] = [];
     if (filters.category !== "todas") labels.push(filters.category);
     if (filters.type !== "todas") labels.push(filters.type === "premium" ? "Premium" : filters.type);
     if (filters.difficulty !== "todas") labels.push(filters.difficulty);
@@ -321,6 +333,17 @@ const Routes = () => {
   };
 
   const activeLabels = getActiveFilterLabels();
+
+  const packageQueryFilters: PackageQueryFilters = {
+    location: packageFilters.location || undefined,
+    price_min: packageFilters.price_min || undefined,
+    price_max: packageFilters.price_max || undefined,
+    min_people: packageFilters.min_people || undefined,
+    package_type: packageFilters.package_type !== "todos" ? packageFilters.package_type : undefined,
+    available_date: packageFilters.available_date || undefined,
+    component_type: packageFilters.component_type || undefined,
+    component_name: packageFilters.component_name || undefined,
+  };
 
   return (
     <div className="min-h-screen bg-background pb-20">
@@ -385,7 +408,7 @@ const Routes = () => {
                 <div className="relative flex-1">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                   <Input
-                    placeholder={activeTab === "rutas" ? "Buscar rutas..." : "Buscar hospedajes..."}
+                    placeholder={activeTab === "rutas" ? "Buscar rutas..." : activeTab === "hospedajes" ? "Buscar hospedajes..." : "Buscar paquetes..."}
                     className="pl-10 backdrop-blur-md bg-card/80 border-border text-foreground placeholder:text-muted-foreground/70 shadow-sm dark:bg-foreground/[0.06] dark:border-foreground/[0.08]"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
@@ -394,7 +417,7 @@ const Routes = () => {
                 <Button 
                   variant={hasActiveFilters ? "default" : "outline"} 
                   size="icon"
-                  onClick={() => setShowFiltersModal(true)}
+                  onClick={() => activeTab === "paquetes" ? setShowPackageFilters(true) : setShowFiltersModal(true)}
                   className={hasActiveFilters ? "relative" : "relative backdrop-blur-md bg-card/80 border-border hover:bg-card shadow-sm dark:bg-foreground/[0.06] dark:border-foreground/[0.08] dark:hover:bg-foreground/[0.1]"}
                 >
                   <SlidersHorizontal className="w-4 h-4" />
@@ -421,17 +444,23 @@ const Routes = () => {
                   <Badge 
                     variant="outline" 
                     className="text-xs cursor-pointer bg-card/80 backdrop-blur-sm border border-border hover:bg-destructive/10 hover:text-destructive hover:border-destructive dark:bg-foreground/[0.06] dark:border-foreground/[0.08]"
-                    onClick={() => setFilters({
-                      category: "todas",
-                      type: "todas",
-                      maxDistance: 50,
-                      difficulty: "todas",
-                      maxDuration: 12,
-                      companion: "todas",
-                      experience: "todas",
-                      format: "todas",
-                      agroDuration: 24,
-                    })}
+                    onClick={() => {
+                      if (activeTab === "paquetes") {
+                        setPackageFilters(defaultPackageFilters);
+                      } else {
+                        setFilters({
+                          category: "todas",
+                          type: "todas",
+                          maxDistance: 50,
+                          difficulty: "todas",
+                          maxDuration: 12,
+                          companion: "todas",
+                          experience: "todas",
+                          format: "todas",
+                          agroDuration: 24,
+                        });
+                      }
+                    }}
                   >
                     <X className="w-3 h-3 mr-1" />
                     Limpiar
@@ -451,6 +480,13 @@ const Routes = () => {
         onOpenChange={setShowFiltersModal}
         filters={filters}
         onFiltersChange={setFilters}
+      />
+
+      <PackageFiltersDialog
+        open={showPackageFilters}
+        onOpenChange={setShowPackageFilters}
+        filters={packageFilters}
+        onFiltersChange={setPackageFilters}
       />
 
       <main className="max-w-lg mx-auto px-4 -mt-12 relative z-10 space-y-4">
@@ -518,7 +554,7 @@ const Routes = () => {
         ) : activeTab === "hospedajes" ? (
           <HospedajesTab />
         ) : (
-          <PaquetesTab />
+          <PaquetesTab filters={packageQueryFilters} />
         )}
       </main>
 

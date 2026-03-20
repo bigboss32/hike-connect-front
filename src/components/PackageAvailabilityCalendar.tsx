@@ -3,7 +3,7 @@ import { ChevronLeft, ChevronRight, Loader2, Users, CalendarCheck, CalendarX } f
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
-import { usePackageAvailability } from "@/hooks/usePackageAvailability";
+import { usePackageMonthAvailability, type PackageDateAvailability } from "@/hooks/usePackageAvailability";
 
 interface Props {
   packageId: string;
@@ -21,7 +21,14 @@ const PackageAvailabilityCalendar = ({ packageId }: Props) => {
   const [viewYear, setViewYear] = useState(now.getFullYear());
   const [selectedDate, setSelectedDate] = useState<string | undefined>();
 
-  const { data: availability, isLoading: isLoadingAvailability } = usePackageAvailability(packageId, selectedDate);
+  const { data: monthData, isLoading } = usePackageMonthAvailability(packageId, viewMonth, viewYear);
+
+  // Index availability by date for quick lookup
+  const availabilityMap = useMemo(() => {
+    const map = new Map<string, PackageDateAvailability>();
+    monthData?.dates?.forEach((d) => map.set(d.date, d));
+    return map;
+  }, [monthData]);
 
   const calendarDays = useMemo(() => {
     const firstDay = new Date(viewYear, viewMonth - 1, 1);
@@ -57,8 +64,10 @@ const PackageAvailabilityCalendar = ({ packageId }: Props) => {
   const handleSelectDay = (day: number) => {
     const dateStr = formatDateStr(day);
     if (dateStr < todayStr) return;
-    setSelectedDate(dateStr);
+    setSelectedDate(dateStr === selectedDate ? undefined : dateStr);
   };
+
+  const selectedAvailability = selectedDate ? availabilityMap.get(selectedDate) : undefined;
 
   return (
     <div className="space-y-4">
@@ -84,87 +93,97 @@ const PackageAvailabilityCalendar = ({ packageId }: Props) => {
         ))}
 
         {/* Day cells */}
-        {calendarDays.map((day, i) => {
-          if (day === null) return <div key={`empty-${i}`} />;
-          const dateStr = formatDateStr(day);
-          const isPast = dateStr < todayStr;
-          const isSelected = dateStr === selectedDate;
+        {isLoading
+          ? Array.from({ length: 35 }).map((_, i) => (
+              <div key={`skel-${i}`} className="aspect-square rounded-lg bg-muted/30 animate-pulse" />
+            ))
+          : calendarDays.map((day, i) => {
+              if (day === null) return <div key={`empty-${i}`} />;
+              const dateStr = formatDateStr(day);
+              const isPast = dateStr < todayStr;
+              const isSelected = dateStr === selectedDate;
+              const dayAvail = availabilityMap.get(dateStr);
+              const isAvailable = dayAvail?.is_available ?? false;
+              const isDayEnabled = dayAvail?.is_day_available ?? false;
 
-          return (
-            <button
-              key={dateStr}
-              disabled={isPast}
-              onClick={() => handleSelectDay(day)}
-              className={cn(
-                "aspect-square rounded-lg text-sm font-medium transition-all flex items-center justify-center",
-                isPast && "text-muted-foreground/40 cursor-not-allowed",
-                !isPast && !isSelected && "text-foreground hover:bg-primary/10 cursor-pointer",
-                isSelected && "bg-primary text-primary-foreground shadow-sm",
-              )}
-            >
-              {day}
-            </button>
-          );
-        })}
+              return (
+                <button
+                  key={dateStr}
+                  disabled={isPast}
+                  onClick={() => handleSelectDay(day)}
+                  className={cn(
+                    "aspect-square rounded-lg text-sm font-medium transition-all flex items-center justify-center relative",
+                    isPast && "text-muted-foreground/40 cursor-not-allowed",
+                    !isPast && !isSelected && isAvailable && "text-foreground hover:bg-primary/10 cursor-pointer",
+                    !isPast && !isSelected && isDayEnabled && !isAvailable && "text-destructive/70 hover:bg-destructive/10 cursor-pointer",
+                    !isPast && !isSelected && !isDayEnabled && "text-muted-foreground/50 cursor-pointer",
+                    isSelected && "bg-primary text-primary-foreground shadow-sm",
+                  )}
+                >
+                  {day}
+                  {!isPast && isDayEnabled && !isSelected && (
+                    <span className={cn(
+                      "absolute bottom-0.5 w-1.5 h-1.5 rounded-full",
+                      isAvailable ? "bg-green-500" : "bg-destructive"
+                    )} />
+                  )}
+                </button>
+              );
+            })}
       </div>
 
-      {/* Availability result */}
-      {selectedDate && (
+      {/* Selected date detail */}
+      {selectedDate && selectedAvailability && (
         <Card className={cn(
           "transition-all animate-fade-in",
-          availability?.is_available
+          selectedAvailability.is_available
             ? "border-green-500/30 bg-green-500/5"
-            : availability && !availability.is_available
-            ? "border-destructive/30 bg-destructive/5"
-            : ""
+            : "border-destructive/30 bg-destructive/5"
         )}>
           <CardContent className="p-4">
-            {isLoadingAvailability ? (
-              <div className="flex items-center gap-2 text-muted-foreground justify-center py-2">
-                <Loader2 className="w-4 h-4 animate-spin" />
-                <span className="text-sm">Consultando disponibilidad...</span>
+            <div className="space-y-2">
+              <div className="flex items-center gap-2">
+                {selectedAvailability.is_available ? (
+                  <CalendarCheck className="w-5 h-5 text-green-600" />
+                ) : (
+                  <CalendarX className="w-5 h-5 text-destructive" />
+                )}
+                <span className={cn(
+                  "font-semibold text-sm",
+                  selectedAvailability.is_available ? "text-green-700 dark:text-green-400" : "text-destructive"
+                )}>
+                  {selectedAvailability.is_available ? "Disponible" : "No disponible"}
+                </span>
               </div>
-            ) : availability ? (
-              <div className="space-y-2">
-                <div className="flex items-center gap-2">
-                  {availability.is_available ? (
-                    <CalendarCheck className="w-5 h-5 text-green-600" />
-                  ) : (
-                    <CalendarX className="w-5 h-5 text-destructive" />
-                  )}
-                  <span className={cn(
-                    "font-semibold text-sm",
-                    availability.is_available ? "text-green-700 dark:text-green-400" : "text-destructive"
-                  )}>
-                    {availability.is_available ? "Disponible" : "No disponible"}
-                  </span>
-                </div>
 
-                {availability.is_day_available && (
-                  <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                    <div className="flex items-center gap-1">
-                      <Users className="w-4 h-4" />
-                      <span>
-                        {availability.available_guests} cupo{availability.available_guests !== 1 ? "s" : ""} disponible{availability.available_guests !== 1 ? "s" : ""}
-                      </span>
-                    </div>
-                    {availability.booked_count > 0 && (
-                      <span className="text-xs">
-                        ({availability.booked_count} reserva{availability.booked_count !== 1 ? "s" : ""})
-                      </span>
-                    )}
+              {selectedAvailability.is_day_available && (
+                <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                  <div className="flex items-center gap-1">
+                    <Users className="w-4 h-4" />
+                    <span>
+                      {selectedAvailability.available_guests} cupo{selectedAvailability.available_guests !== 1 ? "s" : ""} disponible{selectedAvailability.available_guests !== 1 ? "s" : ""}
+                    </span>
                   </div>
-                )}
+                  {selectedAvailability.booked_count > 0 && (
+                    <span className="text-xs">
+                      ({selectedAvailability.booked_count} reserva{selectedAvailability.booked_count !== 1 ? "s" : ""})
+                    </span>
+                  )}
+                </div>
+              )}
 
-                {!availability.is_day_available && (
-                  <p className="text-xs text-muted-foreground">
-                    Este día no está habilitado para este paquete.
-                  </p>
-                )}
-              </div>
-            ) : null}
+              {!selectedAvailability.is_day_available && (
+                <p className="text-xs text-muted-foreground">
+                  Este día no está habilitado para este paquete.
+                </p>
+              )}
+            </div>
           </CardContent>
         </Card>
+      )}
+
+      {selectedDate && !selectedAvailability && !isLoading && (
+        <p className="text-xs text-muted-foreground text-center">Sin datos de disponibilidad para esta fecha.</p>
       )}
     </div>
   );
