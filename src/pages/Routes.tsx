@@ -9,7 +9,9 @@ import { Search, SlidersHorizontal, Loader2, X, TreePine, Home as HomeIcon, Pack
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useRoutes } from "@/hooks/useRoutes";
 import { useHospedajes } from "@/hooks/useHospedajes";
+import { useAdventurePackages } from "@/hooks/useAdventurePackages";
 import HospedajeCard from "@/components/HospedajeCard";
+import AdventurePackageCard from "@/components/AdventurePackageCard";
 import { Skeleton } from "@/components/ui/skeleton";
 import EmptyRoutesScene from "@/components/EmptyRoutesScene";
 import { cn } from "@/lib/utils";
