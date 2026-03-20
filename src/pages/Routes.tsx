@@ -417,7 +417,7 @@ const Routes = () => {
                 <Button 
                   variant={hasActiveFilters ? "default" : "outline"} 
                   size="icon"
-                  onClick={() => setShowFiltersModal(true)}
+                  onClick={() => activeTab === "paquetes" ? setShowPackageFilters(true) : setShowFiltersModal(true)}
                   className={hasActiveFilters ? "relative" : "relative backdrop-blur-md bg-card/80 border-border hover:bg-card shadow-sm dark:bg-foreground/[0.06] dark:border-foreground/[0.08] dark:hover:bg-foreground/[0.1]"}
                 >
                   <SlidersHorizontal className="w-4 h-4" />
