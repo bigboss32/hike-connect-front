@@ -1,5 +1,6 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useAdventurePackageById } from "@/hooks/useAdventurePackages";
+import PackageAvailabilityCalendar from "@/components/PackageAvailabilityCalendar";
 import Navigation from "@/components/Navigation";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
