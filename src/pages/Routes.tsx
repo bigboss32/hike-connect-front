@@ -482,6 +482,13 @@ const Routes = () => {
         onFiltersChange={setFilters}
       />
 
+      <PackageFiltersDialog
+        open={showPackageFilters}
+        onOpenChange={setShowPackageFilters}
+        filters={packageFilters}
+        onFiltersChange={setPackageFilters}
+      />
+
       <main className="max-w-lg mx-auto px-4 -mt-12 relative z-10 space-y-4">
         {activeTab === "rutas" ? (
           <>
