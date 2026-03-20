@@ -421,8 +421,10 @@ const Routes = () => {
               )}
             </div>
           </>
-        ) : (
+        ) : activeTab === "hospedajes" ? (
           <HospedajesTab />
+        ) : (
+          <PaquetesTab />
         )}
       </main>
 
