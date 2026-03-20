@@ -444,17 +444,23 @@ const Routes = () => {
                   <Badge 
                     variant="outline" 
                     className="text-xs cursor-pointer bg-card/80 backdrop-blur-sm border border-border hover:bg-destructive/10 hover:text-destructive hover:border-destructive dark:bg-foreground/[0.06] dark:border-foreground/[0.08]"
-                    onClick={() => setFilters({
-                      category: "todas",
-                      type: "todas",
-                      maxDistance: 50,
-                      difficulty: "todas",
-                      maxDuration: 12,
-                      companion: "todas",
-                      experience: "todas",
-                      format: "todas",
-                      agroDuration: 24,
-                    })}
+                    onClick={() => {
+                      if (activeTab === "paquetes") {
+                        setPackageFilters(defaultPackageFilters);
+                      } else {
+                        setFilters({
+                          category: "todas",
+                          type: "todas",
+                          maxDistance: 50,
+                          difficulty: "todas",
+                          maxDuration: 12,
+                          companion: "todas",
+                          experience: "todas",
+                          format: "todas",
+                          agroDuration: 24,
+                        });
+                      }
+                    }}
                   >
                     <X className="w-3 h-3 mr-1" />
                     Limpiar
