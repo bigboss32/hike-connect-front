@@ -112,7 +112,7 @@ const HospedajesTab = () => {
   );
 };
 
-const PaquetesTab = () => {
+const PaquetesTab = ({ filters }: { filters?: import("@/hooks/useAdventurePackages").PackageQueryFilters }) => {
   const {
     data,
     fetchNextPage,
@@ -121,7 +121,7 @@ const PaquetesTab = () => {
     isLoading,
     isError,
     error,
-  } = useAdventurePackages();
+  } = useAdventurePackages(filters);
 
   const observerRef = useRef<IntersectionObserver | null>(null);
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
