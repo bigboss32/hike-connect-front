@@ -271,6 +271,18 @@ const Routes = () => {
                 <HomeIcon className="w-4 h-4" />
                 Hospedajes
               </button>
+              <button
+                onClick={() => setActiveTab("paquetes")}
+                className={cn(
+                  "flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium transition-all",
+                  activeTab === "paquetes"
+                    ? "bg-primary text-primary-foreground shadow-lg shadow-primary/25"
+                    : "backdrop-blur-md bg-card/70 border border-border text-muted-foreground hover:text-foreground dark:bg-foreground/[0.06] dark:border-foreground/[0.08]"
+                )}
+              >
+                <Package className="w-4 h-4" />
+                Paquetes
+              </button>
             </div>
 
             {/* Search + Filter inside hero */}
