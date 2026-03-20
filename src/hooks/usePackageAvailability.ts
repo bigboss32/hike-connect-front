@@ -14,55 +14,40 @@ const getStoredAccessToken = (): string | null => {
 };
 
 export interface PackageDateAvailability {
+  package_id: string;
   date: string;
   weekday: number;
   is_day_available: boolean;
+  is_available: boolean;
   booked_count: number;
   available_guests: number;
-  is_available: boolean;
+  max_people?: number;
 }
 
-export interface PackageMonthAvailability {
-  package_id: string;
-  year: number;
-  month: number;
-  dates: PackageDateAvailability[];
-}
-
-const fetchPackageMonthAvailability = async (
+const fetchPackageAvailability = async (
   packageId: string,
-  month: number,
-  year: number,
+  date: string,
   token: string | null
-): Promise<PackageMonthAvailability> => {
+): Promise<PackageDateAvailability> => {
   const headers: HeadersInit = {};
   if (token) headers["Authorization"] = `Bearer ${token}`;
 
-  const params = new URLSearchParams({
-    id: packageId,
-    month: String(month),
-    year: String(year),
-  });
-
   const response = await fetch(
-    `${API_BASE_URL}/hospedaje/packages/availability/?${params.toString()}`,
+    `${API_BASE_URL}/hospedaje/packages/availability/?id=${packageId}&date=${date}`,
     { headers }
   );
 
-  if (!response.ok) throw new Error("Error al consultar disponibilidad mensual");
+  if (!response.ok) throw new Error("Error al consultar disponibilidad");
   return response.json();
 };
 
-export const usePackageMonthAvailability = (
-  packageId: string | undefined,
-  month: number,
-  year: number
-) => {
+export const usePackageAvailability = (packageId: string | undefined, date: string | undefined) => {
   const token = getStoredAccessToken();
   return useQuery({
-    queryKey: ["packageMonthAvailability", packageId, month, year],
-    queryFn: () => fetchPackageMonthAvailability(packageId!, month, year, token),
-    enabled: !!packageId,
-    staleTime: 60_000,
+    queryKey: ["packageAvailability", packageId, date],
+    queryFn: () => fetchPackageAvailability(packageId!, date!, token),
+    enabled: !!packageId && !!date,
+    staleTime: 0,
+    refetchOnMount: "always",
   });
 };
