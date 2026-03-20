@@ -554,7 +554,7 @@ const Routes = () => {
         ) : activeTab === "hospedajes" ? (
           <HospedajesTab />
         ) : (
-          <PaquetesTab />
+          <PaquetesTab filters={packageQueryFilters} />
         )}
       </main>
 
