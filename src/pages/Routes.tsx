@@ -298,19 +298,28 @@ const Routes = () => {
     return true;
   });
 
-  const hasActiveFilters = 
-    filters.category !== "todas" || 
-    filters.type !== "todas" || 
-    filters.maxDistance < 50 || 
-    filters.difficulty !== "todas" ||
-    filters.maxDuration < 12 ||
-    filters.companion !== "todas" ||
-    filters.experience !== "todas" ||
-    filters.format !== "todas" ||
-    filters.agroDuration < 24;
+  const hasActiveFilters = activeTab === "paquetes"
+    ? (packageFilters.location !== "" || packageFilters.price_min !== "" || packageFilters.price_max !== "" ||
+       packageFilters.min_people !== "" || packageFilters.package_type !== "todos" ||
+       packageFilters.available_date !== "" || packageFilters.component_type !== "" || packageFilters.component_name !== "")
+    : (filters.category !== "todas" || filters.type !== "todas" || filters.maxDistance < 50 || 
+       filters.difficulty !== "todas" || filters.maxDuration < 12 || filters.companion !== "todas" ||
+       filters.experience !== "todas" || filters.format !== "todas" || filters.agroDuration < 24);
 
   const getActiveFilterLabels = () => {
-    const labels = [];
+    if (activeTab === "paquetes") {
+      const labels: string[] = [];
+      if (packageFilters.location) labels.push(packageFilters.location);
+      if (packageFilters.package_type !== "todos") labels.push(packageFilters.package_type.replace(/_/g, " "));
+      if (packageFilters.price_min) labels.push(`≥$${packageFilters.price_min}`);
+      if (packageFilters.price_max) labels.push(`≤$${packageFilters.price_max}`);
+      if (packageFilters.min_people) labels.push(`≥${packageFilters.min_people} pers.`);
+      if (packageFilters.available_date) labels.push(packageFilters.available_date);
+      if (packageFilters.component_type) labels.push(packageFilters.component_type);
+      if (packageFilters.component_name) labels.push(packageFilters.component_name);
+      return labels;
+    }
+    const labels: string[] = [];
     if (filters.category !== "todas") labels.push(filters.category);
     if (filters.type !== "todas") labels.push(filters.type === "premium" ? "Premium" : filters.type);
     if (filters.difficulty !== "todas") labels.push(filters.difficulty);
@@ -324,6 +333,17 @@ const Routes = () => {
   };
 
   const activeLabels = getActiveFilterLabels();
+
+  const packageQueryFilters: PackageQueryFilters = {
+    location: packageFilters.location || undefined,
+    price_min: packageFilters.price_min || undefined,
+    price_max: packageFilters.price_max || undefined,
+    min_people: packageFilters.min_people || undefined,
+    package_type: packageFilters.package_type !== "todos" ? packageFilters.package_type : undefined,
+    available_date: packageFilters.available_date || undefined,
+    component_type: packageFilters.component_type || undefined,
+    component_name: packageFilters.component_name || undefined,
+  };
 
   return (
     <div className="min-h-screen bg-background pb-20">
