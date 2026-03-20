@@ -5,16 +5,18 @@ import RouteFiltersDialog, { type RouteFilters } from "@/components/RouteFilters
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Search, SlidersHorizontal, Loader2, X, TreePine, Home as HomeIcon } from "lucide-react";
+import { Search, SlidersHorizontal, Loader2, X, TreePine, Home as HomeIcon, Package } from "lucide-react";
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useRoutes } from "@/hooks/useRoutes";
 import { useHospedajes } from "@/hooks/useHospedajes";
+import { useAdventurePackages } from "@/hooks/useAdventurePackages";
 import HospedajeCard from "@/components/HospedajeCard";
+import AdventurePackageCard from "@/components/AdventurePackageCard";
 import { Skeleton } from "@/components/ui/skeleton";
 import EmptyRoutesScene from "@/components/EmptyRoutesScene";
 import { cn } from "@/lib/utils";
 
-type ExperienceTab = "rutas" | "hospedajes";
+type ExperienceTab = "rutas" | "hospedajes" | "paquetes";
 
 const HospedajesTab = () => {
   const {
@@ -110,6 +112,100 @@ const HospedajesTab = () => {
   );
 };
 
+const PaquetesTab = () => {
+  const {
+    data,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    isLoading,
+    isError,
+    error,
+  } = useAdventurePackages();
+
+  const observerRef = useRef<IntersectionObserver | null>(null);
+  const loadMoreRef = useRef<HTMLDivElement | null>(null);
+
+  const handleObserver = useCallback((entries: IntersectionObserverEntry[]) => {
+    const [target] = entries;
+    if (target.isIntersecting && hasNextPage && !isFetchingNextPage) {
+      fetchNextPage();
+    }
+  }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
+
+  useEffect(() => {
+    const element = loadMoreRef.current;
+    if (!element) return;
+    observerRef.current = new IntersectionObserver(handleObserver, { root: null, rootMargin: "100px", threshold: 0.1 });
+    observerRef.current.observe(element);
+    return () => { observerRef.current?.disconnect(); };
+  }, [handleObserver]);
+
+  const allPackages = data?.pages.flatMap((page) => page.results) ?? [];
+
+  if (isLoading) {
+    return (
+      <div className="grid gap-4">
+        {[...Array(3)].map((_, i) => (
+          <div key={i} className="rounded-lg overflow-hidden border border-border">
+            <Skeleton className="h-32 w-full" />
+            <div className="p-4 space-y-3">
+              <Skeleton className="h-5 w-3/4" />
+              <Skeleton className="h-4 w-full" />
+              <Skeleton className="h-4 w-1/2" />
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+  }
+
+  if (isError) {
+    return (
+      <div className="text-center py-12">
+        <p className="text-destructive mb-2">Error al cargar los paquetes</p>
+        <p className="text-muted-foreground text-sm">{(error as Error)?.message}</p>
+      </div>
+    );
+  }
+
+  if (allPackages.length === 0) {
+    return (
+      <div className="text-center py-16 animate-fade-in">
+        <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-4">
+          <Package className="w-8 h-8 text-primary" />
+        </div>
+        <h3 className="font-bold text-foreground text-lg mb-2">Sin paquetes</h3>
+        <p className="text-sm text-muted-foreground max-w-xs mx-auto">
+          No se encontraron paquetes de aventura disponibles en este momento.
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <>
+      <div className="grid gap-4">
+        {allPackages.map((pkg, index) => (
+          <div key={pkg.id} className="route-card-stagger" style={{ animationDelay: `${index * 100}ms` }}>
+            <AdventurePackageCard pkg={pkg} />
+          </div>
+        ))}
+      </div>
+      <div ref={loadMoreRef} className="py-4 flex justify-center">
+        {isFetchingNextPage && (
+          <div className="flex items-center gap-2 text-muted-foreground">
+            <Loader2 className="w-4 h-4 animate-spin" />
+            <span className="text-sm">Cargando más paquetes...</span>
+          </div>
+        )}
+        {!hasNextPage && allPackages.length > 0 && (
+          <p className="text-muted-foreground text-sm">No hay más paquetes</p>
+        )}
+      </div>
+    </>
+  );
+};
 
 const Routes = () => {
   const [activeTab, setActiveTab] = useState<ExperienceTab>("rutas");
@@ -230,7 +326,7 @@ const Routes = () => {
     <div className="min-h-screen bg-background pb-20">
       {/* Hero zone — background scenery like Home */}
       <div className="relative bg-gradient-to-br from-primary/15 via-background to-accent/10 overflow-hidden">
-        <RoutesHeroScene mode={activeTab} scrollY={scrollY} />
+        <RoutesHeroScene mode={activeTab === "paquetes" ? "rutas" : activeTab} scrollY={scrollY} />
 
         {/* All content overlaid on scenery */}
         <div className="relative z-10 pt-6 pb-28 px-4">
@@ -268,6 +364,18 @@ const Routes = () => {
               >
                 <HomeIcon className="w-4 h-4" />
                 Hospedajes
+              </button>
+              <button
+                onClick={() => setActiveTab("paquetes")}
+                className={cn(
+                  "flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium transition-all",
+                  activeTab === "paquetes"
+                    ? "bg-primary text-primary-foreground shadow-lg shadow-primary/25"
+                    : "backdrop-blur-md bg-card/70 border border-border text-muted-foreground hover:text-foreground dark:bg-foreground/[0.06] dark:border-foreground/[0.08]"
+                )}
+              >
+                <Package className="w-4 h-4" />
+                Paquetes
               </button>
             </div>
 
@@ -407,8 +515,10 @@ const Routes = () => {
               )}
             </div>
           </>
-        ) : (
+        ) : activeTab === "hospedajes" ? (
           <HospedajesTab />
+        ) : (
+          <PaquetesTab />
         )}
       </main>
 
