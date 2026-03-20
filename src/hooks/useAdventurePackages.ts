@@ -107,11 +107,11 @@ const fetchPackageById = async (id: string, token: string | null): Promise<Adven
   return response.json();
 };
 
-export const useAdventurePackages = () => {
+export const useAdventurePackages = (filters?: PackageQueryFilters) => {
   const token = getStoredAccessToken();
   return useInfiniteQuery({
-    queryKey: ["adventurePackages"],
-    queryFn: ({ pageParam = 1 }) => fetchPackages(pageParam, token),
+    queryKey: ["adventurePackages", filters],
+    queryFn: ({ pageParam = 1 }) => fetchPackages(pageParam, token, filters),
     getNextPageParam: (lastPage) => {
       const totalPages = Math.ceil(lastPage.count / lastPage.page_size);
       return lastPage.page < totalPages ? lastPage.page + 1 : undefined;

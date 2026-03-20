@@ -14,40 +14,55 @@ const getStoredAccessToken = (): string | null => {
 };
 
 export interface PackageDateAvailability {
-  package_id: string;
   date: string;
   weekday: number;
   is_day_available: boolean;
-  is_available: boolean;
   booked_count: number;
   available_guests: number;
-  max_people?: number;
+  is_available: boolean;
 }
 
-const fetchPackageAvailability = async (
+export interface PackageMonthAvailability {
+  package_id: string;
+  year: number;
+  month: number;
+  dates: PackageDateAvailability[];
+}
+
+const fetchPackageMonthAvailability = async (
   packageId: string,
-  date: string,
+  month: number,
+  year: number,
   token: string | null
-): Promise<PackageDateAvailability> => {
+): Promise<PackageMonthAvailability> => {
   const headers: HeadersInit = {};
   if (token) headers["Authorization"] = `Bearer ${token}`;
 
+  const params = new URLSearchParams({
+    id: packageId,
+    month: String(month),
+    year: String(year),
+  });
+
   const response = await fetch(
-    `${API_BASE_URL}/hospedaje/packages/availability/?id=${packageId}&date=${date}`,
+    `${API_BASE_URL}/hospedaje/packages/availability/?${params.toString()}`,
     { headers }
   );
 
-  if (!response.ok) throw new Error("Error al consultar disponibilidad");
+  if (!response.ok) throw new Error("Error al consultar disponibilidad mensual");
   return response.json();
 };
 
-export const usePackageAvailability = (packageId: string | undefined, date: string | undefined) => {
+export const usePackageMonthAvailability = (
+  packageId: string | undefined,
+  month: number,
+  year: number
+) => {
   const token = getStoredAccessToken();
   return useQuery({
-    queryKey: ["packageAvailability", packageId, date],
-    queryFn: () => fetchPackageAvailability(packageId!, date!, token),
-    enabled: !!packageId && !!date,
-    staleTime: 0,
-    refetchOnMount: "always",
+    queryKey: ["packageMonthAvailability", packageId, month, year],
+    queryFn: () => fetchPackageMonthAvailability(packageId!, month, year, token),
+    enabled: !!packageId,
+    staleTime: 60_000,
   });
 };
