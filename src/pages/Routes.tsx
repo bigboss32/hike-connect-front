@@ -231,7 +231,9 @@ const Routes = () => {
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [debouncedSearch, setDebouncedSearch] = useState<string>("");
   const [showFiltersModal, setShowFiltersModal] = useState(false);
-  
+  const [packageFilters, setPackageFilters] = useState<PackageFilters>(defaultPackageFilters);
+  const [showPackageFilters, setShowPackageFilters] = useState(false);
+
   const observerRef = useRef<IntersectionObserver | null>(null);
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
 
