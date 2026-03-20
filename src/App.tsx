@@ -20,6 +20,7 @@ import Auth from "./pages/Auth";
 import Legends from "./pages/Legends";
 import BookingChat from "./pages/BookingChat";
 import HospedajeDetail from "./pages/HospedajeDetail";
+import AdventurePackageDetail from "./pages/AdventurePackageDetail";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
