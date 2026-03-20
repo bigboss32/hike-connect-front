@@ -16,7 +16,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import EmptyRoutesScene from "@/components/EmptyRoutesScene";
 import { cn } from "@/lib/utils";
 
-type ExperienceTab = "rutas" | "hospedajes";
+type ExperienceTab = "rutas" | "hospedajes" | "paquetes";
 
 const HospedajesTab = () => {
   const {
