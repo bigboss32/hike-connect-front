@@ -65,11 +65,34 @@ interface PackagesResponse {
   results: AdventurePackage[];
 }
 
-const fetchPackages = async (page: number, token: string | null): Promise<PackagesResponse> => {
+export interface PackageQueryFilters {
+  location?: string;
+  price_min?: string;
+  price_max?: string;
+  min_people?: string;
+  package_type?: string;
+  available_date?: string;
+  component_type?: string;
+  component_name?: string;
+}
+
+const fetchPackages = async (page: number, token: string | null, filters?: PackageQueryFilters): Promise<PackagesResponse> => {
   const headers: HeadersInit = {};
   if (token) headers["Authorization"] = `Bearer ${token}`;
 
-  const response = await fetch(`${API_BASE_URL}/hospedaje/packages/?page=${page}`, { headers });
+  const params = new URLSearchParams({ page: String(page) });
+  if (filters) {
+    if (filters.location) params.set("location", filters.location);
+    if (filters.price_min) params.set("price_min", filters.price_min);
+    if (filters.price_max) params.set("price_max", filters.price_max);
+    if (filters.min_people) params.set("min_people", filters.min_people);
+    if (filters.package_type && filters.package_type !== "todos") params.set("package_type", filters.package_type);
+    if (filters.available_date) params.set("available_date", filters.available_date);
+    if (filters.component_type) params.set("component_type", filters.component_type);
+    if (filters.component_name) params.set("component_name", filters.component_name);
+  }
+
+  const response = await fetch(`${API_BASE_URL}/hospedaje/packages/?${params.toString()}`, { headers });
   if (!response.ok) throw new Error("Error al cargar los paquetes de aventura");
   const data = await response.json();
   return { ...data, page };
