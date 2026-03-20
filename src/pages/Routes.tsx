@@ -5,7 +5,7 @@ import RouteFiltersDialog, { type RouteFilters } from "@/components/RouteFilters
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Search, SlidersHorizontal, Loader2, X, TreePine, Home as HomeIcon } from "lucide-react";
+import { Search, SlidersHorizontal, Loader2, X, TreePine, Home as HomeIcon, Package } from "lucide-react";
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useRoutes } from "@/hooks/useRoutes";
 import { useHospedajes } from "@/hooks/useHospedajes";
