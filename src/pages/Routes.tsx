@@ -408,7 +408,7 @@ const Routes = () => {
                 <div className="relative flex-1">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                   <Input
-                    placeholder={activeTab === "rutas" ? "Buscar rutas..." : "Buscar hospedajes..."}
+                    placeholder={activeTab === "rutas" ? "Buscar rutas..." : activeTab === "hospedajes" ? "Buscar hospedajes..." : "Buscar paquetes..."}
                     className="pl-10 backdrop-blur-md bg-card/80 border-border text-foreground placeholder:text-muted-foreground/70 shadow-sm dark:bg-foreground/[0.06] dark:border-foreground/[0.08]"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
