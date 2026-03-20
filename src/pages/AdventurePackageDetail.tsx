@@ -1,5 +1,6 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useAdventurePackageById } from "@/hooks/useAdventurePackages";
+import PackageAvailabilityCalendar from "@/components/PackageAvailabilityCalendar";
 import Navigation from "@/components/Navigation";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -162,7 +163,7 @@ const AdventurePackageDetail = () => {
           </Card>
         )}
 
-        {/* Availability */}
+        {/* Availability calendar */}
         <Card>
           <CardContent className="p-5">
             <h2 className="font-semibold text-foreground mb-3 flex items-center gap-2">
@@ -174,21 +175,22 @@ const AdventurePackageDetail = () => {
                 <Badge key={day} variant="secondary">{day}</Badge>
               ))}
             </div>
-            <p className="text-xs text-muted-foreground capitalize">
+            <p className="text-xs text-muted-foreground capitalize mb-4">
               Frecuencia: {pkg.frequency}
             </p>
             {pkg.booking_rules?.min_nights && (
-              <div className="flex items-center gap-1 text-xs text-muted-foreground mt-1">
+              <div className="flex items-center gap-1 text-xs text-muted-foreground mb-1">
                 <Clock className="w-3 h-3" />
                 Mínimo {pkg.booking_rules.min_nights} noche(s)
               </div>
             )}
             {pkg.pricing_rules?.weekend_multiplier && (
-              <div className="flex items-center gap-1 text-xs text-muted-foreground mt-1">
+              <div className="flex items-center gap-1 text-xs text-muted-foreground mb-4">
                 <DollarSign className="w-3 h-3" />
                 Fin de semana: ×{pkg.pricing_rules.weekend_multiplier}
               </div>
             )}
+            <PackageAvailabilityCalendar packageId={pkg.id} />
           </CardContent>
         </Card>
       </div>
