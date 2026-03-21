@@ -155,14 +155,31 @@ const AdventurePackageDetail = () => {
           <Card>
             <CardContent className="p-5">
               <h2 className="font-semibold text-foreground mb-3">Componentes</h2>
-              <div className="space-y-2">
+              <div className="space-y-4">
                 {pkg.components.map((comp, i) => (
-                  <div key={i} className="flex items-center justify-between p-3 rounded-lg bg-muted/50">
-                    <div>
-                      <p className="text-sm font-medium text-foreground">{comp.nombre}</p>
-                      <p className="text-xs text-muted-foreground capitalize">{comp.tipo}</p>
+                  <div key={i} className="rounded-lg bg-muted/50 overflow-hidden">
+                    {/* Component images carousel */}
+                    {comp.imagenes && comp.imagenes.length > 0 && (
+                      <div className="flex gap-2 overflow-x-auto p-2 scrollbar-hide">
+                        {comp.imagenes
+                          .sort((a, b) => a.order - b.order)
+                          .map((img) => (
+                            <img
+                              key={img.id}
+                              src={img.url}
+                              alt={img.caption}
+                              className="h-24 w-32 rounded-md object-cover shrink-0"
+                            />
+                          ))}
+                      </div>
+                    )}
+                    <div className="flex items-center justify-between p-3">
+                      <div>
+                        <p className="text-sm font-medium text-foreground">{comp.nombre}</p>
+                        <p className="text-xs text-muted-foreground capitalize">{comp.tipo}</p>
+                      </div>
+                      <Badge variant="outline">×{comp.cantidad}</Badge>
                     </div>
-                    <Badge variant="outline">×{comp.cantidad}</Badge>
                   </div>
                 ))}
               </div>
