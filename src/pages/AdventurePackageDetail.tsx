@@ -70,8 +70,15 @@ const AdventurePackageDetail = () => {
   return (
     <div className="min-h-screen bg-background pb-20">
       {/* Header */}
-      <div className="relative h-52 bg-gradient-to-br from-primary/25 via-accent/15 to-primary/10 flex items-center justify-center">
-        <Package className="w-20 h-20 text-primary/30" />
+      <div className="relative h-52 overflow-hidden">
+        {pkg.banner ? (
+          <img src={pkg.banner} alt={pkg.title} className="w-full h-full object-cover" />
+        ) : (
+          <div className="w-full h-full bg-gradient-to-br from-primary/25 via-accent/15 to-primary/10 flex items-center justify-center">
+            <Package className="w-20 h-20 text-primary/30" />
+          </div>
+        )}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
         <Button
           variant="ghost"
           size="icon"
