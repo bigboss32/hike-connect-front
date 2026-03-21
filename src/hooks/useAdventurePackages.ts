@@ -18,11 +18,19 @@ export interface PackageActivity {
   name: string;
 }
 
+export interface ComponentImage {
+  id: string;
+  url: string;
+  caption: string;
+  order: number;
+}
+
 export interface PackageComponent {
   tipo: string;
   nombre: string;
   cantidad: number;
   imagen?: string;
+  imagenes?: ComponentImage[];
 }
 
 export interface AdventurePackage {
@@ -31,6 +39,7 @@ export interface AdventurePackage {
   created_by: string;
   title: string;
   description: string;
+  banner?: string;
   location: string;
   address: string;
   coordinates: { lat: number; lng: number };

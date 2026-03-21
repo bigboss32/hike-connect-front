@@ -31,9 +31,15 @@ const AdventurePackageCard = ({ pkg }: { pkg: AdventurePackage }) => {
       className="overflow-hidden shadow-soft hover:shadow-elevated transition-all cursor-pointer"
       onClick={() => navigate(`/paquetes/${pkg.id}`)}
     >
-      {/* Header with gradient instead of image */}
-      <div className="relative h-32 bg-gradient-to-br from-primary/20 via-accent/15 to-primary/10 flex items-center justify-center">
-        <Package className="w-12 h-12 text-primary/40" />
+      {/* Header with banner or gradient fallback */}
+      <div className="relative h-32 overflow-hidden">
+        {pkg.banner ? (
+          <img src={pkg.banner} alt={pkg.title} className="w-full h-full object-cover" />
+        ) : (
+          <div className="w-full h-full bg-gradient-to-br from-primary/20 via-accent/15 to-primary/10 flex items-center justify-center">
+            <Package className="w-12 h-12 text-primary/40" />
+          </div>
+        )}
         <Badge className="absolute top-2 right-2 bg-primary text-primary-foreground">
           {packageTypeLabels[pkg.package_type] || pkg.package_type}
         </Badge>
