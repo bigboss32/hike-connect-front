@@ -1,0 +1,160 @@
+import { useEffect, useRef, useState, useCallback } from "react";
+import { useAuth } from "@/contexts/AuthContext";
+
+const API_BASE_URL = "https://hike-connect-back.onrender.com/api/v1";
+const WS_BASE_URL = "wss://hike-connect-back.onrender.com/ws/chat/payment";
+
+export interface PaymentChatMessage {
+  id: string;
+  message: string;
+  sender_id: string | number;
+  sender_username: string;
+  sender_avatar?: string | null;
+  created_at: string;
+}
+
+interface UsePaymentChatOptions {
+  paymentId: string | undefined;
+  pageSize?: number;
+}
+
+export const usePaymentChat = ({ paymentId, pageSize = 30 }: UsePaymentChatOptions) => {
+  const { authFetch, getAccessToken, refreshAccessToken, user } = useAuth();
+  const [messages, setMessages] = useState<PaymentChatMessage[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [isConnected, setIsConnected] = useState(false);
+  const wsRef = useRef<WebSocket | null>(null);
+  const reconnectTimeoutRef = useRef<ReturnType<typeof setTimeout>>();
+  const pingIntervalRef = useRef<ReturnType<typeof setInterval>>();
+  const reconnectAttemptsRef = useRef(0);
+
+  // Fetch initial history
+  useEffect(() => {
+    if (!paymentId) return;
+    let cancelled = false;
+    setLoading(true);
+    (async () => {
+      try {
+        const res = await authFetch(
+          `${API_BASE_URL}/payments/${paymentId}/chat/?page=1&page_size=${pageSize}`
+        );
+        if (!res.ok) throw new Error("Error al cargar mensajes");
+        const data = await res.json();
+        const items: PaymentChatMessage[] = data.results || data.data || [];
+        // API returns most-recent-first; reverse for chat display (oldest at top)
+        if (!cancelled) setMessages([...items].reverse());
+      } catch (e) {
+        console.error(e);
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [paymentId, pageSize, authFetch]);
+
+  // WebSocket connection
+  const connect = useCallback(async () => {
+    if (!paymentId) return;
+
+    if (wsRef.current) {
+      wsRef.current.close();
+      wsRef.current = null;
+    }
+
+    let token = getAccessToken();
+    if (!token) {
+      token = await refreshAccessToken();
+      if (!token) return;
+    }
+
+    const ws = new WebSocket(`${WS_BASE_URL}/${paymentId}/?token=${token}`);
+    wsRef.current = ws;
+
+    ws.onopen = () => {
+      setIsConnected(true);
+      reconnectAttemptsRef.current = 0;
+      // Keep-alive ping every 30s
+      pingIntervalRef.current = setInterval(() => {
+        if (ws.readyState === WebSocket.OPEN) {
+          ws.send(JSON.stringify({ type: "ping" }));
+        }
+      }, 30000);
+    };
+
+    ws.onmessage = (event) => {
+      try {
+        const data = JSON.parse(event.data);
+        if (data.type === "new_message") {
+          const msg: PaymentChatMessage = {
+            id: data.id,
+            message: data.message,
+            sender_id: data.sender_id,
+            sender_username: data.sender_username,
+            sender_avatar: data.sender_avatar ?? null,
+            created_at: data.created_at,
+          };
+          setMessages((prev) => {
+            if (prev.some((m) => m.id === msg.id)) return prev;
+            return [...prev, msg];
+          });
+        }
+      } catch (err) {
+        console.error("WS parse error:", err);
+      }
+    };
+
+    ws.onerror = () => {
+      // handled in onclose
+    };
+
+    ws.onclose = async (event) => {
+      setIsConnected(false);
+      if (pingIntervalRef.current) clearInterval(pingIntervalRef.current);
+
+      if (event.code === 4001) {
+        const newToken = await refreshAccessToken();
+        if (newToken) {
+          reconnectAttemptsRef.current = 0;
+          connect();
+        }
+        return;
+      }
+
+      if (event.code !== 1000 && reconnectAttemptsRef.current < 5) {
+        const delay = 1000 * Math.pow(2, reconnectAttemptsRef.current);
+        reconnectAttemptsRef.current++;
+        reconnectTimeoutRef.current = setTimeout(connect, delay);
+      }
+    };
+  }, [paymentId, getAccessToken, refreshAccessToken]);
+
+  useEffect(() => {
+    connect();
+    return () => {
+      clearTimeout(reconnectTimeoutRef.current);
+      if (pingIntervalRef.current) clearInterval(pingIntervalRef.current);
+      if (wsRef.current) {
+        wsRef.current.close(1000, "unmount");
+        wsRef.current = null;
+      }
+    };
+  }, [connect]);
+
+  const sendMessage = useCallback((message: string) => {
+    const text = message.trim();
+    if (!text) return false;
+    if (wsRef.current?.readyState !== WebSocket.OPEN) return false;
+    wsRef.current.send(JSON.stringify({ type: "message", message: text }));
+    return true;
+  }, []);
+
+  return {
+    messages,
+    loading,
+    isConnected,
+    sendMessage,
+    currentUserId: user?.id,
+  };
+};
