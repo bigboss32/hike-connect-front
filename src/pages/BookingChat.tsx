@@ -5,92 +5,51 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   ArrowLeft,
   Send,
-  Phone,
   MoreVertical,
   MapPin,
-  CheckCheck,
-  Clock,
   Image as ImageIcon,
+  Loader2,
 } from "lucide-react";
-
-// Mock data — will be replaced by real API
-const MOCK_PROVIDER = {
-  name: "Carlos Montoya",
-  avatar: "",
-  role: "Guía Certificado",
-  online: true,
-};
-
-const MOCK_MESSAGES = [
-  {
-    id: "1",
-    content: "¡Hola! Gracias por reservar la ruta. ¿Tienes alguna pregunta sobre el recorrido?",
-    sender: "provider",
-    timestamp: new Date(Date.now() - 3600000 * 2),
-    read: true,
-  },
-  {
-    id: "2",
-    content: "Hola Carlos! Sí, quería saber si necesito llevar botas especiales o con unas de trekking normales está bien",
-    sender: "user",
-    timestamp: new Date(Date.now() - 3600000 * 1.5),
-    read: true,
-  },
-  {
-    id: "3",
-    content: "Con botas de trekking normales estás perfecto. Eso sí, asegúrate de que tengan buen agarre porque hay tramos con piedra húmeda 🥾",
-    sender: "provider",
-    timestamp: new Date(Date.now() - 3600000),
-    read: true,
-  },
-  {
-    id: "4",
-    content: "¡Genial! ¿Y el punto de encuentro exacto?",
-    sender: "user",
-    timestamp: new Date(Date.now() - 1800000),
-    read: true,
-  },
-  {
-    id: "5",
-    content: "Nos vemos en la entrada principal del parque, junto a la caseta de guardabosques. Llegaré 15 minutos antes para recibirlos 📍",
-    sender: "provider",
-    timestamp: new Date(Date.now() - 900000),
-    read: false,
-  },
-];
+import { usePaymentChat } from "@/hooks/usePaymentChat";
 
 const formatTime = (date: Date) =>
   date.toLocaleTimeString("es-CO", { hour: "2-digit", minute: "2-digit" });
+
+const initialsOf = (name: string) =>
+  name
+    .split(/\s|_/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((n) => n[0]?.toUpperCase())
+    .join("") || "?";
 
 const BookingChat = () => {
   const { bookingId } = useParams();
   const navigate = useNavigate();
   const { user } = useAuth();
-  const [messages, setMessages] = useState(MOCK_MESSAGES);
+
+  const { messages, loading, isConnected, sendMessage, currentUserId } =
+    usePaymentChat({ paymentId: bookingId });
+
   const [input, setInput] = useState("");
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
+    scrollRef.current?.scrollTo({
+      top: scrollRef.current.scrollHeight,
+      behavior: "smooth",
+    });
   }, [messages]);
 
   const handleSend = () => {
     const text = input.trim();
     if (!text) return;
-    setMessages((prev) => [
-      ...prev,
-      {
-        id: Date.now().toString(),
-        content: text,
-        sender: "user",
-        timestamp: new Date(),
-        read: false,
-      },
-    ]);
-    setInput("");
+    const ok = sendMessage(text);
+    if (ok) setInput("");
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -100,6 +59,13 @@ const BookingChat = () => {
     }
   };
 
+  // Identify the "other" participant for header (first sender that isn't me)
+  const otherParticipant = messages.find(
+    (m) => String(m.sender_id) !== String(currentUserId ?? user?.id)
+  );
+  const headerName = otherParticipant?.sender_username || "Conversación";
+  const headerAvatar = otherParticipant?.sender_avatar || "";
+
   return (
     <div className="flex flex-col h-[100dvh] bg-background">
       {/* Header */}
@@ -108,25 +74,26 @@ const BookingChat = () => {
           <ArrowLeft className="w-5 h-5" />
         </Button>
         <Avatar className="h-9 w-9 shrink-0">
-          <AvatarImage src={MOCK_PROVIDER.avatar} />
+          <AvatarImage src={headerAvatar} />
           <AvatarFallback className="bg-primary/10 text-primary text-sm font-bold">
-            {MOCK_PROVIDER.name.split(" ").map((n) => n[0]).join("")}
+            {initialsOf(headerName)}
           </AvatarFallback>
         </Avatar>
         <div className="flex-1 min-w-0">
-          <p className="text-sm font-semibold text-foreground truncate">{MOCK_PROVIDER.name}</p>
+          <p className="text-sm font-semibold text-foreground truncate">{headerName}</p>
           <div className="flex items-center gap-1.5">
-            {MOCK_PROVIDER.online && (
-              <span className="w-2 h-2 rounded-full bg-primary shrink-0" />
-            )}
-            <span className="text-xs text-muted-foreground">{MOCK_PROVIDER.role}</span>
+            <span
+              className={`w-2 h-2 rounded-full shrink-0 ${
+                isConnected ? "bg-primary" : "bg-muted-foreground/40"
+              }`}
+            />
+            <span className="text-xs text-muted-foreground">
+              {isConnected ? "En línea" : "Conectando..."}
+            </span>
           </div>
         </div>
-        <Button variant="ghost" size="icon" className="shrink-0 text-primary">
-          <Phone className="w-4.5 h-4.5" />
-        </Button>
         <Button variant="ghost" size="icon" className="shrink-0">
-          <MoreVertical className="w-4.5 h-4.5" />
+          <MoreVertical className="w-4 h-4" />
         </Button>
       </header>
 
@@ -134,70 +101,101 @@ const BookingChat = () => {
       <div className="px-4 py-2 bg-primary/5 border-b border-border flex items-center gap-2 shrink-0">
         <MapPin className="w-4 h-4 text-primary shrink-0" />
         <p className="text-xs text-muted-foreground truncate">
-          Reserva <span className="font-medium text-foreground">#{bookingId?.slice(0, 8)}</span> — Conversación con tu guía
+          Reserva <span className="font-medium text-foreground">#{bookingId?.slice(0, 8)}</span> — Coordina los detalles
         </p>
         <Badge variant="outline" className="text-[10px] ml-auto shrink-0 border-primary/30 text-primary">
-          Activa
+          {isConnected ? "Activa" : "Offline"}
         </Badge>
       </div>
 
       {/* Messages */}
       <div ref={scrollRef} className="flex-1 overflow-y-auto px-4 py-4 space-y-3">
-        {/* Date separator */}
-        <div className="flex justify-center">
-          <span className="text-[11px] text-muted-foreground bg-muted/60 px-3 py-1 rounded-full">
-            Hoy
-          </span>
-        </div>
-
-        {messages.map((msg) => {
-          const isUser = msg.sender === "user";
-          return (
-            <div key={msg.id} className={`flex ${isUser ? "justify-end" : "justify-start"}`}>
-              <div
-                className={`max-w-[80%] rounded-2xl px-3.5 py-2.5 ${
-                  isUser
-                    ? "bg-primary text-primary-foreground rounded-br-md"
-                    : "bg-muted text-foreground rounded-bl-md"
-                }`}
-              >
-                <p className="text-sm leading-relaxed whitespace-pre-wrap">{msg.content}</p>
-                <div className={`flex items-center gap-1 mt-1 ${isUser ? "justify-end" : "justify-start"}`}>
-                  <span className={`text-[10px] ${isUser ? "text-primary-foreground/60" : "text-muted-foreground"}`}>
-                    {formatTime(msg.timestamp)}
-                  </span>
-                  {isUser && (
-                    msg.read
-                      ? <CheckCheck className="w-3.5 h-3.5 text-primary-foreground/60" />
-                      : <Clock className="w-3 h-3 text-primary-foreground/40" />
-                  )}
-                </div>
-              </div>
+        {loading ? (
+          <div className="space-y-3">
+            <Skeleton className="h-12 w-2/3 rounded-2xl" />
+            <Skeleton className="h-12 w-1/2 rounded-2xl ml-auto" />
+            <Skeleton className="h-12 w-3/5 rounded-2xl" />
+          </div>
+        ) : messages.length === 0 ? (
+          <div className="flex flex-col items-center justify-center h-full text-center text-muted-foreground gap-2 py-12">
+            <MapPin className="w-8 h-8 opacity-40" />
+            <p className="text-sm">Inicia la conversación con tu ofertante</p>
+            <p className="text-xs opacity-70">Coordina punto de encuentro, dudas y logística.</p>
+          </div>
+        ) : (
+          <>
+            <div className="flex justify-center">
+              <span className="text-[11px] text-muted-foreground bg-muted/60 px-3 py-1 rounded-full">
+                Conversación
+              </span>
             </div>
-          );
-        })}
+            {messages.map((msg) => {
+              const isUser = String(msg.sender_id) === String(currentUserId ?? user?.id);
+              const ts = new Date(msg.created_at);
+              return (
+                <div key={msg.id} className={`flex ${isUser ? "justify-end" : "justify-start"}`}>
+                  <div
+                    className={`max-w-[80%] rounded-2xl px-3.5 py-2.5 ${
+                      isUser
+                        ? "bg-primary text-primary-foreground rounded-br-md"
+                        : "bg-muted text-foreground rounded-bl-md"
+                    }`}
+                  >
+                    {!isUser && (
+                      <p className="text-[11px] font-semibold text-primary mb-0.5">
+                        {msg.sender_username}
+                      </p>
+                    )}
+                    <p className="text-sm leading-relaxed whitespace-pre-wrap break-words">
+                      {msg.message}
+                    </p>
+                    <div
+                      className={`flex items-center gap-1 mt-1 ${
+                        isUser ? "justify-end" : "justify-start"
+                      }`}
+                    >
+                      <span
+                        className={`text-[10px] ${
+                          isUser ? "text-primary-foreground/60" : "text-muted-foreground"
+                        }`}
+                      >
+                        {formatTime(ts)}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </>
+        )}
       </div>
 
       {/* Input bar */}
       <div className="px-3 py-2.5 border-t border-border bg-card safe-bottom shrink-0">
         <div className="flex items-center gap-2 max-w-lg mx-auto">
-          <Button variant="ghost" size="icon" className="shrink-0 text-muted-foreground">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="shrink-0 text-muted-foreground"
+            disabled
+          >
             <ImageIcon className="w-5 h-5" />
           </Button>
           <Input
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder="Escribe un mensaje..."
+            placeholder={isConnected ? "Escribe un mensaje..." : "Conectando al chat..."}
+            disabled={!isConnected}
             className="flex-1 rounded-full bg-muted/50 border-none focus-visible:ring-1 focus-visible:ring-primary/30"
           />
           <Button
             size="icon"
             className="shrink-0 rounded-full"
-            disabled={!input.trim()}
+            disabled={!input.trim() || !isConnected}
             onClick={handleSend}
           >
-            <Send className="w-4 h-4" />
+            {isConnected ? <Send className="w-4 h-4" /> : <Loader2 className="w-4 h-4 animate-spin" />}
           </Button>
         </div>
       </div>
