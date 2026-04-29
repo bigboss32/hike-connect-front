@@ -115,8 +115,27 @@ export const usePaymentChat = ({ paymentId, pageSize = 30 }: UsePaymentChatOptio
         };
 
         setMessages((prev) => {
+          // Skip if exact same id already exists
           if (prev.some((m) => String(m.id) === String(msg.id))) return prev;
-          return [...prev, msg];
+
+          // Replace optimistic local message: same sender + same text within last 30s
+          const msgTime = new Date(msg.created_at).getTime();
+          const optimisticIdx = prev.findIndex(
+            (m) =>
+              String(m.id).startsWith("local-") &&
+              String(m.sender_id) === String(msg.sender_id) &&
+              m.message.trim() === msg.message.trim() &&
+              Math.abs(new Date(m.created_at).getTime() - msgTime) < 30000
+          );
+          if (optimisticIdx !== -1) {
+            const next = [...prev];
+            next[optimisticIdx] = msg;
+            return next;
+          }
+
+          return [...prev, msg].sort(
+            (a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+          );
         });
       } catch (err) {
         console.error("WS parse error:", err);
