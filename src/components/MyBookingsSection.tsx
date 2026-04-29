@@ -4,6 +4,7 @@ import { Ticket, CalendarDays, Users, ChevronRight, MessageCircle } from "lucide
 import { useAuth } from "@/contexts/AuthContext";
 import { Link } from "react-router-dom";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useUnreadBookingChats } from "@/hooks/useUnreadBookingChats";
 
 const API_BASE_URL = "https://hike-connect-back.onrender.com/api/v1";
 
@@ -33,6 +34,9 @@ const MyBookingsSection = () => {
   const { authFetch } = useAuth();
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);
+  const { unreadMap } = useUnreadBookingChats(
+    bookings.map((b) => ({ payment_id: b.payment_id, ruta_title: b.ruta_title }))
+  );
 
   useEffect(() => {
     const fetchBookings = async () => {
@@ -121,10 +125,15 @@ const MyBookingsSection = () => {
             </Link>
             <Link
               to={`/booking-chat/${b.payment_id}`}
-              className="shrink-0 p-1.5 rounded-full bg-primary/15 hover:bg-primary/25 transition-colors"
+              className="shrink-0 relative p-1.5 rounded-full bg-primary/15 hover:bg-primary/25 transition-colors"
               onClick={(e) => e.stopPropagation()}
             >
               <MessageCircle className="w-3.5 h-3.5 text-primary" />
+              {unreadMap[b.payment_id] > 0 && (
+                <span className="absolute -top-1 -right-1 min-w-[16px] h-4 px-1 rounded-full bg-destructive text-destructive-foreground text-[9px] font-bold flex items-center justify-center ring-2 ring-background animate-pulse">
+                  {unreadMap[b.payment_id] > 9 ? "9+" : unreadMap[b.payment_id]}
+                </span>
+              )}
             </Link>
             <Link to={`/routes/${b.ruta_id}`} className="shrink-0">
               <ChevronRight className="w-4 h-4 text-muted-foreground/60" />

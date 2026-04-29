@@ -15,6 +15,7 @@ import {
   Loader2,
 } from "lucide-react";
 import { usePaymentChat } from "@/hooks/usePaymentChat";
+import { useUnreadBookingChats } from "@/hooks/useUnreadBookingChats";
 
 const formatTime = (date: Date) =>
   date.toLocaleTimeString("es-CO", { hour: "2-digit", minute: "2-digit" });
@@ -35,8 +36,15 @@ const BookingChat = () => {
   const { messages, loading, isConnected, sendMessage, currentUserId } =
     usePaymentChat({ paymentId: bookingId });
 
+  const { markAsSeen } = useUnreadBookingChats([]);
+
   const [input, setInput] = useState("");
   const scrollRef = useRef<HTMLDivElement>(null);
+
+  // Mark this conversation as seen when entering and whenever new messages arrive
+  useEffect(() => {
+    if (bookingId) markAsSeen(bookingId);
+  }, [bookingId, messages.length, markAsSeen]);
 
   useEffect(() => {
     const el = scrollRef.current;
