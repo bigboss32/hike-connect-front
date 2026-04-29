@@ -160,13 +160,31 @@ export const usePaymentChat = ({ paymentId, pageSize = 30 }: UsePaymentChatOptio
     };
   }, [connect]);
 
-  const sendMessage = useCallback((message: string) => {
-    const text = message.trim();
-    if (!text) return false;
-    if (wsRef.current?.readyState !== WebSocket.OPEN) return false;
-    wsRef.current.send(JSON.stringify({ type: "message", message: text }));
-    return true;
-  }, []);
+  const sendMessage = useCallback(
+    (message: string) => {
+      const text = message.trim();
+      if (!text) return false;
+      if (wsRef.current?.readyState !== WebSocket.OPEN) return false;
+      wsRef.current.send(JSON.stringify({ type: "message", message: text }));
+
+      // Optimistic local append so the sender sees the message immediately
+      // even if the backend does not echo it back via WS.
+      const tempId = `local-${Date.now()}`;
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: tempId,
+          message: text,
+          sender_id: user?.id ?? "",
+          sender_username: user?.name || user?.first_name || "Tú",
+          sender_avatar: user?.avatar ?? null,
+          created_at: new Date().toISOString(),
+        },
+      ]);
+      return true;
+    },
+    [user]
+  );
 
   return {
     messages,
