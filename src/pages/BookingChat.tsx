@@ -39,11 +39,13 @@ const BookingChat = () => {
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    scrollRef.current?.scrollTo({
-      top: scrollRef.current.scrollHeight,
-      behavior: "smooth",
+    const el = scrollRef.current;
+    if (!el) return;
+    // Ensure DOM is painted before scrolling to bottom (WhatsApp-style)
+    requestAnimationFrame(() => {
+      el.scrollTop = el.scrollHeight;
     });
-  }, [messages]);
+  }, [messages, loading]);
 
   const handleSend = () => {
     const text = input.trim();
