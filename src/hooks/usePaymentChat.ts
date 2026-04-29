@@ -86,20 +86,38 @@ export const usePaymentChat = ({ paymentId, pageSize = 30 }: UsePaymentChatOptio
     ws.onmessage = (event) => {
       try {
         const data = JSON.parse(event.data);
-        if (data.type === "new_message") {
-          const msg: PaymentChatMessage = {
-            id: data.id,
-            message: data.message,
-            sender_id: data.sender_id,
-            sender_username: data.sender_username,
-            sender_avatar: data.sender_avatar ?? null,
-            created_at: data.created_at,
-          };
-          setMessages((prev) => {
-            if (prev.some((m) => m.id === msg.id)) return prev;
-            return [...prev, msg];
-          });
-        }
+        console.log("[PaymentChat WS] msg:", data);
+
+        // Ignore pongs / connection acks
+        if (data.type === "pong" || data.type === "connection_established") return;
+
+        // Accept any payload that looks like a chat message:
+        // backend may send { type: "new_message" | "message" | "chat_message", ... }
+        // or even bare message objects.
+        const looksLikeMessage =
+          data && (data.message || data.content) && (data.id || data.created_at);
+
+        const isMessageType =
+          data?.type === "new_message" ||
+          data?.type === "message" ||
+          data?.type === "chat_message" ||
+          data?.type === "chat.message";
+
+        if (!isMessageType && !looksLikeMessage) return;
+
+        const msg: PaymentChatMessage = {
+          id: String(data.id ?? `${data.sender_id ?? "x"}-${data.created_at ?? Date.now()}`),
+          message: data.message ?? data.content ?? "",
+          sender_id: data.sender_id ?? data.user_id ?? data.sender ?? "",
+          sender_username: data.sender_username ?? data.username ?? "Usuario",
+          sender_avatar: data.sender_avatar ?? data.avatar ?? null,
+          created_at: data.created_at ?? new Date().toISOString(),
+        };
+
+        setMessages((prev) => {
+          if (prev.some((m) => String(m.id) === String(msg.id))) return prev;
+          return [...prev, msg];
+        });
       } catch (err) {
         console.error("WS parse error:", err);
       }
@@ -142,13 +160,31 @@ export const usePaymentChat = ({ paymentId, pageSize = 30 }: UsePaymentChatOptio
     };
   }, [connect]);
 
-  const sendMessage = useCallback((message: string) => {
-    const text = message.trim();
-    if (!text) return false;
-    if (wsRef.current?.readyState !== WebSocket.OPEN) return false;
-    wsRef.current.send(JSON.stringify({ type: "message", message: text }));
-    return true;
-  }, []);
+  const sendMessage = useCallback(
+    (message: string) => {
+      const text = message.trim();
+      if (!text) return false;
+      if (wsRef.current?.readyState !== WebSocket.OPEN) return false;
+      wsRef.current.send(JSON.stringify({ type: "message", message: text }));
+
+      // Optimistic local append so the sender sees the message immediately
+      // even if the backend does not echo it back via WS.
+      const tempId = `local-${Date.now()}`;
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: tempId,
+          message: text,
+          sender_id: user?.id ?? "",
+          sender_username: user?.name || user?.first_name || "Tú",
+          sender_avatar: user?.avatar ?? null,
+          created_at: new Date().toISOString(),
+        },
+      ]);
+      return true;
+    },
+    [user]
+  );
 
   return {
     messages,
