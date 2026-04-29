@@ -41,8 +41,11 @@ export const usePaymentChat = ({ paymentId, pageSize = 30 }: UsePaymentChatOptio
         if (!res.ok) throw new Error("Error al cargar mensajes");
         const data = await res.json();
         const items: PaymentChatMessage[] = data.results || data.data || [];
-        // API returns most-recent-first; reverse for chat display (oldest at top)
-        if (!cancelled) setMessages([...items].reverse());
+        // Sort ascending by date so newest appears at the bottom (WhatsApp-style)
+        const sorted = [...items].sort(
+          (a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+        );
+        if (!cancelled) setMessages(sorted);
       } catch (e) {
         console.error(e);
       } finally {
